@@ -1,7 +1,7 @@
-# Data Cloud Demo Collection
+# Data 360 Demo Collection
 
-Interactive demo files for Salesforce Data Cloud training and presentations.  
-Salesforce Data Cloud トレーニング・プレゼンテーション用インタラクティブデモ集。
+Interactive demo files for Salesforce Data 360 training and presentations.  
+Salesforce Data 360 トレーニング・プレゼンテーション用インタラクティブデモ集。
 
 ---
 
@@ -69,8 +69,8 @@ No server or deployment required. Open any `.html` file directly in a browser.
 
 ## Classroom Talking Points
 
-**Data Cloud Timeline**
-> "In real Data Cloud, these custom objects are created automatically from connected data streams. Identity Resolution merges records from different sources into a single Unified Individual — what you see here as one profile."
+**Data 360 Timeline**
+> "In real Data 360, these custom objects are created automatically from connected data streams. Identity Resolution merges records from different sources into a single Unified Individual — what you see here as one profile."
 
 **Streaming Insights**
 > "This SQL runs continuously against incoming streaming data — not against stored records. The `WITHIN 5 MINUTES` clause defines a rolling time window. When the `HAVING` condition is met, the insight fires and triggers an action immediately, without any scheduled batch process."

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Salesforce Data 360 — Demo Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white:      #FFFFFF;
+  --bg:         #F0F6FF;
+  --surface:    #FFFFFF;
+  --border:     rgba(0,112,210,.14);
+  --border-h:   rgba(0,112,210,.32);
+  --navy:       #032D60;
+  --text-1:     #032D60;
+  --text-2:     #546D8F;
+  --text-3:     #9BAFC8;
+  --brand:      #0070D2;
+  --sky:        #00A1E0;
+  --orange:     #FF8B00;
+  --violet:     #8B5CF6;
+  --green:      #3CB879;
+  --yellow:     #FFD000;
+  --r-card:     18px;
+  --r-pill:     100px;
+  --sh-sm:      0 2px 10px rgba(3,45,96,.08);
+  --sh-md:      0 8px 32px rgba(3,45,96,.11);
+  --sh-lg:      0 20px 60px rgba(3,45,96,.16);
+  --t:          .22s cubic-bezier(.4,0,.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, 'Hiragino Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+}
+
+/* ── Nav ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--sh-sm);
+  padding: 0 48px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.sf-cloud {
+  width: 36px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: var(--brand); border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: white;
+}
+.nav-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; color: var(--navy);
+}
+.nav-title span { color: var(--text-3); font-weight: 400; }
+.live-chip {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: var(--r-pill);
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+  animation: live-pulse 2.2s infinite;
+}
+@keyframes live-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(60,184,121,.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(60,184,121,0); }
+}
+
+/* ── Hero ── */
+.hero {
+  background: var(--white);
+  padding: 72px 48px 56px;
+  overflow: hidden;
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -120px; right: -60px;
+  width: 560px; height: 560px;
+  background: radial-gradient(circle, rgba(0,161,224,.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1060px; margin: 0 auto;
+  display: flex; align-items: center; gap: 40px;
+}
+.hero-text { flex: 1; min-width: 0; }
+.hero-fig {
+  flex-shrink: 0; width: 250px;
+  animation: float-hero 3.8s ease-in-out infinite;
+}
+@keyframes float-hero {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--brand); letter-spacing: .1em; text-transform: uppercase;
+  padding: 6px 14px; border: 1px solid rgba(0,112,210,.2);
+  border-radius: var(--r-pill); background: rgba(0,112,210,.05);
+  margin-bottom: 20px;
+}
+.eyebrow-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--brand);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 4.2vw, 52px);
+  font-weight: 700; line-height: 1.1; letter-spacing: -.03em;
+  color: var(--navy); margin-bottom: 18px;
+}
+h1 em {
+  font-style: normal;
+  background: linear-gradient(130deg, var(--brand) 0%, var(--violet) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.hero-sub-en {
+  font-size: 16px; color: var(--text-2); line-height: 1.65;
+  max-width: 460px; margin-bottom: 8px;
+}
+.hero-sub-ja {
+  font-size: 13px; color: var(--text-3); line-height: 1.8;
+  max-width: 440px; margin-bottom: 32px;
+}
+.meta-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.mpill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-2);
+  padding: 7px 15px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--r-pill);
+  box-shadow: var(--sh-sm);
+}
+.mpill strong { color: var(--navy); }
+
+/* ── Demos section ── */
+.demos {
+  background: var(--bg); padding: 64px 48px 96px;
+}
+.demos-inner {
+  max-width: 960px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 52px;
+}
+
+/* Section header */
+.sect-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.sect-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: white; padding: 4px 11px; border-radius: var(--r-pill); font-weight: 500;
+  letter-spacing: .06em;
+}
+.num-sky    { background: var(--sky); }
+.num-violet { background: var(--violet); }
+.sect-info {}
+.sect-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 600; color: var(--navy);
+}
+.sect-desc {
+  font-size: 12px; color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace; margin-top: 2px;
+}
+
+/* ── Demo card (horizontal split) ── */
+.demo-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  display: flex;
+  box-shadow: var(--sh-md);
+  transition: box-shadow var(--t), transform var(--t), border-color var(--t);
+}
+.demo-card:hover {
+  box-shadow: var(--sh-lg);
+  transform: translateY(-5px);
+  border-color: var(--border-h);
+}
+
+/* Character panel (left) */
+.card-char {
+  width: 210px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 20px;
+  position: relative; overflow: hidden;
+}
+.char-sky    { background: linear-gradient(150deg, #D8F0FA 0%, #B3E3F5 100%); }
+.char-violet { background: linear-gradient(150deg, #EDE6FF 0%, #D9CCF9 100%); }
+
+/* Decorative orbs in char panel */
+.char-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+
+.char-svg { width: 100%; max-width: 150px; position: relative; z-index: 1; }
+.char-float { animation: char-bob 3.2s ease-in-out infinite; }
+.char-float-2 { animation: char-bob 3.6s ease-in-out infinite; animation-delay: .4s; }
+@keyframes char-bob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* Card content (right) */
+.card-content {
+  flex: 1; padding: 28px 28px 22px;
+  display: flex; flex-direction: column;
+}
+
+/* Title row */
+.title-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 14px; margin-bottom: 10px;
+}
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--navy); line-height: 1.25;
+}
+
+/* Language toggle */
+.lang-toggle {
+  flex-shrink: 0; display: flex; gap: 3px;
+  padding: 3px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--r-pill);
+}
+.lang-btn {
+  font-size: 11px; font-family: 'JetBrains Mono', monospace;
+  color: var(--text-2); padding: 5px 12px; border-radius: 100px;
+  border: none; background: transparent; cursor: pointer;
+  transition: background var(--t), color var(--t), box-shadow var(--t);
+  white-space: nowrap; line-height: 1;
+}
+.lang-btn.active {
+  background: white; color: var(--navy); font-weight: 500;
+  box-shadow: var(--sh-sm);
+}
+.lang-btn:hover:not(.active) {
+  background: rgba(0,112,210,.07); color: var(--brand);
+}
+
+.card-sub {
+  font-size: 13.5px; color: var(--text-2); line-height: 1.65;
+  margin-bottom: 16px;
+}
+code {
+  font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+  background: rgba(0,112,210,.08); color: var(--brand);
+  padding: 1px 5px; border-radius: 4px;
+}
+
+/* Preview box */
+.card-preview {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--text-3); line-height: 1.9;
+}
+.pline { display: flex; align-items: center; gap: 8px; }
+.pdot  { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.d-sky    { background: var(--sky); }
+.d-green  { background: var(--green); }
+.d-violet { background: var(--violet); }
+.d-orange { background: var(--orange); }
+.ptext { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Tags */
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.tag {
+  font-size: 10px; font-family: 'JetBrains Mono', monospace;
+  color: var(--brand); background: rgba(0,112,210,.06);
+  border: 1px solid rgba(0,112,210,.16); padding: 3px 9px;
+  border-radius: var(--r-pill);
+}
+
+/* Card footer */
+.card-foot {
+  margin-top: auto; padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.open-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 10px 22px; border-radius: 9px;
+  text-decoration: none;
+  transition: opacity var(--t), transform var(--t), box-shadow var(--t);
+}
+.open-btn:hover { opacity: .88; transform: translateX(3px); box-shadow: var(--sh-md); }
+.btn-sky    { background: var(--brand); color: white; }
+.btn-violet { background: var(--violet); color: white; }
+.card-stat {
+  font-size: 11px; color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace; text-align: right; line-height: 1.7;
+}
+
+/* ── Footer ── */
+footer {
+  background: var(--navy); padding: 36px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+}
+.ft-brand { display: flex; align-items: center; gap: 12px; }
+.ft-text { font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.7; }
+.ft-text strong { color: rgba(255,255,255,.85); }
+.ft-note { font-size: 11px; color: rgba(255,255,255,.3); font-family: 'JetBrains Mono', monospace; }
+
+/* ── Responsive ── */
+@media (max-width: 780px) {
+  nav   { padding: 0 20px; }
+  .hero { padding: 52px 24px 40px; }
+  .hero-inner { flex-direction: column-reverse; gap: 28px; }
+  .hero-fig   { width: 180px; align-self: center; }
+  .demos      { padding: 48px 20px 64px; }
+  footer      { padding: 28px 20px; }
+  .demo-card  { flex-direction: column; }
+  .card-char  { width: 100%; height: 160px; }
+  .char-svg   { max-width: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-fig, .char-float, .char-float-2, .demo-card, .open-btn { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="sf-cloud">SF</div>
+    <span class="nav-title">Data 360 <span>/ Demo Portal</span></span>
+  </a>
+  <div class="live-chip">
+    <div class="live-dot"></div>
+    LIVE · 2026
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- Text -->
+    <div class="hero-text">
+      <div class="eyebrow"><div class="eyebrow-dot"></div>Salesforce Data 360 · Training Demos</div>
+      <h1>Real-time data.<br><em>Real learning.</em></h1>
+      <p class="hero-sub-en">
+        Interactive demos for Salesforce Data 360 training —
+        Unified Profiles, Streaming Insights, and Customer Journeys.
+      </p>
+      <p class="hero-sub-ja">
+        Data 360 のコア概念をブラウザで体験できるインタラクティブデモ集。<br>
+        サーバー不要。すぐに開けます。
+      </p>
+      <div class="meta-pills">
+        <div class="mpill">📁 <strong>2</strong> demos</div>
+        <div class="mpill">🌐 <strong>JA · KO</strong></div>
+        <div class="mpill">⚡ No install required</div>
+      </div>
+    </div>
+
+    <!-- Astro character -->
+    <div class="hero-fig">
+      <svg viewBox="0 0 210 258" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ground shadow -->
+        <ellipse cx="105" cy="251" rx="62" ry="10" fill="#032D60" opacity="0.10"/>
+
+        <!-- Body — orange suit -->
+        <rect x="40" y="135" width="130" height="96" rx="34" fill="#FF8B00"/>
+        <!-- Suit shine stripe -->
+        <rect x="53" y="143" width="56" height="12" rx="6" fill="#FFB347" opacity="0.55"/>
+        <!-- Chest badge circle -->
+        <circle cx="105" cy="172" r="17" fill="#FFD000"/>
+        <!-- Star on badge -->
+        <path d="M105 159 L108.5 169.5 L119.5 169.5 L111.5 175.8 L114 186.5 L105 180.2 L96 186.5 L98.5 175.8 L90.5 169.5 L101.5 169.5 Z" fill="#032D60" opacity="0.9"/>
+
+        <!-- Legs -->
+        <rect x="55" y="207" width="40" height="34" rx="15" fill="#E67E00"/>
+        <rect x="115" y="207" width="40" height="34" rx="15" fill="#E67E00"/>
+        <!-- Boots -->
+        <rect x="46" y="228" width="58" height="20" rx="10" fill="#032D60"/>
+        <rect x="106" y="228" width="58" height="20" rx="10" fill="#032D60"/>
+
+        <!-- Left arm -->
+        <rect x="6"   y="140" width="38" height="62" rx="19" fill="#FF8B00"/>
+        <!-- Left glove -->
+        <circle cx="25" cy="205" r="19" fill="#032D60"/>
+        <!-- Right arm -->
+        <rect x="166" y="140" width="38" height="62" rx="19" fill="#FF8B00"/>
+        <!-- Right glove -->
+        <circle cx="185" cy="205" r="19" fill="#032D60"/>
+
+        <!-- Collar ring (SF blue) -->
+        <rect x="54" y="126" width="102" height="18" rx="9" fill="#0070D2"/>
+
+        <!-- Helmet sphere -->
+        <circle cx="105" cy="90" r="60" fill="#032D60"/>
+        <!-- Helmet subtle highlight -->
+        <ellipse cx="80" cy="64" rx="20" ry="13" fill="white" opacity="0.07"/>
+
+        <!-- Visor (dark inside) -->
+        <ellipse cx="105" cy="90" rx="43" ry="36" fill="#0B3A7A"/>
+        <!-- Visor glass reflection -->
+        <ellipse cx="87" cy="72" rx="14" ry="9" fill="white" opacity="0.18"/>
+        <ellipse cx="92" cy="77" rx="6" ry="4" fill="white" opacity="0.30"/>
+
+        <!-- Face / skin visible inside visor -->
+        <circle cx="105" cy="94" r="27" fill="#F5C9A0" opacity="0.92"/>
+
+        <!-- Eyes -->
+        <circle cx="94"  cy="88" r="7"   fill="white"/>
+        <circle cx="116" cy="88" r="7"   fill="white"/>
+        <circle cx="95.5" cy="89" r="4.5" fill="#032D60"/>
+        <circle cx="117.5" cy="89" r="4.5" fill="#032D60"/>
+        <!-- Eye shine -->
+        <circle cx="97"  cy="87" r="2"   fill="white"/>
+        <circle cx="119" cy="87" r="2"   fill="white"/>
+        <!-- Blush -->
+        <ellipse cx="82"  cy="99" rx="7" ry="4" fill="#FF9B8A" opacity="0.38"/>
+        <ellipse cx="128" cy="99" rx="7" ry="4" fill="#FF9B8A" opacity="0.38"/>
+        <!-- Smile -->
+        <path d="M93 103 Q105 114 117 103" stroke="#032D60" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+        <!-- Bear ears on helmet -->
+        <circle cx="56"  cy="42" r="20" fill="#032D60"/>
+        <circle cx="56"  cy="42" r="12" fill="#0B3A7A"/>
+        <circle cx="154" cy="42" r="20" fill="#032D60"/>
+        <circle cx="154" cy="42" r="12" fill="#0B3A7A"/>
+
+        <!-- Decorative stars / sparkles -->
+        <circle cx="180" cy="58"  r="4.5" fill="#FFD000" opacity="0.80"/>
+        <circle cx="24"  cy="118" r="3.5" fill="#FFD000" opacity="0.65"/>
+        <circle cx="188" cy="118" r="5.5" fill="#00A1E0" opacity="0.50"/>
+        <circle cx="16"  cy="72"  r="3"   fill="#4BCA81" opacity="0.70"/>
+        <!-- Star shapes -->
+        <path d="M188 76 L190 83 L197 83 L191.5 87 L193.5 94 L188 90 L182.5 94 L184.5 87 L179 83 L186 83 Z"
+              fill="#FFD000" opacity="0.70"/>
+        <path d="M16 148 L17.5 153 L23 153 L18.5 156 L20 161 L16 158 L12 161 L13.5 156 L9 153 L14.5 153 Z"
+              fill="#00A1E0" opacity="0.55"/>
+      </svg>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Demo cards ── -->
+<section class="demos">
+  <div class="demos-inner">
+
+    <!-- ── Demo 01: Streaming Insights ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-sky">Demo 01</span>
+        <div class="sect-info">
+          <div class="sect-title">Streaming Insights</div>
+          <div class="sect-desc">Real-time event stream → SQL-based insight rules → instant action triggers</div>
+        </div>
+      </div>
+
+      <div id="card-streaming" class="demo-card">
+
+        <!-- Codey character panel -->
+        <div class="card-char char-sky">
+          <!-- Orb decorations -->
+          <div class="char-orb" style="width:48px;height:48px;background:#00A1E0;opacity:.2;top:8%;left:4%;"></div>
+          <div class="char-orb" style="width:22px;height:22px;background:#FFD000;opacity:.35;bottom:14%;right:8%;"></div>
+          <div class="char-orb" style="width:30px;height:30px;background:#0070D2;opacity:.18;bottom:8%;left:12%;"></div>
+          <div class="char-orb" style="width:14px;height:14px;background:#3CB879;opacity:.40;top:22%;right:14%;"></div>
+
+          <!-- Codey SVG -->
+          <svg class="char-svg char-float-2" viewBox="0 0 130 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="65" cy="145" rx="38" ry="7" fill="#0070D2" opacity="0.15"/>
+
+            <!-- Body: dark blue hoodie -->
+            <rect x="18" y="84" width="94" height="56" rx="22" fill="#0070D2"/>
+            <!-- Hoodie center pocket -->
+            <rect x="40" y="104" width="50" height="26" rx="10" fill="#032D60"/>
+
+            <!-- Laptop/terminal in hands -->
+            <rect x="12" y="122" width="106" height="22" rx="7" fill="#032D60"/>
+            <rect x="16" y="125" width="98" height="16" rx="4" fill="#1589EE"/>
+            <!-- Code lines on screen -->
+            <rect x="20" y="128" width="36" height="3.5" rx="1.5" fill="#00FF88" opacity="0.9"/>
+            <rect x="20" y="134" width="50" height="3.5" rx="1.5" fill="#FFD000" opacity="0.9"/>
+            <rect x="62" y="128" width="28" height="3.5" rx="1.5" fill="#FF8B00" opacity="0.9"/>
+            <rect x="62" y="134" width="44" height="3.5" rx="1.5" fill="#00A1E0" opacity="0.9"/>
+
+            <!-- Head -->
+            <circle cx="65" cy="56" r="40" fill="#00A1E0"/>
+
+            <!-- Bear ears -->
+            <circle cx="34" cy="24" r="14" fill="#00A1E0"/>
+            <circle cx="34" cy="24" r="8"  fill="#0070D2"/>
+            <circle cx="96" cy="24" r="14" fill="#00A1E0"/>
+            <circle cx="96" cy="24" r="8"  fill="#0070D2"/>
+
+            <!-- Muzzle area -->
+            <ellipse cx="65" cy="62" rx="28" ry="22" fill="white" opacity="0.22"/>
+
+            <!-- Eyes -->
+            <circle cx="51" cy="50" r="7.5" fill="white"/>
+            <circle cx="79" cy="50" r="7.5" fill="white"/>
+            <circle cx="52.5" cy="51" r="4.5" fill="#032D60"/>
+            <circle cx="80.5" cy="51" r="4.5" fill="#032D60"/>
+            <circle cx="54"  cy="49" r="2"   fill="white"/>
+            <circle cx="82"  cy="49" r="2"   fill="white"/>
+
+            <!-- Nose -->
+            <ellipse cx="65" cy="64" rx="5" ry="3.5" fill="#032D60"/>
+
+            <!-- Smile -->
+            <path d="M54 71 Q65 80 76 71" stroke="#032D60" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+            <!-- Blush -->
+            <ellipse cx="38" cy="62" rx="9" ry="5" fill="#FF9B8A" opacity="0.32"/>
+            <ellipse cx="92" cy="62" rx="9" ry="5" fill="#FF9B8A" opacity="0.32"/>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-streaming-ja"><div class="card-title">Streaming Insights<br>リアルタイムデモ</div></div>
+              <div data-lc="card-streaming-ko" style="display:none"><div class="card-title">Streaming Insights<br>실시간 데모</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-streaming" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-streaming" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-streaming-ja">
+            <p class="card-sub">イベントストリームが Insight ルールと照合され、アクションが即時発動する様子をリアルタイムで体験。SQLの<code>WITHIN</code>句と<code>HAVING</code>条件がどう動くかを可視化します。</p>
+          </div>
+          <div data-lc="card-streaming-ko" style="display:none">
+            <p class="card-sub">이벤트 스트림이 Insight 룰과 실시간으로 평가되고 액션이 즉시 트리거되는 흐름을 시각화. SQL의 <code>WITHIN</code>절과 <code>HAVING</code> 조건이 어떻게 동작하는지 확인합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-streaming-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">高購買意欲検知 — page_view × 3 / 5分</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">カート放棄リスク — add_to_cart → abandon</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">購入完了コンバージョン — purchase 即時</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">クロスチャネル行動 — app_open → store_visit</span></div>
+            </div>
+            <div data-lc="card-streaming-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">고관심 구매의도 — page_view × 3 / 5분</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">장바구니 포기 위험 — add_to_cart → abandon</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">구매 완료 전환 — purchase 즉시 감지</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">크로스채널 행동 — app_open → store_visit</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">WITHIN 5 MINUTES</span>
+            <span class="tag">HAVING COUNT >= 3</span>
+            <span class="tag">Cross-channel JOIN</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="streaming-insights-ja.html" id="btn-streaming">Open Demo →</a>
+            <div class="card-stat">5 active insights<br>10 event types</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 02: Customer Journey Timeline ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-violet">Demo 02</span>
+        <div class="sect-info">
+          <div class="sect-title">Customer Journey Timeline</div>
+          <div class="sect-desc">Unified Individual Profile · cross-channel event history · Einstein NBA</div>
+        </div>
+      </div>
+
+      <div id="card-timeline" class="demo-card">
+
+        <!-- Einstein character panel -->
+        <div class="card-char char-violet">
+          <!-- Orb decorations -->
+          <div class="char-orb" style="width:44px;height:44px;background:#8B5CF6;opacity:.22;top:6%;right:6%;"></div>
+          <div class="char-orb" style="width:20px;height:20px;background:#FFD000;opacity:.40;bottom:10%;left:8%;"></div>
+          <div class="char-orb" style="width:26px;height:26px;background:#3CB879;opacity:.25;top:55%;right:14%;"></div>
+          <div class="char-orb" style="width:32px;height:32px;background:#032D60;opacity:.12;top:28%;left:4%;"></div>
+
+          <!-- Einstein the Owl SVG -->
+          <svg class="char-svg char-float" viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="65" cy="150" rx="36" ry="7" fill="#8B5CF6" opacity="0.20"/>
+
+            <!-- Tassel cord & ball -->
+            <line x1="97" y1="22" x2="109" y2="44" stroke="#FFD000" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="109" cy="48" r="5.5" fill="#FFD000"/>
+
+            <!-- Graduation cap — top block -->
+            <rect x="45" y="10" width="40" height="13" rx="3" fill="#032D60"/>
+            <!-- Graduation cap — brim -->
+            <rect x="22" y="21" width="86" height="10" rx="2.5" fill="#032D60"/>
+
+            <!-- Wings -->
+            <ellipse cx="14"  cy="108" rx="15" ry="28" fill="#7C3AED" transform="rotate(-14 14 108)"/>
+            <ellipse cx="116" cy="108" rx="15" ry="28" fill="#7C3AED" transform="rotate(14 116 108)"/>
+
+            <!-- Body -->
+            <rect x="27" y="92" width="76" height="52" rx="24" fill="#8B5CF6"/>
+            <!-- Belly lighter area -->
+            <ellipse cx="65" cy="116" rx="26" ry="22" fill="#A78BFA" opacity="0.55"/>
+
+            <!-- Feet / talons -->
+            <path d="M46 142 L40 150 M46 142 L47 151 M46 142 L54 149" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+            <path d="M84 142 L78 150 M84 142 L84 151 M84 142 L92 149" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+
+            <!-- Neck bow tie -->
+            <path d="M52 92 Q65 100 78 92 Q65 99 52 92 Z" fill="#FFD000" opacity="0.9"/>
+
+            <!-- Head -->
+            <circle cx="65" cy="62" r="40" fill="#8B5CF6"/>
+
+            <!-- Face disk -->
+            <ellipse cx="65" cy="67" rx="32" ry="27" fill="#A78BFA" opacity="0.60"/>
+
+            <!-- Ear tufts -->
+            <path d="M31 30 Q24 14 34 11 Q37 26 38 31 Z" fill="#7C3AED"/>
+            <path d="M99 30 Q106 14 96 11 Q93 26 92 31 Z" fill="#7C3AED"/>
+
+            <!-- Glasses frames -->
+            <rect x="33" y="47" width="26" height="20" rx="10" stroke="#FFD000" stroke-width="2.5" fill="none"/>
+            <rect x="71" y="47" width="26" height="20" rx="10" stroke="#FFD000" stroke-width="2.5" fill="none"/>
+            <line x1="59" y1="57" x2="71" y2="57" stroke="#FFD000" stroke-width="2.5"/>
+            <line x1="33" y1="57" x2="27" y2="54" stroke="#FFD000" stroke-width="2" stroke-linecap="round"/>
+            <line x1="97" y1="57" x2="103" y2="54" stroke="#FFD000" stroke-width="2" stroke-linecap="round"/>
+
+            <!-- Big round eyes (behind glasses) -->
+            <circle cx="46" cy="57" r="10" fill="white"/>
+            <circle cx="84" cy="57" r="10" fill="white"/>
+            <!-- Pupils -->
+            <circle cx="46" cy="57" r="6.5" fill="#032D60"/>
+            <circle cx="84" cy="57" r="6.5" fill="#032D60"/>
+            <!-- Iris -->
+            <circle cx="46" cy="57" r="3.8" fill="#8B5CF6"/>
+            <circle cx="84" cy="57" r="3.8" fill="#8B5CF6"/>
+            <!-- Pupil center -->
+            <circle cx="46" cy="57" r="2"   fill="#032D60"/>
+            <circle cx="84" cy="57" r="2"   fill="#032D60"/>
+            <!-- Eye shine -->
+            <circle cx="49" cy="53" r="2.5" fill="white"/>
+            <circle cx="87" cy="53" r="2.5" fill="white"/>
+
+            <!-- Beak -->
+            <path d="M57 72 L65 80 L73 72 Z" fill="#FFD000"/>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-timeline-ja"><div class="card-title">カスタマージャーニー<br>タイムライン</div></div>
+              <div data-lc="card-timeline-ko" style="display:none"><div class="card-title">고객 여정<br>타임라인</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-timeline" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-timeline" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-timeline-ja">
+            <p class="card-sub">日本人顧客12名の統合プロファイルと、Web・アプリ・CRM・メール・オフラインにまたがるジャーニーを可視化。Einstein NBA によるパーソナライズ推奨も確認できます。</p>
+          </div>
+          <div data-lc="card-timeline-ko" style="display:none">
+            <p class="card-sub">한국인 고객 12명의 통합 프로파일과 Web·앱·CRM·이메일·오프라인을 아우르는 여정을 시각화. Einstein NBA 기반 개인화 추천도 확인할 수 있습니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-timeline-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">Web — Adobe Analytics</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">App — Mobile App SDK</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">Email — Marketing Cloud</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Offline — POS System</span></div>
+            </div>
+            <div data-lc="card-timeline-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">Web — Adobe Analytics</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">앱 — Mobile App SDK</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">이메일 — Marketing Cloud</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">오프라인 — POS System</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Unified Individual</span>
+            <span class="tag">Einstein NBA</span>
+            <span class="tag">Identity Resolution</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-violet" href="data360-timeline-ja.html" id="btn-timeline">Open Demo →</a>
+            <div class="card-stat">12 customers<br>5 data sources</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="ft-brand">
+    <div class="sf-cloud">SF</div>
+    <div class="ft-text">
+      <strong>Salesforce Data 360</strong> · Training Demo Collection<br>
+      All data is fictional and for demonstration purposes only.
+    </div>
+  </div>
+  <div class="ft-note">2026 · data360-insights</div>
+</footer>
+
+<!-- ── Language toggle JS ── -->
+<script>
+(function(){
+  const LINKS = {
+    'card-streaming': { ja: 'streaming-insights-ja.html', ko: 'streaming-insights-demo.html' },
+    'card-timeline':  { ja: 'data360-timeline-ja.html',   ko: 'data360-timeline.html' }
+  };
+  const BTNS = {
+    'card-streaming': document.getElementById('btn-streaming'),
+    'card-timeline':  document.getElementById('btn-timeline')
+  };
+
+  function switchLang(cardId, lang) {
+    const card = document.getElementById(cardId);
+    card.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    card.querySelectorAll('[data-lc]').forEach(el => {
+      el.style.display = el.dataset.lc.endsWith('-' + lang) ? '' : 'none';
+    });
+    BTNS[cardId].href = LINKS[cardId][lang];
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      switchLang(this.dataset.card, this.dataset.lang);
+    });
+  });
+
+  switchLang('card-streaming', 'ja');
+  switchLang('card-timeline',  'ja');
+})();
+</script>
+
+</body>
+</html>
