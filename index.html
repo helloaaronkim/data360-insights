@@ -173,6 +173,7 @@ h1 em {
 }
 .num-sky    { background: var(--sky); }
 .num-violet { background: var(--violet); }
+.num-green  { background: var(--green); }
 .sect-info {}
 .sect-title {
   font-family: 'Space Grotesk', sans-serif;
@@ -208,6 +209,7 @@ h1 em {
 }
 .char-sky    { background: linear-gradient(150deg, #D8F0FA 0%, #B3E3F5 100%); }
 .char-violet { background: linear-gradient(150deg, #EDE6FF 0%, #D9CCF9 100%); }
+.char-green  { background: linear-gradient(150deg, #DCFCE7 0%, #BBF7D0 100%); }
 
 /* Decorative orbs in char panel */
 .char-orb {
@@ -310,6 +312,7 @@ code {
 .open-btn:hover { opacity: .88; transform: translateX(3px); box-shadow: var(--sh-md); }
 .btn-sky    { background: var(--brand); color: white; }
 .btn-violet { background: var(--violet); color: white; }
+.btn-green  { background: #3CB879; color: white; }
 .card-stat {
   font-size: 11px; color: var(--text-3);
   font-family: 'JetBrains Mono', monospace; text-align: right; line-height: 1.7;
@@ -374,7 +377,7 @@ footer {
         サーバー不要。すぐに開けます。
       </p>
       <div class="meta-pills">
-        <div class="mpill">📁 <strong>2</strong> demos</div>
+        <div class="mpill">📁 <strong>3</strong> demos</div>
         <div class="mpill">🌐 <strong>JA · KO</strong></div>
         <div class="mpill">⚡ No install required</div>
       </div>
@@ -725,6 +728,101 @@ footer {
             <div class="card-stat">12 customers<br>5 data sources</div>
           </div>
 
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 03: Segment & Activation ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-green">Demo 03</span>
+        <div class="sect-info">
+          <div class="sect-title">セグメント &amp; アクティベーション</div>
+          <div class="sect-desc">Segment → Activation Target → Activation → Segment Publish</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+
+        <!-- Character panel -->
+        <div class="card-char char-green">
+          <div class="char-orb" style="width:40px;height:40px;background:#3CB879;opacity:.22;top:8%;left:5%;"></div>
+          <div class="char-orb" style="width:18px;height:18px;background:#FFD000;opacity:.40;bottom:12%;right:10%;"></div>
+          <div class="char-orb" style="width:26px;height:26px;background:#0070D2;opacity:.18;top:55%;left:75%;"></div>
+
+          <!-- Astro (smaller, with megaphone) -->
+          <svg class="char-svg char-float" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="70" cy="155" rx="40" ry="7" fill="#3CB879" opacity="0.15"/>
+            <!-- Body -->
+            <rect x="28" y="90" width="84" height="60" rx="22" fill="#FF8B00"/>
+            <rect x="35" y="96" width="36" height="8" rx="4" fill="#FFB347" opacity="0.55"/>
+            <circle cx="70" cy="112" r="11" fill="#FFD000"/>
+            <path d="M70 104 L72.5 111 L80 111 L74 115 L76 122 L70 118 L64 122 L66 115 L60 111 L67.5 111 Z" fill="#032D60" opacity="0.9"/>
+            <!-- Legs -->
+            <rect x="36" y="130" width="26" height="20" rx="9" fill="#E67E00"/>
+            <rect x="78" y="130" width="26" height="20" rx="9" fill="#E67E00"/>
+            <rect x="30" y="142" width="36" height="13" rx="6.5" fill="#032D60"/>
+            <rect x="74" y="142" width="36" height="13" rx="6.5" fill="#032D60"/>
+            <!-- Arms -->
+            <rect x="4" y="93" width="26" height="40" rx="13" fill="#FF8B00"/>
+            <circle cx="17" cy="136" r="13" fill="#032D60"/>
+            <!-- Megaphone in right hand -->
+            <rect x="110" y="88" width="24" height="38" rx="10" fill="#FF8B00"/>
+            <circle cx="122" cy="130" r="12" fill="#032D60"/>
+            <path d="M116 95 L138 82 L138 120 L116 107 Z" fill="#FFD000" opacity="0.9"/>
+            <path d="M138 82 L148 78 L148 124 L138 120 Z" fill="#FFD000" opacity="0.7"/>
+            <!-- Signal waves from megaphone -->
+            <path d="M150 86 Q158 101 150 116" stroke="#3CB879" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+            <path d="M155 80 Q166 101 155 122" stroke="#3CB879" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+            <!-- Collar -->
+            <rect x="36" y="82" width="68" height="13" rx="6.5" fill="#0070D2"/>
+            <!-- Helmet -->
+            <circle cx="70" cy="58" r="38" fill="#032D60"/>
+            <ellipse cx="70" cy="58" rx="27" ry="23" fill="#0B3A7A"/>
+            <ellipse cx="58" cy="46" rx="9" ry="6" fill="white" opacity="0.18"/>
+            <ellipse cx="62" cy="50" rx="4" ry="2.5" fill="white" opacity="0.28"/>
+            <circle cx="70" cy="62" r="18" fill="#F5C9A0" opacity="0.9"/>
+            <circle cx="62" cy="57" r="5" fill="white"/>
+            <circle cx="78" cy="57" r="5" fill="white"/>
+            <circle cx="63.5" cy="58" r="3" fill="#032D60"/>
+            <circle cx="79.5" cy="58" r="3" fill="#032D60"/>
+            <circle cx="64.5" cy="56.5" r="1.4" fill="white"/>
+            <circle cx="80.5" cy="56.5" r="1.4" fill="white"/>
+            <ellipse cx="55" cy="66" rx="5" ry="3" fill="#FF9B8A" opacity="0.38"/>
+            <ellipse cx="85" cy="66" rx="5" ry="3" fill="#FF9B8A" opacity="0.38"/>
+            <path d="M62 69 Q70 77 78 69" stroke="#032D60" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="27" r="13" fill="#032D60"/>
+            <circle cx="38" cy="27" r="8" fill="#0B3A7A"/>
+            <circle cx="102" cy="27" r="13" fill="#032D60"/>
+            <circle cx="102" cy="27" r="8" fill="#0B3A7A"/>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+          <div class="title-row">
+            <div class="card-title">セグメント &amp;<br>アクティベーション</div>
+          </div>
+          <p class="card-sub">顧客データをフィルター条件で絞り込み、外部システム（Marketing Cloud・Meta Ads・Google Ads）へ配信するまでの全フローをインタラクティブに体験。</p>
+
+          <div class="card-preview">
+            <div class="pline"><div class="pdot d-sky"></div><span class="ptext">セグメントビルダー — 属性・行動・エンゲージメントでフィルター</span></div>
+            <div class="pline"><div class="pdot d-green"></div><span class="ptext">Activation Target — MC / Meta / Google / CRM</span></div>
+            <div class="pline"><div class="pdot d-violet"></div><span class="ptext">属性マッピング — Data 360 フィールドを自由に対応付け</span></div>
+            <div class="pline"><div class="pdot d-orange"></div><span class="ptext">セグメント公開 — リアルタイムプログレス表示</span></div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Segment</span>
+            <span class="tag">Activation Target</span>
+            <span class="tag">Activation</span>
+            <span class="tag">Segment Publish</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-green" href="data360-segment-ja.html">Open Demo →</a>
+            <div class="card-stat">48 members<br>4 concepts</div>
+          </div>
         </div>
       </div>
     </div>

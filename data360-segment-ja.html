@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data 360 — セグメント & アクティベーション</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0F6FF; --white:#fff; --border:rgba(0,112,210,.13); --border-h:rgba(0,112,210,.30);
+  --navy:#032D60; --t2:#546D8F; --t3:#9BAFC8;
+  --brand:#0070D2; --sky:#00A1E0; --violet:#8B5CF6; --green:#3CB879;
+  --orange:#FF8B00; --yellow:#FFD000; --red:#E74C3C;
+  --seg:#0070D2; --act-tgt:#00A1E0; --act:#8B5CF6; --pub:#3CB879;
+  --sh-sm:0 2px 10px rgba(3,45,96,.08); --sh-md:0 8px 32px rgba(3,45,96,.12); --sh-lg:0 20px 60px rgba(3,45,96,.18);
+  --r:14px; --pill:100px; --t:.2s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,'Hiragino Sans',sans-serif;background:var(--bg);color:var(--navy);min-height:100vh}
+
+/* ── App bar ── */
+.appbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);box-shadow:var(--sh-sm);
+  padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;
+}
+.appbar-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sf-mark{width:30px;height:30px;background:var(--brand);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.appbar-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--navy)}
+.appbar-title span{color:var(--t3);font-weight:400}
+.back-link{font-size:12px;color:var(--t2);text-decoration:none;display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;padding:6px 12px;border:1px solid var(--border);border-radius:var(--pill);transition:color var(--t),border-color var(--t)}
+.back-link:hover{color:var(--brand);border-color:var(--border-h)}
+
+/* ── Hero ── */
+.hero{background:var(--white);padding:52px 40px 44px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:960px;margin:0 auto}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border:1px solid rgba(0,112,210,.2);border-radius:var(--pill);background:rgba(0,112,210,.05);margin-bottom:18px}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--brand);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:700;line-height:1.15;letter-spacing:-.025em;color:var(--navy);margin-bottom:12px}
+.hero h1 em{font-style:normal;background:linear-gradient(130deg,var(--brand),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:14px;color:var(--t2);line-height:1.7;max-width:640px}
+
+/* ── Section wrapper ── */
+.section{padding:56px 40px;max-width:960px;margin:0 auto}
+.section+.section{padding-top:0}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:white;padding:3px 9px;border-radius:var(--pill);letter-spacing:.06em}
+.sec-desc{font-size:13px;color:var(--t3);margin-bottom:28px;font-family:'JetBrains Mono',monospace}
+
+/* ── Section 1: Concept cards ── */
+.concept-flow{display:flex;align-items:stretch;gap:0;position:relative;flex-wrap:nowrap;overflow-x:auto}
+.concept-card{
+  background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:24px 20px;flex:1;min-width:180px;
+  display:flex;flex-direction:column;gap:10px;
+  box-shadow:var(--sh-sm);transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+  position:relative;
+}
+.concept-card:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.concept-arrow{display:flex;align-items:center;padding:0 4px;flex-shrink:0;color:var(--t3);font-size:20px;align-self:center}
+.concept-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ci-seg    {background:rgba(0,112,210,.1);border:1px solid rgba(0,112,210,.2)}
+.ci-tgt    {background:rgba(0,161,224,.1);border:1px solid rgba(0,161,224,.2)}
+.ci-act    {background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2)}
+.ci-pub    {background:rgba(60,184,121,.1);border:1px solid rgba(60,184,121,.2)}
+.concept-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--navy)}
+.concept-en{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:-6px}
+.concept-def{font-size:12px;color:var(--t2);line-height:1.65;flex:1}
+.concept-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.ctag{font-size:9.5px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:var(--pill);border:1px solid}
+.ctag-seg  {color:var(--seg);   border-color:rgba(0,112,210,.25);  background:rgba(0,112,210,.06)}
+.ctag-tgt  {color:var(--sky);   border-color:rgba(0,161,224,.25);  background:rgba(0,161,224,.06)}
+.ctag-act  {color:var(--violet);border-color:rgba(139,92,246,.25); background:rgba(139,92,246,.06)}
+.ctag-pub  {color:var(--green); border-color:rgba(60,184,121,.25); background:rgba(60,184,121,.06)}
+.concept-bar{height:3px;border-radius:2px;margin-top:auto;margin-bottom:-24px;margin-left:-20px;margin-right:-20px;border-radius:0 0 var(--r) var(--r)}
+
+/* ── Section 2: Segment Builder ── */
+.builder-wrap{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+.filter-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh-sm)}
+.filter-panel-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--border)}
+.filter-panel-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--navy)}
+.filter-cat{border-bottom:1px solid var(--border)}
+.filter-cat:last-child{border-bottom:none}
+.filter-cat-hdr{padding:11px 18px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background var(--t)}
+.filter-cat-hdr:hover{background:rgba(0,112,210,.04)}
+.filter-cat-body{padding:0 18px 10px;display:flex;flex-direction:column;gap:3px}
+.filter-opt{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background var(--t)}
+.filter-opt:hover{background:rgba(0,112,210,.06)}
+.filter-opt-label{font-size:12px;color:var(--navy)}
+.filter-add-btn{width:20px;height:20px;border-radius:50%;background:var(--brand);color:white;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity var(--t)}
+.filter-add-btn:hover{opacity:.8}
+.filter-add-btn.added{background:var(--t3);cursor:default}
+
+.result-panel{display:flex;flex-direction:column;gap:14px}
+.result-header{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--sh-sm)}
+.seg-name-row{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.seg-name-input{flex:1;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--navy);outline:none;transition:border-color var(--t)}
+.seg-name-input:focus{border-color:var(--brand)}
+.save-seg-btn{padding:9px 18px;background:var(--brand);color:white;border:none;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity var(--t),transform var(--t);white-space:nowrap}
+.save-seg-btn:hover{opacity:.88;transform:translateY(-1px)}
+.active-filters{display:flex;flex-wrap:wrap;gap:7px;min-height:32px;align-items:center}
+.no-filter-txt{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.filter-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--brand);background:rgba(0,112,210,.08);border:1px solid rgba(0,112,210,.2);padding:4px 10px;border-radius:var(--pill);font-family:'JetBrains Mono',monospace}
+.chip-remove{background:none;border:none;cursor:pointer;color:var(--brand);font-size:13px;line-height:1;padding:0;opacity:.7;transition:opacity var(--t)}
+.chip-remove:hover{opacity:1}
+.count-display{display:flex;align-items:center;gap:18px}
+.count-big{font-family:'Space Grotesk',sans-serif;font-size:42px;font-weight:700;color:var(--brand);line-height:1;transition:all .3s ease}
+.count-label{font-size:12px;color:var(--t3)}
+.count-bar-wrap{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.count-bar-fill{height:100%;background:linear-gradient(to right,var(--brand),var(--sky));border-radius:4px;transition:width .4s ease}
+
+.member-list{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh-sm)}
+.member-list-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.member-list-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--navy)}
+.member-rows{max-height:300px;overflow-y:auto}
+.member-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid rgba(0,112,210,.06);transition:background var(--t)}
+.member-row:hover{background:rgba(0,112,210,.03)}
+.member-row:last-child{border-bottom:none}
+.member-ava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:white;flex-shrink:0}
+.member-name{font-size:13px;font-weight:600;color:var(--navy)}
+.member-meta{font-size:11px;color:var(--t3);margin-top:1px}
+.seg-pill{font-size:9.5px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:var(--pill);margin-left:auto;flex-shrink:0}
+.seg-hv  {background:rgba(255,193,0,.15);color:#B8860B;border:1px solid rgba(255,193,0,.3)}
+.seg-loyal{background:rgba(0,112,210,.1);color:var(--brand);border:1px solid rgba(0,112,210,.2)}
+.seg-risk {background:rgba(231,76,60,.1);color:var(--red);border:1px solid rgba(231,76,60,.2)}
+.seg-new  {background:rgba(60,184,121,.1);color:#2E8B57;border:1px solid rgba(60,184,121,.2)}
+
+/* ── Section 3: Activation Flow ── */
+.stepper{display:flex;align-items:center;margin-bottom:32px;gap:0}
+.step-item{display:flex;align-items:center;flex:1}
+.step-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--t3);flex-shrink:0;transition:all .3s;z-index:1}
+.step-dot.active{border-color:var(--brand);background:var(--brand);color:white;box-shadow:0 0 0 4px rgba(0,112,210,.15)}
+.step-dot.done{border-color:var(--green);background:var(--green);color:white}
+.step-label{font-size:11px;color:var(--t3);margin-left:8px;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:color .3s}
+.step-label.active{color:var(--brand);font-weight:500}
+.step-label.done{color:var(--green)}
+.step-line{flex:1;height:2px;background:var(--border);margin:0 4px;transition:background .3s}
+.step-line.done{background:var(--green)}
+
+.step-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--sh-md);min-height:260px}
+.step-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.step-hint{font-size:12px;color:var(--t3);margin-bottom:24px;font-family:'JetBrains Mono',monospace}
+.step-nav{display:flex;gap:10px;margin-top:28px}
+.btn-primary{padding:10px 22px;background:var(--brand);color:white;border:none;border-radius:9px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity var(--t),transform var(--t)}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+.btn-secondary{padding:10px 22px;background:transparent;color:var(--t2);border:1.5px solid var(--border);border-radius:9px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:border-color var(--t),color var(--t)}
+.btn-secondary:hover{border-color:var(--border-h);color:var(--navy)}
+
+/* Step 1: Segment selection */
+.seg-select-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.seg-select-card{border:2px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all var(--t);background:var(--white)}
+.seg-select-card:hover{border-color:rgba(0,112,210,.35);background:rgba(0,112,210,.03)}
+.seg-select-card.selected{border-color:var(--brand);background:rgba(0,112,210,.06)}
+.seg-card-name{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.seg-card-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brand);margin-bottom:6px}
+.seg-card-desc{font-size:11px;color:var(--t2);line-height:1.5}
+
+/* Step 2: Target selection */
+.target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.target-card{border:2px solid var(--border);border-radius:10px;padding:20px 16px;cursor:pointer;transition:all var(--t);background:var(--white);text-align:center}
+.target-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.target-card.selected{border-color:var(--sky);background:rgba(0,161,224,.06)}
+.target-logo{font-size:32px;margin-bottom:10px}
+.target-name{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.target-type{font-size:11px;color:var(--t2)}
+
+/* Step 3: Attribute mapping */
+.mapping-table{width:100%;border-collapse:collapse;font-size:13px}
+.mapping-table th{padding:10px 14px;text-align:left;background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);border-bottom:1px solid var(--border)}
+.mapping-table td{padding:10px 14px;border-bottom:1px solid rgba(0,112,210,.06)}
+.mapping-table tr:last-child td{border-bottom:none}
+.field-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--navy)}
+.field-arrow{color:var(--t3);text-align:center;font-size:16px}
+.field-select{padding:6px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--navy);background:white;outline:none;transition:border-color var(--t);width:100%}
+.field-select:focus{border-color:var(--brand)}
+.req-badge{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:var(--pill);background:rgba(0,112,210,.1);color:var(--brand);margin-left:6px}
+
+/* Step 4: Publish */
+.publish-wrap{display:flex;flex-direction:column;gap:20px}
+.publish-summary{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:20px}
+.pub-item{font-size:12px;color:var(--t2)}
+.pub-item strong{color:var(--navy);display:block;font-family:'Space Grotesk',sans-serif;margin-bottom:2px}
+.progress-wrap{display:flex;flex-direction:column;gap:10px}
+.progress-bar-bg{height:10px;background:var(--bg);border-radius:5px;overflow:hidden;border:1px solid var(--border)}
+.progress-bar-fill{height:100%;background:linear-gradient(to right,var(--brand),var(--green));border-radius:5px;width:0%;transition:width .6s ease}
+.progress-status{font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;min-height:18px}
+.progress-steps-list{display:flex;flex-direction:column;gap:8px}
+.pub-step-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace;transition:color .3s}
+.pub-step-row.active{color:var(--brand)}
+.pub-step-row.done{color:var(--green)}
+.pub-step-icon{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;transition:all .3s}
+.pub-step-icon.active{border-color:var(--brand);background:rgba(0,112,210,.1);color:var(--brand)}
+.pub-step-icon.done{border-color:var(--green);background:var(--green);color:white}
+.success-banner{background:rgba(60,184,121,.1);border:1.5px solid rgba(60,184,121,.35);border-radius:10px;padding:20px 22px;display:flex;gap:14px;align-items:flex-start;display:none}
+.success-icon{font-size:28px;flex-shrink:0}
+.success-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#2E8B57;margin-bottom:6px}
+.success-detail{font-size:12px;color:var(--t2);line-height:1.6}
+
+/* ── Saved segments badge ── */
+.saved-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;background:rgba(60,184,121,.1);border:1px solid rgba(60,184,121,.25);padding:4px 10px;border-radius:var(--pill);margin-left:8px;display:none}
+
+/* ── Footer ── */
+footer{background:var(--navy);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ft-brand{display:flex;align-items:center;gap:10px}
+.ft-text{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7}
+.ft-text strong{color:rgba(255,255,255,.8)}
+.ft-note{font-size:11px;color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace}
+
+@media(max-width:720px){
+  .appbar,.section{padding-left:20px;padding-right:20px}
+  .hero{padding:36px 20px 32px}
+  .builder-wrap{grid-template-columns:1fr}
+  .concept-flow{flex-wrap:wrap;gap:12px}
+  .concept-arrow{transform:rotate(90deg)}
+  footer{padding:24px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── App bar ── -->
+<nav class="appbar">
+  <a class="appbar-brand" href="index.html">
+    <div class="sf-mark">SF</div>
+    <span class="appbar-title">Data 360 <span>/ セグメント &amp; アクティベーション</span></span>
+  </a>
+  <a class="back-link" href="index.html">← デモ一覧</a>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow"><div class="eyebrow-dot"></div>Salesforce Data 360 · Demo 03</div>
+    <h1>セグメント化して、<em>届ける。</em></h1>
+    <p class="hero-sub">統合された顧客データを条件で絞り込み（セグメント）、外部システムへ配信（アクティベーション）するまでの流れをインタラクティブに体験できます。</p>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+     SECTION 1 — Concept Reference Cards
+──────────────────────────────────────── -->
+<div class="section">
+  <div class="sec-title">
+    <span class="sec-num" style="background:var(--navy)">概念</span>
+    4つの主要コンセプト
+  </div>
+  <p class="sec-desc">Segment → Activation Target → Activation → Segment Publish の関係</p>
+
+  <div class="concept-flow">
+
+    <!-- Segment -->
+    <div class="concept-card">
+      <div class="concept-icon ci-seg">🎯</div>
+      <div>
+        <div class="concept-name">セグメント</div>
+        <div class="concept-en">Segment</div>
+      </div>
+      <div class="concept-def">
+        統合個人（Unified Individual）をフィルター条件で絞り込んだグループ。属性・行動・エンゲージメントデータを組み合わせて定義します。
+      </div>
+      <div class="concept-tags">
+        <span class="ctag ctag-seg">フィルター条件</span>
+        <span class="ctag ctag-seg">メンバー数</span>
+        <span class="ctag ctag-seg">リアルタイム評価</span>
+      </div>
+      <div class="concept-bar" style="background:var(--seg)"></div>
+    </div>
+
+    <div class="concept-arrow">→</div>
+
+    <!-- Activation Target -->
+    <div class="concept-card">
+      <div class="concept-icon ci-tgt">📡</div>
+      <div>
+        <div class="concept-name">アクティベーション<br>ターゲット</div>
+        <div class="concept-en">Activation Target</div>
+      </div>
+      <div class="concept-def">
+        セグメントデータの送信先となる外部システムの接続設定。一度設定すれば複数のアクティベーションで再利用できます。
+      </div>
+      <div class="concept-tags">
+        <span class="ctag ctag-tgt">Marketing Cloud</span>
+        <span class="ctag ctag-tgt">Meta Ads</span>
+        <span class="ctag ctag-tgt">Google Ads</span>
+        <span class="ctag ctag-tgt">Salesforce CRM</span>
+      </div>
+      <div class="concept-bar" style="background:var(--sky)"></div>
+    </div>
+
+    <div class="concept-arrow">→</div>
+
+    <!-- Activation -->
+    <div class="concept-card">
+      <div class="concept-icon ci-act">🔗</div>
+      <div>
+        <div class="concept-name">アクティベーション</div>
+        <div class="concept-en">Activation</div>
+      </div>
+      <div class="concept-def">
+        セグメントとアクティベーションターゲットを紐付ける設定。Data 360 の属性をターゲットシステムのフィールドにマッピングします。
+      </div>
+      <div class="concept-tags">
+        <span class="ctag ctag-act">属性マッピング</span>
+        <span class="ctag ctag-act">スケジュール</span>
+        <span class="ctag ctag-act">増分 / 全件</span>
+      </div>
+      <div class="concept-bar" style="background:var(--violet)"></div>
+    </div>
+
+    <div class="concept-arrow">→</div>
+
+    <!-- Segment Publish -->
+    <div class="concept-card">
+      <div class="concept-icon ci-pub">🚀</div>
+      <div>
+        <div class="concept-name">セグメント公開</div>
+        <div class="concept-en">Segment Publish</div>
+      </div>
+      <div class="concept-def">
+        セグメントを有効化し、メンバー数の計算と外部システムへのデータ配信を開始するプロセス。ステータスはリアルタイムで更新されます。
+      </div>
+      <div class="concept-tags">
+        <span class="ctag ctag-pub">公開中</span>
+        <span class="ctag ctag-pub">公開完了</span>
+        <span class="ctag ctag-pub">スケジュール実行</span>
+      </div>
+      <div class="concept-bar" style="background:var(--green)"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────
+     SECTION 2 — Segment Builder
+──────────────────────────────────────── -->
+<div style="background:var(--bg);padding:2px 0">
+<div class="section" style="padding-top:48px">
+  <div class="sec-title">
+    <span class="sec-num" style="background:var(--seg)">01</span>
+    セグメントビルダー
+    <span class="saved-badge" id="saved-badge">✓ 保存済み</span>
+  </div>
+  <p class="sec-desc">条件を追加してセグメントを定義 → 「セグメントを保存」するとアクティベーションフローで使用できます</p>
+
+  <div class="builder-wrap">
+
+    <!-- Filter panel -->
+    <div class="filter-panel">
+      <div class="filter-panel-hdr">
+        <div class="filter-panel-title">フィルター条件を追加</div>
+      </div>
+
+      <!-- デモグラフィック -->
+      <div class="filter-cat">
+        <div class="filter-cat-hdr" onclick="toggleCat(this)">👤 デモグラフィック <span>▾</span></div>
+        <div class="filter-cat-body">
+          <div class="filter-opt"><span class="filter-opt-label">年齢：20代</span><button class="filter-add-btn" onclick="addFilter('age','20代','age20')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">年齢：30代</span><button class="filter-add-btn" onclick="addFilter('age','30代','age30')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">年齢：40代</span><button class="filter-add-btn" onclick="addFilter('age','40代','age40')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">年齢：50代以上</span><button class="filter-add-btn" onclick="addFilter('age','50代以上','age50')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">性別：男性</span><button class="filter-add-btn" onclick="addFilter('gender','男性','gM')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">性別：女性</span><button class="filter-add-btn" onclick="addFilter('gender','女性','gF')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">居住地：東京</span><button class="filter-add-btn" onclick="addFilter('pref','東京','pTokyo')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">居住地：大阪</span><button class="filter-add-btn" onclick="addFilter('pref','大阪','pOsaka')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">居住地：名古屋</span><button class="filter-add-btn" onclick="addFilter('pref','名古屋','pNagoya')">+</button></div>
+        </div>
+      </div>
+
+      <!-- 購買行動 -->
+      <div class="filter-cat">
+        <div class="filter-cat-hdr" onclick="toggleCat(this)">🛒 購買行動 <span>▾</span></div>
+        <div class="filter-cat-body">
+          <div class="filter-opt"><span class="filter-opt-label">購入金額：¥50,000以上</span><button class="filter-add-btn" onclick="addFilter('ltv','¥50,000以上','ltv50')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">購入金額：¥100,000以上</span><button class="filter-add-btn" onclick="addFilter('ltv','¥100,000以上','ltv100')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">最終購入：30日以内</span><button class="filter-add-btn" onclick="addFilter('lastPurchase','30日以内','lp30')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">最終購入：7日以内</span><button class="filter-add-btn" onclick="addFilter('lastPurchase','7日以内','lp7')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">購入回数：5回以上</span><button class="filter-add-btn" onclick="addFilter('purchaseCount','5回以上','pc5')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">購入回数：10回以上</span><button class="filter-add-btn" onclick="addFilter('purchaseCount','10回以上','pc10')">+</button></div>
+        </div>
+      </div>
+
+      <!-- エンゲージメント -->
+      <div class="filter-cat">
+        <div class="filter-cat-hdr" onclick="toggleCat(this)">📊 エンゲージメント <span>▾</span></div>
+        <div class="filter-cat-body">
+          <div class="filter-opt"><span class="filter-opt-label">PV数：10回以上</span><button class="filter-add-btn" onclick="addFilter('pageViews','10回以上','pv10')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">PV数：20回以上</span><button class="filter-add-btn" onclick="addFilter('pageViews','20回以上','pv20')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">メール開封：直近30日あり</span><button class="filter-add-btn" onclick="addFilter('emailOpened','直近30日あり','email30')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">アプリ利用：直近7日あり</span><button class="filter-add-btn" onclick="addFilter('appUsed','直近7日あり','app7')">+</button></div>
+        </div>
+      </div>
+
+      <!-- セグメント種別 -->
+      <div class="filter-cat">
+        <div class="filter-cat-hdr" onclick="toggleCat(this)">🏷 セグメント種別 <span>▾</span></div>
+        <div class="filter-cat-body">
+          <div class="filter-opt"><span class="filter-opt-label">ハイバリュー顧客</span><button class="filter-add-btn" onclick="addFilter('segment','ハイバリュー','segHV')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">ロイヤル顧客</span><button class="filter-add-btn" onclick="addFilter('segment','ロイヤル','segLoyal')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">離脱リスク顧客</span><button class="filter-add-btn" onclick="addFilter('segment','離脱リスク','segRisk')">+</button></div>
+          <div class="filter-opt"><span class="filter-opt-label">新規顧客</span><button class="filter-add-btn" onclick="addFilter('segment','新規','segNew')">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result panel -->
+    <div class="result-panel">
+      <div class="result-header">
+        <div class="seg-name-row">
+          <input class="seg-name-input" id="seg-name" type="text" placeholder="セグメント名を入力..." value="新しいセグメント" />
+          <button class="save-seg-btn" onclick="saveSegment()">💾 保存</button>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:8px">適用中のフィルター</div>
+          <div class="active-filters" id="active-filters">
+            <span class="no-filter-txt">フィルターなし（全メンバーを表示中）</span>
+          </div>
+        </div>
+        <div class="count-display">
+          <div>
+            <div class="count-big" id="member-count">48</div>
+            <div class="count-label">対象メンバー数</div>
+          </div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:6px;font-family:'JetBrains Mono',monospace">
+              <span>全体の<span id="percent-label">100%</span>をカバー</span>
+              <span>全体：48名</span>
+            </div>
+            <div class="count-bar-wrap"><div class="count-bar-fill" id="count-bar" style="width:100%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="member-list">
+        <div class="member-list-hdr">
+          <span class="member-list-title">プレビュー（最大12名）</span>
+          <span style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace" id="preview-count">48名中12名を表示</span>
+        </div>
+        <div class="member-rows" id="member-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ────────────────────────────────────────
+     SECTION 3 — Activation Flow
+──────────────────────────────────────── -->
+<div class="section" style="padding-top:48px;padding-bottom:80px">
+  <div class="sec-title">
+    <span class="sec-num" style="background:var(--violet)">02</span>
+    アクティベーションフロー
+  </div>
+  <p class="sec-desc">セグメントを選択 → ターゲット設定 → 属性マッピング → 公開 の4ステップ</p>
+
+  <!-- Stepper -->
+  <div class="stepper" id="stepper">
+    <div class="step-item">
+      <div class="step-dot active" id="sdot-1">1</div>
+      <span class="step-label active" id="slbl-1">セグメント選択</span>
+    </div>
+    <div class="step-line" id="sline-1"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-2">2</div>
+      <span class="step-label" id="slbl-2">ターゲット選択</span>
+    </div>
+    <div class="step-line" id="sline-2"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-3">3</div>
+      <span class="step-label" id="slbl-3">属性マッピング</span>
+    </div>
+    <div class="step-line" id="sline-3"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-4">4</div>
+      <span class="step-label" id="slbl-4">公開</span>
+    </div>
+  </div>
+
+  <div class="step-panel" id="step-panel">
+    <!-- Step content injected by JS -->
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="ft-brand">
+    <div class="sf-mark">SF</div>
+    <div class="ft-text">
+      <strong>Salesforce Data 360</strong> · セグメント &amp; アクティベーション デモ<br>
+      すべてのデータはデモ用の架空データです。
+    </div>
+  </div>
+  <div class="ft-note">2026 · data360-insights</div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════
+   CUSTOMER DATA POOL (48名)
+════════════════════════════════════════ */
+const NAMES=[
+  "田中さくら","鈴木雄太","佐藤美咲","高橋健太","伊藤れな",
+  "渡辺大輝","山本花菜","中村拓也","小林美穂","加藤翔太",
+  "吉田由美","山田浩二","松本奈々","井上聡","木村実花",
+  "林大介","清水恵子","山口健","池田麻衣","橋本涼",
+  "阿部恵美","石川拓","前田美紀","藤田航平","岡田真子",
+  "後藤隆司","長谷川愛","村田慎一","坂本理恵","遠藤隼人",
+  "近藤美和","青木宏","藤原奈緒","西村健二","三浦舞",
+  "平野達也","森田琴音","福田篤","原田理沙","菊地晃",
+  "杉山紗也","大野修","宮崎彩乃","増田俊介","島田麗",
+  "谷口剛","安田菜緒","千葉康介"
+];
+const AGES=[22,26,29,31,34,37,41,44,47,51,53,28,36];
+const PREFS=["東京","大阪","名古屋","福岡","その他"];
+const LTVS=[8500,18000,35000,62000,95000,135000,185000,260000];
+const LP_DAYS=[3,8,12,18,25,40,55,80,110];
+const PC=[1,2,4,6,8,12,16,22];
+const PV=[3,5,8,11,15,18,24,28,32];
+const SEGS=["high_value","loyal","at_risk","new"];
+const SEG_LABEL={"high_value":"ハイバリュー","loyal":"ロイヤル","at_risk":"離脱リスク","new":"新規"};
+const AVATAR_COLORS=["#0070D2","#00A1E0","#8B5CF6","#3CB879","#FF8B00","#E74C3C","#E67E22","#2ECC71"];
+
+const CUSTOMERS = NAMES.map((name,i)=>{
+  const age=AGES[i%AGES.length];
+  return {
+    id:i+1, name,
+    age, ageGroup: age<30?"20代":age<40?"30代":age<50?"40代":"50代以上",
+    gender: i%5===0?"男性":i%5===1?"女性":i%5===2?"男性":i%5===3?"女性":"男性",
+    pref: PREFS[i%5],
+    ltv: LTVS[i%8],
+    lastPurchase: LP_DAYS[i%9],
+    purchaseCount: PC[i%8],
+    pageViews: PV[i%9],
+    emailOpened: i%3!==2,
+    appUsed: i%4!==3,
+    segment: SEGS[i%4],
+    color: AVATAR_COLORS[i%8],
+    initials: name.slice(0,1)
+  };
+});
+
+/* ════════════════════════════════════════
+   FILTER STATE
+════════════════════════════════════════ */
+let activeFilters=[];
+let savedSegments=[
+  {id:"preset1",name:"高額購入者セグメント",filters:[{key:'ltv100',cat:'ltv',val:'¥100,000以上'}],count:0},
+  {id:"preset2",name:"ロイヤル顧客セグメント",filters:[{key:'pc5',cat:'purchaseCount',val:'5回以上'},{key:'lp30',cat:'lastPurchase',val:'30日以内'}],count:0},
+  {id:"preset3",name:"離脱リスクセグメント",filters:[{key:'segRisk',cat:'segment',val:'離脱リスク'}],count:0},
+  {id:"preset4",name:"新規顧客セグメント",filters:[{key:'segNew',cat:'segment',val:'新規'}],count:0}
+];
+
+// Pre-compute preset counts
+savedSegments.forEach(s=>{
+  s.count=computeMembersForFilters(s.filters).length;
+});
+
+function filterMatch(c,f){
+  switch(f.key){
+    case 'age20': return c.ageGroup==="20代";
+    case 'age30': return c.ageGroup==="30代";
+    case 'age40': return c.ageGroup==="40代";
+    case 'age50': return c.ageGroup==="50代以上";
+    case 'gM':    return c.gender==="男性";
+    case 'gF':    return c.gender==="女性";
+    case 'pTokyo':  return c.pref==="東京";
+    case 'pOsaka':  return c.pref==="大阪";
+    case 'pNagoya': return c.pref==="名古屋";
+    case 'ltv50':   return c.ltv>=50000;
+    case 'ltv100':  return c.ltv>=100000;
+    case 'lp30':    return c.lastPurchase<=30;
+    case 'lp7':     return c.lastPurchase<=7;
+    case 'pc5':     return c.purchaseCount>=5;
+    case 'pc10':    return c.purchaseCount>=10;
+    case 'pv10':    return c.pageViews>=10;
+    case 'pv20':    return c.pageViews>=20;
+    case 'email30': return c.emailOpened===true;
+    case 'app7':    return c.appUsed===true;
+    case 'segHV':   return c.segment==="high_value";
+    case 'segLoyal':return c.segment==="loyal";
+    case 'segRisk': return c.segment==="at_risk";
+    case 'segNew':  return c.segment==="new";
+    default: return true;
+  }
+}
+
+function computeMembersForFilters(filters){
+  return CUSTOMERS.filter(c=>filters.every(f=>filterMatch(c,f)));
+}
+
+function computeMembers(){
+  return computeMembersForFilters(activeFilters);
+}
+
+function toggleCat(hdr){
+  const body=hdr.nextElementSibling;
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'flex';
+  hdr.querySelector('span').textContent=isOpen?'▸':'▾';
+}
+
+function addFilter(cat,val,key){
+  if(activeFilters.some(f=>f.key===key))return;
+  // Remove conflicting filters in same cat
+  const conflicts={age:['age20','age30','age40','age50'],gender:['gM','gF']};
+  if(conflicts[cat]) activeFilters=activeFilters.filter(f=>!conflicts[cat].includes(f.key));
+  activeFilters.push({cat,val,key});
+  // Mark button
+  document.querySelectorAll('.filter-add-btn').forEach(btn=>{
+    if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes("'"+key+"'"))
+      btn.classList.add('added');
+  });
+  renderFilters(); renderMembers();
+}
+
+function removeFilter(key){
+  activeFilters=activeFilters.filter(f=>f.key!==key);
+  document.querySelectorAll('.filter-add-btn').forEach(btn=>{
+    if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes("'"+key+"'"))
+      btn.classList.remove('added');
+  });
+  renderFilters(); renderMembers();
+}
+
+function renderFilters(){
+  const el=document.getElementById('active-filters');
+  if(activeFilters.length===0){
+    el.innerHTML='<span class="no-filter-txt">フィルターなし（全メンバーを表示中）</span>';
+    return;
+  }
+  el.innerHTML=activeFilters.map(f=>`
+    <span class="filter-chip">
+      ${f.cat} : ${f.val}
+      <button class="chip-remove" onclick="removeFilter('${f.key}')" title="削除">✕</button>
+    </span>
+  `).join('');
+}
+
+function renderMembers(){
+  const members=computeMembers();
+  const total=48;
+  const pct=Math.round(members.length/total*100);
+
+  // Animate count
+  const el=document.getElementById('member-count');
+  el.style.color=members.length===0?'var(--red)':members.length<10?'var(--orange)':'var(--brand)';
+  el.textContent=members.length;
+  document.getElementById('percent-label').textContent=pct+'%';
+  document.getElementById('count-bar').style.width=pct+'%';
+  document.getElementById('preview-count').textContent=total+'名中'+Math.min(members.length,12)+'名を表示';
+
+  const preview=members.slice(0,12);
+  const rowsEl=document.getElementById('member-rows');
+  if(preview.length===0){
+    rowsEl.innerHTML='<div style="padding:24px;text-align:center;font-size:13px;color:var(--t3)">条件に合うメンバーがいません</div>';
+    return;
+  }
+  const segPillClass={high_value:'seg-hv',loyal:'seg-loyal',at_risk:'seg-risk',new:'seg-new'};
+  rowsEl.innerHTML=preview.map(c=>`
+    <div class="member-row">
+      <div class="member-ava" style="background:${c.color}">${c.initials}</div>
+      <div>
+        <div class="member-name">${c.name}</div>
+        <div class="member-meta">${c.ageGroup} · ${c.pref} · ¥${c.ltv.toLocaleString()}</div>
+      </div>
+      <span class="seg-pill ${segPillClass[c.segment]}">${SEG_LABEL[c.segment]}</span>
+    </div>
+  `).join('');
+}
+
+function saveSegment(){
+  const name=document.getElementById('seg-name').value.trim()||'名称未設定セグメント';
+  const members=computeMembers();
+  const existing=savedSegments.find(s=>s.id==='user_saved');
+  if(existing){
+    existing.name=name;existing.filters=[...activeFilters];existing.count=members.length;
+  } else {
+    savedSegments.push({id:'user_saved',name,filters:[...activeFilters],count:members.length});
+  }
+  const badge=document.getElementById('saved-badge');
+  badge.style.display='inline-flex';
+  badge.textContent='✓ 「'+name+'」を保存';
+  setTimeout(()=>badge.style.display='none',3000);
+  renderStep(1); // refresh step 1 if visible
+}
+
+/* ════════════════════════════════════════
+   ACTIVATION FLOW STATE
+════════════════════════════════════════ */
+const FLOW={step:1,segId:null,targetId:null,mapping:{}};
+
+const TARGETS=[
+  {id:'mc',  logo:'✉️',  name:'Marketing Cloud',   type:'Email Studio',          color:'#0070D2'},
+  {id:'meta',logo:'📘',  name:'Meta Ads',           type:'Facebook / Instagram',  color:'#1877F2'},
+  {id:'gads',logo:'🔴',  name:'Google Ads',         type:'検索・ディスプレイ広告',   color:'#EA4335'},
+  {id:'crm', logo:'☁️',  name:'Salesforce CRM',     type:'Sales Cloud連携',       color:'#00A1E0'},
+];
+
+const MAPPING_DEFS={
+  mc:[
+    {src:'氏名（名）',     tgt:'FirstName',       req:true},
+    {src:'氏名（姓）',     tgt:'LastName',        req:true},
+    {src:'メールアドレス', tgt:'EmailAddress',    req:true},
+    {src:'累計購入金額',   tgt:'TotalPurchase__c',req:false},
+    {src:'都道府県',       tgt:'MailingState',    req:false},
+  ],
+  meta:[
+    {src:'メールアドレス', tgt:'email',           req:true},
+    {src:'電話番号',       tgt:'phone',           req:false},
+    {src:'生年月日',       tgt:'dob',             req:false},
+  ],
+  gads:[
+    {src:'メールアドレス', tgt:'hashed_email',    req:true},
+    {src:'電話番号',       tgt:'hashed_phone',    req:false},
+    {src:'氏名',           tgt:'first_last_name', req:false},
+  ],
+  crm:[
+    {src:'氏名',           tgt:'Name',            req:true},
+    {src:'メールアドレス', tgt:'Email',           req:true},
+    {src:'都道府県',       tgt:'MailingState',    req:false},
+    {src:'累計購入金額',   tgt:'AnnualRevenue',   req:false},
+  ]
+};
+
+function setStep(n){
+  FLOW.step=n;
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('sdot-'+i);
+    const lbl=document.getElementById('slbl-'+i);
+    if(i<n){dot.className='step-dot done';dot.textContent='✓';lbl.className='step-label done';}
+    else if(i===n){dot.className='step-dot active';dot.textContent=i;lbl.className='step-label active';}
+    else{dot.className='step-dot';dot.textContent=i;lbl.className='step-label';}
+    if(i<4){const line=document.getElementById('sline-'+i);line.className='step-line'+(i<n?' done':'');}
+  }
+  renderStep(n);
+}
+
+function renderStep(n){
+  if(FLOW.step!==n)return;
+  const panel=document.getElementById('step-panel');
+  if(n===1)panel.innerHTML=renderStep1();
+  else if(n===2)panel.innerHTML=renderStep2();
+  else if(n===3)panel.innerHTML=renderStep3();
+  else panel.innerHTML=renderStep4();
+}
+
+function renderStep1(){
+  return `
+    <div class="step-title">セグメントを選択</div>
+    <div class="step-hint">アクティベーションに使用するセグメントを1つ選択してください</div>
+    <div class="seg-select-grid">
+      ${savedSegments.map(s=>`
+        <div class="seg-select-card ${FLOW.segId===s.id?'selected':''}" onclick="selectSegment('${s.id}')">
+          <div class="seg-card-name">${s.name}</div>
+          <div class="seg-card-count">👤 ${s.count}名</div>
+          <div class="seg-card-desc">${s.filters.length?s.filters.map(f=>f.val).join(' AND '):'全メンバー'}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="step-nav">
+      <button class="btn-primary" onclick="if(FLOW.segId)setStep(2);else alert('セグメントを選択してください')">次へ：ターゲット選択 →</button>
+    </div>
+  `;
+}
+
+function selectSegment(id){FLOW.segId=id;renderStep(1);}
+function selectTarget(id){FLOW.targetId=id;renderStep(2);}
+
+function renderStep2(){
+  return `
+    <div class="step-title">アクティベーションターゲットを選択</div>
+    <div class="step-hint">データの送信先となるシステムを選択してください</div>
+    <div class="target-grid">
+      ${TARGETS.map(t=>`
+        <div class="target-card ${FLOW.targetId===t.id?'selected':''}" onclick="selectTarget('${t.id}')">
+          <div class="target-logo">${t.logo}</div>
+          <div class="target-name">${t.name}</div>
+          <div class="target-type">${t.type}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="setStep(1)">← 戻る</button>
+      <button class="btn-primary" onclick="if(FLOW.targetId)setStep(3);else alert('ターゲットを選択してください')">次へ：属性マッピング →</button>
+    </div>
+  `;
+}
+
+function renderStep3(){
+  const defs=MAPPING_DEFS[FLOW.targetId]||MAPPING_DEFS.mc;
+  const tgt=TARGETS.find(t=>t.id===FLOW.targetId);
+  const sel=savedSegments.find(s=>s.id===FLOW.segId);
+  return `
+    <div class="step-title">属性マッピング</div>
+    <div class="step-hint">${tgt?tgt.name:''} に送信する Data 360 の属性と、ターゲット側フィールドを対応付けてください</div>
+    <table class="mapping-table">
+      <thead>
+        <tr>
+          <th>Data 360 フィールド</th>
+          <th style="text-align:center;width:40px"></th>
+          <th>${tgt?tgt.name:''} フィールド</th>
+          <th style="width:80px">ステータス</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${defs.map((row,i)=>`
+          <tr>
+            <td><span class="field-name">${row.src}</span></td>
+            <td class="field-arrow">→</td>
+            <td><select class="field-select"><option value="${row.tgt}" selected>${row.tgt}</option></select></td>
+            <td style="text-align:center">${row.req?'<span class="req-badge">必須</span>':'<span style="font-size:11px;color:var(--t3)">任意</span>'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(0,112,210,.05);border:1px solid rgba(0,112,210,.12);border-radius:8px;font-size:12px;color:var(--t2)">
+      💡 <strong>対象セグメント：</strong>${sel?sel.name:'—'} (${sel?sel.count:0}名)　→　<strong>${tgt?tgt.name:''}</strong> に配信
+    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="setStep(2)">← 戻る</button>
+      <button class="btn-primary" onclick="setStep(4)">次へ：公開 →</button>
+    </div>
+  `;
+}
+
+let publishTimer=null;
+
+function renderStep4(){
+  const seg=savedSegments.find(s=>s.id===FLOW.segId);
+  const tgt=TARGETS.find(t=>t.id===FLOW.targetId);
+  return `
+    <div class="step-title">セグメントを公開</div>
+    <div class="step-hint">設定内容を確認して「公開を開始」を押してください</div>
+    <div class="publish-wrap">
+      <div class="publish-summary">
+        <div class="pub-item"><strong>セグメント</strong>${seg?seg.name:'—'}</div>
+        <div class="pub-item"><strong>メンバー数</strong>${seg?seg.count:0} 名</div>
+        <div class="pub-item"><strong>ターゲット</strong>${tgt?tgt.name:'—'}</div>
+        <div class="pub-item"><strong>公開モード</strong>増分更新</div>
+        <div class="pub-item"><strong>スケジュール</strong>毎日 02:00 JST</div>
+      </div>
+      <div class="progress-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:600;color:var(--navy)">公開ステータス</span>
+          <span class="progress-status" id="pub-status">待機中</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="pub-bar"></div></div>
+      </div>
+      <div class="progress-steps-list" id="pub-steps">
+        ${['セグメント条件を検証中...','メンバーリストを生成中...','ターゲットシステムと接続中...','データを転送中...','公開完了'].map((s,i)=>`
+          <div class="pub-step-row" id="pstep-${i}">
+            <div class="pub-step-icon" id="picon-${i}">✦</div>
+            <span>${s}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="success-banner" id="success-banner">
+        <div class="success-icon">🎉</div>
+        <div>
+          <div class="success-title">公開完了！</div>
+          <div class="success-detail">
+            セグメント「${seg?seg.name:'—'}」(${seg?seg.count:0}名) を <strong>${tgt?tgt.name:'—'}</strong> へ正常に配信しました。<br>
+            次回更新：毎日 02:00 JST（スケジュール実行）
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-secondary" onclick="setStep(3)">← 戻る</button>
+      <button class="btn-primary" id="pub-btn" onclick="startPublish()">🚀 公開を開始</button>
+    </div>
+  `;
+}
+
+function startPublish(){
+  document.getElementById('pub-btn').disabled=true;
+  document.getElementById('pub-btn').textContent='公開中...';
+  const steps=[15,35,60,80,100];
+  const msgs=['セグメント条件を検証中...','メンバーリストを生成中...','ターゲットシステムと接続中...','データを転送中...','公開完了！'];
+  let i=0;
+  function next(){
+    if(i>0){
+      const prev=document.getElementById('pstep-'+(i-1));
+      const prevIcon=document.getElementById('picon-'+(i-1));
+      prev.className='pub-step-row done';
+      prevIcon.className='pub-step-icon done';
+      prevIcon.textContent='✓';
+    }
+    if(i<steps.length){
+      const row=document.getElementById('pstep-'+i);
+      const icon=document.getElementById('picon-'+i);
+      if(row){row.className='pub-step-row active';icon.className='pub-step-icon active';icon.textContent='↻';}
+      document.getElementById('pub-bar').style.width=steps[i]+'%';
+      document.getElementById('pub-status').textContent=msgs[i];
+      i++;
+      if(i<steps.length) publishTimer=setTimeout(next,900);
+      else publishTimer=setTimeout(()=>{
+        document.getElementById('pub-status').textContent='✅ 公開完了';
+        document.getElementById('success-banner').style.display='flex';
+        // update last step icon
+        const last=document.getElementById('pstep-'+(steps.length-1));
+        const lastIcon=document.getElementById('picon-'+(steps.length-1));
+        if(last){last.className='pub-step-row done';lastIcon.className='pub-step-icon done';lastIcon.textContent='✓';}
+      },900);
+    }
+  }
+  next();
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+renderMembers();
+setStep(1);
+</script>
+
+</body>
+</html>
