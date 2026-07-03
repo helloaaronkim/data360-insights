@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculated Insights — Salesforce Data 360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #F0F6FF;
+      --card: #FFFFFF;
+      --navy: #032D60;
+      --secondary: #546D8F;
+      --tertiary: #9BAFC8;
+      --blue: #0070D2;
+      --sky: #00A1E0;
+      --violet: #8B5CF6;
+      --green: #3CB879;
+      --orange: #FF8B00;
+      --yellow: #FFD000;
+      --border: rgba(0,112,210,.14);
+      --shadow: 0 8px 32px rgba(3,45,96,.11);
+      --r-card: 14px;
+      --r-pill: 100px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ── App Bar ── */
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .appbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sf-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .appbar-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      letter-spacing: -0.01em;
+    }
+    .appbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .lang-toggle {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .lang-btn {
+      padding: 5px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--secondary);
+      transition: background .15s, color .15s;
+    }
+    .lang-btn.active {
+      background: var(--blue);
+      color: #fff;
+    }
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--secondary);
+      text-decoration: none;
+      padding: 5px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-pill);
+      transition: color .15s, border-color .15s;
+    }
+    .back-link:hover { color: var(--blue); border-color: var(--blue); }
+
+    /* ── Main content ── */
+    .main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 64px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--card);
+      border-radius: var(--r-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 40px 48px 36px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .eyebrow {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: var(--tertiary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--secondary);
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    /* ── Info bar ── */
+    .info-bar {
+      background: #EFF6FF;
+      border: 1px solid rgba(0,112,210,.2);
+      border-radius: 10px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 32px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--secondary);
+    }
+    .info-bar .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Tab interface ── */
+    .tab-container {
+      margin-bottom: 32px;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 0;
+    }
+    .tab-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary);
+      padding: 12px 24px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s, font-weight .15s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      color: var(--blue);
+      font-weight: 700;
+      border-bottom-color: var(--blue);
+      background: rgba(0,112,210,.04);
+      border-radius: 6px 6px 0 0;
+    }
+    .tab-panel {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--r-card) var(--r-card);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .tab-panel.active { display: block; }
+
+    /* ── SQL Editor ── */
+    .sql-editor {
+      background: #0D1B2E;
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+    .sql-body {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #D4D4D4;
+      white-space: pre;
+      display: flex;
+      gap: 20px;
+    }
+    .sql-lines {
+      color: #546D8F;
+      user-select: none;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .sql-code { flex: 1; }
+    .kw  { color: #569CD6; }
+    .fn  { color: #4EC9B0; }
+    .str { color: #CE9178; }
+    .cmt { color: #6A9955; font-style: italic; }
+
+    /* ── Run button ── */
+    .run-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: var(--r-pill);
+      border: none;
+      cursor: pointer;
+      transition: background .15s, opacity .15s;
+      margin-bottom: 20px;
+    }
+    .run-btn:hover:not(:disabled) { background: #005FB2; }
+    .run-btn:disabled { opacity: .7; cursor: not-allowed; }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .spinner.active { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Results panel ── */
+    .results-panel {
+      display: none;
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+    .results-panel.visible {
+      display: block;
+      opacity: 1;
+    }
+    .results-panel.fade-in {
+      animation: fadeIn .35s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Bar chart ── */
+    .chart-section {
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+    }
+    .bar-chart { width: 100%; }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .bar-label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--navy);
+      min-width: 90px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 22px;
+      background: var(--bg);
+      border-radius: 6px;
+      overflow: hidden;
+      max-width: 300px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width .6s cubic-bezier(.25,.8,.25,1);
+    }
+    .bar-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--secondary);
+      min-width: 50px;
+    }
+
+    /* ── Results table ── */
+    .results-table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .results-table th {
+      background: #F0F6FF;
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    .results-table th:hover { color: var(--blue); }
+    .results-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(0,112,210,.07);
+      color: var(--navy);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: rgba(240,246,255,.6); }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .badge-score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      padding: 3px 8px;
+      border-radius: var(--r-pill);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-high   { background: rgba(0,112,210,.12); color: var(--blue); }
+    .badge-mid    { background: rgba(255,139,0,.12); color: var(--orange); }
+    .badge-low    { background: rgba(155,175,200,.15); color: var(--secondary); }
+
+    /* ── Concept cards ── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 0;
+    }
+    @media (max-width: 720px) {
+      .concept-grid { grid-template-columns: 1fr; }
+      .hero { padding: 28px 24px; }
+      .hero-title { font-size: 24px; }
+      .tab-btn { padding: 10px 14px; font-size: 13px; }
+    }
+    .concept-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+    }
+    .concept-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .concept-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .concept-desc {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--secondary);
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.65);
+      text-align: center;
+      padding: 22px 24px;
+      font-size: 12.5px;
+      font-family: 'Inter', sans-serif;
+    }
+    footer strong { color: rgba(255,255,255,.9); }
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 18px;
+    }
+
+    /* lang show/hide */
+    [data-ko] { display: none; }
+    [data-ja] { display: block; }
+    .inline-ko { display: none; }
+    .inline-ja { display: inline; }
+    body.lang-ko [data-ko] { display: block; }
+    body.lang-ko [data-ja] { display: none; }
+    body.lang-ko .inline-ko { display: inline; }
+    body.lang-ko .inline-ja { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ APP BAR ══════════════════ -->
+<header class="appbar">
+  <div class="appbar-left">
+    <div class="sf-badge">SF</div>
+    <span class="appbar-title">Data 360 / Calculated Insights</span>
+  </div>
+  <div class="appbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btnKo" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn active" id="btnJa" onclick="setLang('ja')">JA</button>
+    </div>
+    <a href="index.html" class="back-link">
+      <span class="inline-ko">← 데모 목록</span>
+      <span class="inline-ja">← デモ一覧</span>
+    </a>
+  </div>
+</header>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main class="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="eyebrow">SALESFORCE DATA 360 · Demo 06</p>
+    <h1 class="hero-title">
+      <span data-ko>Calculated Insights 대시보드</span>
+      <span data-ja>Calculated Insights ダッシュボード</span>
+    </h1>
+    <p class="hero-sub">
+      <span data-ko>정기 실행 배치 SQL로 RFM 스코어·구매 빈도·카테고리 친화도를 계산하고, 결과를 Unified Individual에 부착하는 Data 360 핵심 기능입니다.</span>
+      <span data-ja>定期実行バッチ SQL で RFM スコア・購買頻度・カテゴリ親和度を算出し、結果を Unified Individual に付与する Data 360 の中核機能です。</span>
+    </p>
+  </section>
+
+  <!-- Info bar -->
+  <div class="info-bar">
+    <span class="icon">💡</span>
+    <span>
+      <span data-ko>Streaming Insights는 실시간 이벤트 평가, Calculated Insights는 정기 배치 계산 — 두 기능은 상호 보완적입니다.</span>
+      <span data-ja>Streaming Insights はリアルタイムイベント評価、Calculated Insights は定期バッチ計算 — 2つの機能は相互補完的です。</span>
+    </span>
+  </div>
+
+  <!-- ─── Tab Interface ─── -->
+  <div class="tab-container">
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" id="tab-rfm" role="tab" onclick="switchTab('rfm')">
+        <span class="inline-ko">RFM 스코어</span>
+        <span class="inline-ja">RFM スコア</span>
+      </button>
+      <button class="tab-btn" id="tab-freq" role="tab" onclick="switchTab('freq')">
+        <span class="inline-ko">30일 구매 빈도</span>
+        <span class="inline-ja">30日購買頻度</span>
+      </button>
+      <button class="tab-btn" id="tab-affinity" role="tab" onclick="switchTab('affinity')">
+        <span class="inline-ko">카테고리 친화도</span>
+        <span class="inline-ja">カテゴリ親和度</span>
+      </button>
+    </div>
+
+    <!-- ────────────── TAB 1: RFM ────────────── -->
+    <div class="tab-panel active" id="panel-rfm" role="tabpanel">
+      <!-- SQL Editor -->
+      <div class="sql-editor">
+        <div class="sql-body">
+          <div class="sql-lines" id="lines-rfm"></div>
+          <div class="sql-code" id="code-rfm"></div>
+        </div>
+      </div>
+      <!-- Run button -->
+      <button class="run-btn" id="runBtn-rfm" onclick="runQuery('rfm')">
+        <div class="spinner" id="spin-rfm"></div>
+        <span id="runLabel-rfm">
+          <span class="inline-ko">실행</span>
+          <span class="inline-ja">実行</span>
+        </span>
+      </button>
+      <!-- Results -->
+      <div class="results-panel" id="results-rfm">
+        <!-- Bar chart -->
+        <div class="chart-section">
+          <div class="chart-title">
+            <span class="inline-ko">RFM 스코어 Top 5</span>
+            <span class="inline-ja">RFM スコア Top 5</span>
+          </div>
+          <div class="bar-chart" id="chart-rfm"></div>
+        </div>
+        <!-- Table -->
+        <div class="results-table-wrap">
+          <table class="results-table" id="table-rfm">
+            <thead>
+              <tr>
+                <th data-ko>순위</th>  <th data-ja>ランク</th>
+                <th data-ko>이름</th>  <th data-ja>氏名</th>
+                <th data-ko>최근성(일)</th> <th data-ja>最近性(日)</th>
+                <th data-ko>빈도</th>  <th data-ja>頻度</th>
+                <th data-ko>금액</th>  <th data-ja>金額</th>
+                <th data-ko>RFM 스코어</th> <th data-ja>RFM スコア</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rfm"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────── TAB 2: FREQ ────────────── -->
+    <div class="tab-panel" id="panel-freq" role="tabpanel">
+      <div class="sql-editor">
+        <div class="sql-body">
+          <div class="sql-lines" id="lines-freq"></div>
+          <div class="sql-code" id="code-freq"></div>
+        </div>
+      </div>
+      <button class="run-btn" id="runBtn-freq" onclick="runQuery('freq')">
+        <div class="spinner" id="spin-freq"></div>
+        <span id="runLabel-freq">
+          <span class="inline-ko">실행</span>
+          <span class="inline-ja">実行</span>
+        </span>
+      </button>
+      <div class="results-panel" id="results-freq">
+        <div class="chart-section">
+          <div class="chart-title">
+            <span class="inline-ko">30일 구매횟수 Top 5</span>
+            <span class="inline-ja">30日購買回数 Top 5</span>
+          </div>
+          <div class="bar-chart" id="chart-freq"></div>
+        </div>
+        <div class="results-table-wrap">
+          <table class="results-table" id="table-freq">
+            <thead>
+              <tr>
+                <th data-ko>이름</th>  <th data-ja>氏名</th>
+                <th data-ko>30일 구매횟수</th> <th data-ja>30日購買回数</th>
+                <th data-ko>총 금액</th> <th data-ja>合計金額</th>
+                <th data-ko>평균 주문금액</th> <th data-ja>平均注文額</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-freq"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────── TAB 3: AFFINITY ────────────── -->
+    <div class="tab-panel" id="panel-affinity" role="tabpanel">
+      <div class="sql-editor">
+        <div class="sql-body">
+          <div class="sql-lines" id="lines-affinity"></div>
+          <div class="sql-code" id="code-affinity"></div>
+        </div>
+      </div>
+      <button class="run-btn" id="runBtn-affinity" onclick="runQuery('affinity')">
+        <div class="spinner" id="spin-affinity"></div>
+        <span id="runLabel-affinity">
+          <span class="inline-ko">실행</span>
+          <span class="inline-ja">実行</span>
+        </span>
+      </button>
+      <div class="results-panel" id="results-affinity">
+        <div class="chart-section">
+          <div class="chart-title">
+            <span class="inline-ko">전환율 Top 5</span>
+            <span class="inline-ja">転換率 Top 5</span>
+          </div>
+          <div class="bar-chart" id="chart-affinity"></div>
+        </div>
+        <div class="results-table-wrap">
+          <table class="results-table" id="table-affinity">
+            <thead>
+              <tr>
+                <th data-ko>카테고리</th> <th data-ja>カテゴリ</th>
+                <th data-ko>조회 수</th>  <th data-ja>閲覧数</th>
+                <th data-ko>구매 수</th>  <th data-ja>購入数</th>
+                <th data-ko>전환율</th>   <th data-ja>転換率</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-affinity"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-container -->
+
+  <!-- ─── Concept Cards ─── -->
+  <div class="concept-grid">
+    <!-- Card 1 -->
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(0,112,210,.1);">⚡</div>
+      <div class="concept-title">Calculated vs Streaming Insights</div>
+      <p class="concept-desc">
+        <span data-ko>Streaming Insights는 이벤트 발생 즉시 실시간 평가, Calculated Insights는 스케줄에 따라 배치 SQL로 복잡한 집계를 처리합니다.</span>
+        <span data-ja>Streaming Insights はイベント発生直後にリアルタイム評価、Calculated Insights はスケジュール実行のバッチ SQL で複雑な集計を処理します。</span>
+      </p>
+    </div>
+    <!-- Card 2 -->
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(139,92,246,.1);">🗄️</div>
+      <div class="concept-title">DMO (Data Model Object)</div>
+      <p class="concept-desc">
+        <span data-ko>Calculated Insights는 unified_individual_dlm, sales_order_v1 등 표준 DMO를 직접 참조하여 SQL을 작성합니다.</span>
+        <span data-ja>Calculated Insights は unified_individual_dlm・sales_order_v1 など標準 DMO を直接参照して SQL を記述します。</span>
+      </p>
+    </div>
+    <!-- Card 3 -->
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(60,184,121,.1);">🔢</div>
+      <div class="concept-title">
+        <span class="inline-ko">NTILE / DATEDIFF 함수</span>
+        <span class="inline-ja">NTILE / DATEDIFF 関数</span>
+      </div>
+      <p class="concept-desc">
+        <span data-ko>NTILE(10)으로 고객을 10분위로 분류하고 DATEDIFF로 날짜 차이를 계산합니다. Data 360의 Calculated Insights SQL에서 사용 가능한 표준 함수입니다.</span>
+        <span data-ja>NTILE(10) で顧客を10分位に分類し DATEDIFF で日数差を計算します。Data 360 の Calculated Insights SQL で利用可能な標準関数です。</span>
+      </p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <strong>Salesforce Data 360 · Calculated Insights Demo</strong>&ensp;·&ensp;All data is fictional.
+</footer>
+
+<!-- ══════════════════ JS ══════════════════ -->
+<script>
+/* ── Language ── */
+const params = new URLSearchParams(location.search);
+let currentLang = params.get('lang') || 'ja';
+
+function setLang(l) {
+  currentLang = l;
+  document.body.classList.toggle('lang-ko', l === 'ko');
+  document.getElementById('btnKo').classList.toggle('active', l === 'ko');
+  document.getElementById('btnJa').classList.toggle('active', l === 'ja');
+  // rebuild rendered content to reflect language
+  renderAll();
+}
+
+/* ── Data ── */
+const RFM_DATA = [
+  { ko: '김민준', ja: '田中さくら', recency: 3,  freq: 24, monetary: 485000, rfm: 94 },
+  { ko: '이수진', ja: '鈴木雄太',   recency: 7,  freq: 19, monetary: 320000, rfm: 87 },
+  { ko: '박현우', ja: '佐藤美咲',   recency: 12, freq: 16, monetary: 278000, rfm: 81 },
+  { ko: '최영희', ja: '山田健太',   recency: 5,  freq: 21, monetary: 195000, rfm: 79 },
+  { ko: '정도윤', ja: '伊藤彩',     recency: 18, freq: 14, monetary: 412000, rfm: 76 },
+  { ko: '한소연', ja: '中村翔',     recency: 9,  freq: 12, monetary: 158000, rfm: 68 },
+  { ko: '윤태양', ja: '小林奈々',   recency: 24, freq: 9,  monetary: 245000, rfm: 61 },
+  { ko: '임지원', ja: '渡辺龍',     recency: 33, freq: 8,  monetary: 180000, rfm: 54 },
+  { ko: '송민기', ja: '加藤明子',   recency: 41, freq: 7,  monetary: 135000, rfm: 47 },
+  { ko: '강다은', ja: '吉田大輝',   recency: 15, freq: 6,  monetary: 92000,  rfm: 43 },
+  { ko: '오주혁', ja: '山本花',     recency: 52, freq: 4,  monetary: 67000,  rfm: 31 },
+  { ko: '신예진', ja: '松本直人',   recency: 68, freq: 3,  monetary: 45000,  rfm: 22 }
+];
+
+const FREQ_DATA = [
+  { ko: '김민준', ja: '田中さくら', count: 8, total: 165000, avg: 20625 },
+  { ko: '최영희', ja: '山田健太',   count: 7, total: 112000, avg: 16000 },
+  { ko: '이수진', ja: '鈴木雄太',   count: 6, total: 98000,  avg: 16333 },
+  { ko: '박현우', ja: '佐藤美咲',   count: 5, total: 145000, avg: 29000 },
+  { ko: '정도윤', ja: '伊藤彩',     count: 4, total: 88000,  avg: 22000 },
+  { ko: '한소연', ja: '中村翔',     count: 3, total: 45000,  avg: 15000 },
+  { ko: '윤태양', ja: '小林奈々',   count: 3, total: 78000,  avg: 26000 },
+  { ko: '임지원', ja: '渡辺龍',     count: 2, total: 34000,  avg: 17000 },
+  { ko: '송민기', ja: '加藤明子',   count: 2, total: 56000,  avg: 28000 },
+  { ko: '강다은', ja: '吉田大輝',   count: 1, total: 22000,  avg: 22000 },
+  { ko: '오주혁', ja: '山本花',     count: 1, total: 18000,  avg: 18000 },
+  { ko: '신예진', ja: '松本直人',   count: 1, total: 15000,  avg: 15000 }
+];
+
+const AFFINITY_DATA = [
+  { ko_cat: '스포츠웨어', ja_cat: 'スポーツウェア',  views: 42, purchases: 18, rate: 42.9 },
+  { ko_cat: '운동화',     ja_cat: 'スニーカー',      views: 38, purchases: 14, rate: 36.8 },
+  { ko_cat: '아웃도어',   ja_cat: 'アウトドア',      views: 25, purchases:  7, rate: 28.0 },
+  { ko_cat: '가방·잡화',  ja_cat: 'バッグ・雑貨',   views: 31, purchases:  8, rate: 25.8 },
+  { ko_cat: '홈&amp;라이프', ja_cat: 'ホーム&amp;ライフ', views: 19, purchases: 3, rate: 15.8 },
+  { ko_cat: '뷰티',       ja_cat: 'ビューティ',      views: 12, purchases:  1, rate:  8.3 }
+];
+
+/* ── SQL content (highlighted) ── */
+const SQL_RFM = [
+  '<span class="cmt">-- RFM スコア算出：最近性・頻度・金額に基づく顧客価値評価</span>',
+  '<span class="kw">SELECT</span>',
+  '  ui.unified_individual_id,',
+  '  ui.first_name,',
+  '  ui.last_name,',
+  '  <span class="fn">DATEDIFF</span>(<span class="str">\'day\'</span>, <span class="fn">MAX</span>(so.order_date), <span class="fn">CURRENT_DATE</span>()) <span class="kw">AS</span> recency_days,',
+  '  <span class="fn">COUNT</span>(so.sales_order_id)                            <span class="kw">AS</span> frequency,',
+  '  <span class="fn">SUM</span>(so.total_amount)                                <span class="kw">AS</span> monetary_value,',
+  '  (',
+  '    (<span class="str">10</span> - <span class="fn">NTILE</span>(<span class="str">10</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="fn">DATEDIFF</span>(',
+  '        <span class="str">\'day\'</span>, <span class="fn">MAX</span>(so.order_date), <span class="fn">CURRENT_DATE</span>()))) * <span class="str">4</span>',
+  '    + <span class="fn">NTILE</span>(<span class="str">10</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="fn">COUNT</span>(so.sales_order_id)) * <span class="str">3</span>',
+  '    + <span class="fn">NTILE</span>(<span class="str">10</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="fn">SUM</span>(so.total_amount))    * <span class="str">3</span>',
+  '  )                                                   <span class="kw">AS</span> rfm_score',
+  '<span class="kw">FROM</span> unified_individual_dlm ui',
+  '<span class="kw">JOIN</span> sales_order_v1 so',
+  '  <span class="kw">ON</span> ui.unified_individual_id = so.unified_individual_id',
+  '<span class="kw">GROUP BY</span> ui.unified_individual_id, ui.first_name, ui.last_name',
+  '<span class="kw">ORDER BY</span> rfm_score <span class="kw">DESC</span>',
+  '<span class="kw">LIMIT</span> <span class="str">12</span>'
+];
+
+const SQL_FREQ = [
+  '<span class="cmt">-- 30日購買頻度・平均注文額</span>',
+  '<span class="kw">SELECT</span>',
+  '  ui.unified_individual_id,',
+  '  ui.first_name,',
+  '  ui.last_name,',
+  '  <span class="fn">COUNT</span>(so.sales_order_id)  <span class="kw">AS</span> purchase_count_30d,',
+  '  <span class="fn">SUM</span>(so.total_amount)      <span class="kw">AS</span> total_spend_30d,',
+  '  <span class="fn">AVG</span>(so.total_amount)      <span class="kw">AS</span> avg_order_value_30d',
+  '<span class="kw">FROM</span> unified_individual_dlm ui',
+  '<span class="kw">JOIN</span> sales_order_v1 so',
+  '  <span class="kw">ON</span> ui.unified_individual_id = so.unified_individual_id',
+  '<span class="kw">WHERE</span> so.order_date >= <span class="fn">DATEADD</span>(<span class="str">\'day\'</span>, <span class="str">-30</span>, <span class="fn">CURRENT_DATE</span>())',
+  '<span class="kw">GROUP BY</span> ui.unified_individual_id, ui.first_name, ui.last_name',
+  '<span class="kw">ORDER BY</span> purchase_count_30d <span class="kw">DESC</span>',
+  '<span class="kw">LIMIT</span> <span class="str">12</span>'
+];
+
+const SQL_AFFINITY = [
+  '<span class="cmt">-- カテゴリ親和度 — カテゴリ別転換率ベース</span>',
+  '<span class="kw">SELECT</span>',
+  '  ui.unified_individual_id,',
+  '  ui.first_name,',
+  '  p.product_category,',
+  '  <span class="fn">COUNT</span>(*)                                                           <span class="kw">AS</span> view_count,',
+  '  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> e.engagement_type = <span class="str">\'purchase\'</span> <span class="kw">THEN</span> <span class="str">1</span> <span class="kw">ELSE</span> <span class="str">0</span> <span class="kw">END</span>)  <span class="kw">AS</span> purchase_count,',
+  '  <span class="fn">ROUND</span>(',
+  '    <span class="str">100.0</span>',
+  '    * <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> e.engagement_type = <span class="str">\'purchase\'</span> <span class="kw">THEN</span> <span class="str">1</span> <span class="kw">ELSE</span> <span class="str">0</span> <span class="kw">END</span>)',
+  '    / <span class="fn">COUNT</span>(*), <span class="str">1</span>',
+  '  )                                                                  <span class="kw">AS</span> conversion_rate_pct',
+  '<span class="kw">FROM</span> unified_individual_dlm ui',
+  '<span class="kw">JOIN</span> engagement_interaction_dlm e <span class="kw">ON</span> ui.unified_individual_id = e.unified_individual_id',
+  '<span class="kw">JOIN</span> product_catalog_dlm p        <span class="kw">ON</span> e.product_id = p.product_id',
+  '<span class="kw">WHERE</span> ui.unified_individual_id = <span class="str">\'UI-100847\'</span>',
+  '<span class="kw">GROUP BY</span> ui.unified_individual_id, ui.first_name, p.product_category',
+  '<span class="kw">ORDER BY</span> conversion_rate_pct <span class="kw">DESC</span>'
+];
+
+/* ── Helpers ── */
+function fmtMoney(val) {
+  if (currentLang === 'ko') {
+    return '₩' + val.toLocaleString();
+  } else {
+    return '¥' + Math.round(val / 7.2).toLocaleString();
+  }
+}
+function scoreBadge(v) {
+  const cls = v >= 75 ? 'badge-high' : v >= 50 ? 'badge-mid' : 'badge-low';
+  return `<span class="badge-score ${cls}">${v}</span>`;
+}
+
+/* ── Render SQL ── */
+function renderSQL(id, lines) {
+  const lineNums = document.getElementById('lines-' + id);
+  const codeEl   = document.getElementById('code-' + id);
+  if (!lineNums || !codeEl) return;
+  lineNums.innerHTML = lines.map((_, i) => (i + 1)).join('\n');
+  codeEl.innerHTML   = lines.join('\n');
+}
+
+/* ── Render bar chart ── */
+function renderBarChart(containerId, items, color) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label">${item.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${item.pct}%;background:${color};"></div>
+      </div>
+      <div class="bar-value">${item.display}</div>
+    `;
+    el.appendChild(row);
+  });
+}
+
+/* ── Render tables ── */
+function renderRFMTable() {
+  const tbody = document.getElementById('tbody-rfm');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  RFM_DATA.forEach((d, i) => {
+    const name = currentLang === 'ko' ? d.ko : d.ja;
+    tbody.innerHTML += `
+      <tr>
+        <td class="mono">#${i+1}</td>
+        <td><strong>${name}</strong></td>
+        <td class="mono">${d.recency}</td>
+        <td class="mono">${d.freq}</td>
+        <td class="mono">${fmtMoney(d.monetary)}</td>
+        <td>${scoreBadge(d.rfm)}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderRFMChart() {
+  const top5 = RFM_DATA.slice(0, 5).map(d => ({
+    label: currentLang === 'ko' ? d.ko : d.ja,
+    pct: (d.rfm / 100) * 100,
+    display: d.rfm
+  }));
+  renderBarChart('chart-rfm', top5, '#0070D2');
+}
+
+function renderFreqTable() {
+  const tbody = document.getElementById('tbody-freq');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  FREQ_DATA.forEach(d => {
+    const name = currentLang === 'ko' ? d.ko : d.ja;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${name}</strong></td>
+        <td class="mono">${d.count}</td>
+        <td class="mono">${fmtMoney(d.total)}</td>
+        <td class="mono">${fmtMoney(d.avg)}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderFreqChart() {
+  const top5 = FREQ_DATA.slice(0, 5).map(d => ({
+    label: currentLang === 'ko' ? d.ko : d.ja,
+    pct: (d.count / 8) * 100,
+    display: d.count
+  }));
+  renderBarChart('chart-freq', top5, '#3CB879');
+}
+
+function renderAffinityTable() {
+  const tbody = document.getElementById('tbody-affinity');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  AFFINITY_DATA.forEach(d => {
+    const cat = currentLang === 'ko' ? d.ko_cat : d.ja_cat;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${cat}</strong></td>
+        <td class="mono">${d.views}</td>
+        <td class="mono">${d.purchases}</td>
+        <td>${scoreBadge(d.rate)}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderAffinityChart() {
+  const all = AFFINITY_DATA.map(d => ({
+    label: currentLang === 'ko' ? d.ko_cat : d.ja_cat,
+    pct: (d.rate / 45) * 100,
+    display: d.rate + '%'
+  }));
+  renderBarChart('chart-affinity', all.slice(0, 5), '#8B5CF6');
+}
+
+/* ── Full render pass (called on lang switch) ── */
+function renderAll() {
+  if (executedTabs.has('rfm'))      { renderRFMChart(); renderRFMTable(); }
+  if (executedTabs.has('freq'))     { renderFreqChart(); renderFreqTable(); }
+  if (executedTabs.has('affinity')) { renderAffinityChart(); renderAffinityTable(); }
+}
+
+/* ── Tab switching ── */
+function switchTab(id) {
+  ['rfm','freq','affinity'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === id);
+    document.getElementById('panel-' + t).classList.toggle('active', t === id);
+  });
+}
+
+/* ── Run query ── */
+const executedTabs = new Set();
+
+function runQuery(tab) {
+  const btn   = document.getElementById('runBtn-' + tab);
+  const spin  = document.getElementById('spin-' + tab);
+  const label = document.getElementById('runLabel-' + tab);
+  const panel = document.getElementById('results-' + tab);
+
+  // Already run: show instantly
+  if (executedTabs.has(tab)) {
+    panel.classList.add('visible');
+    return;
+  }
+
+  // First run: spinner
+  btn.disabled = true;
+  spin.classList.add('active');
+  label.style.opacity = '0.5';
+
+  setTimeout(() => {
+    // Build content
+    if (tab === 'rfm')      { renderRFMChart(); renderRFMTable(); }
+    if (tab === 'freq')     { renderFreqChart(); renderFreqTable(); }
+    if (tab === 'affinity') { renderAffinityChart(); renderAffinityTable(); }
+
+    executedTabs.add(tab);
+
+    // Reveal
+    panel.style.display = 'block';
+    panel.style.opacity = '0';
+    requestAnimationFrame(() => {
+      panel.classList.add('visible', 'fade-in');
+    });
+
+    // Reset button
+    btn.disabled = false;
+    spin.classList.remove('active');
+    label.style.opacity = '1';
+  }, 1200);
+}
+
+/* ── Init ── */
+(function init() {
+  // Apply language from URL param
+  if (currentLang === 'ko') {
+    document.body.classList.add('lang-ko');
+    document.getElementById('btnKo').classList.add('active');
+    document.getElementById('btnJa').classList.remove('active');
+  }
+
+  // Render SQL editors
+  renderSQL('rfm', SQL_RFM);
+  renderSQL('freq', SQL_FREQ);
+  renderSQL('affinity', SQL_AFFINITY);
+})();
+</script>
+</body>
+</html>

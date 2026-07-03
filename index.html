@@ -174,6 +174,8 @@ h1 em {
 .num-sky    { background: var(--sky); }
 .num-violet { background: var(--violet); }
 .num-green  { background: var(--green); }
+.num-orange { background: var(--orange); }
+.num-brand  { background: var(--brand); }
 .sect-info {}
 .sect-title {
   font-family: 'Space Grotesk', sans-serif;
@@ -210,6 +212,8 @@ h1 em {
 .char-sky    { background: linear-gradient(150deg, #D8F0FA 0%, #B3E3F5 100%); }
 .char-violet { background: linear-gradient(150deg, #EDE6FF 0%, #D9CCF9 100%); }
 .char-green  { background: linear-gradient(150deg, #DCFCE7 0%, #BBF7D0 100%); }
+.char-orange { background: linear-gradient(150deg, #FFF0D8 0%, #FFD9A8 100%); }
+.char-brand  { background: linear-gradient(150deg, #DCE9F9 0%, #B8D4F5 100%); }
 
 /* Decorative orbs in char panel */
 .char-orb {
@@ -377,7 +381,7 @@ footer {
         サーバー不要。すぐに開けます。
       </p>
       <div class="meta-pills">
-        <div class="mpill">📁 <strong>3</strong> demos</div>
+        <div class="mpill">📁 <strong>7</strong> demos</div>
         <div class="mpill">🌐 <strong>JA · KO</strong></div>
         <div class="mpill">⚡ No install required</div>
       </div>
@@ -827,6 +831,394 @@ footer {
       </div>
     </div>
 
+
+    <!-- ── Demo 04: Identity Resolution ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-orange">Demo 04</span>
+        <div class="sect-info">
+          <div class="sect-title">Identity Resolution</div>
+          <div class="sect-desc">Source records → Matching Rules → Unified Individual · step-by-step simulation</div>
+        </div>
+      </div>
+
+      <div id="card-identity" class="demo-card">
+        <div class="card-char char-orange">
+          <div class="char-orb" style="width:42px;height:42px;background:#FF8B00;opacity:.22;top:8%;right:6%;"></div>
+          <div class="char-orb" style="width:20px;height:20px;background:#FFD000;opacity:.40;bottom:12%;left:10%;"></div>
+          <div class="char-orb" style="width:28px;height:28px;background:#0070D2;opacity:.18;top:55%;right:16%;"></div>
+
+          <!-- Identity Resolution abstract icon: 4 sources → 1 unified -->
+          <svg class="char-svg char-float" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Source circles -->
+            <circle cx="30"  cy="32"  r="18" fill="#00A1E0" opacity=".9"/>
+            <circle cx="130" cy="32"  r="18" fill="#8B5CF6" opacity=".9"/>
+            <circle cx="30"  cy="128" r="18" fill="#FF8B00" opacity=".9"/>
+            <circle cx="130" cy="128" r="18" fill="#3CB879" opacity=".9"/>
+            <!-- Source labels -->
+            <text x="30"  y="36"  text-anchor="middle" font-size="9" fill="white" font-family="monospace" font-weight="bold">Web</text>
+            <text x="130" y="36"  text-anchor="middle" font-size="9" fill="white" font-family="monospace" font-weight="bold">CRM</text>
+            <text x="30"  y="132" text-anchor="middle" font-size="9" fill="white" font-family="monospace" font-weight="bold">MC</text>
+            <text x="130" y="132" text-anchor="middle" font-size="9" fill="white" font-family="monospace" font-weight="bold">POS</text>
+            <!-- Connection lines -->
+            <line x1="46"  y1="46"  x2="70"  y2="70"  stroke="#FF8B00" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/>
+            <line x1="114" y1="46"  x2="90"  y2="70"  stroke="#FF8B00" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/>
+            <line x1="46"  y1="114" x2="70"  y2="90"  stroke="#FF8B00" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/>
+            <line x1="114" y1="114" x2="90"  y2="90"  stroke="#FF8B00" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/>
+            <!-- Center: Unified Individual -->
+            <circle cx="80" cy="80" r="28" fill="#0070D2" opacity=".95"/>
+            <circle cx="80" cy="80" r="22" fill="#032D60" opacity=".6"/>
+            <text x="80" y="77"  text-anchor="middle" font-size="8"  fill="white" font-family="monospace">Unified</text>
+            <text x="80" y="88"  text-anchor="middle" font-size="8"  fill="white" font-family="monospace">Individual</text>
+            <!-- Sparkle dots on lines -->
+            <circle cx="58"  cy="58"  r="3.5" fill="#FFD000" opacity=".85"/>
+            <circle cx="102" cy="58"  r="3.5" fill="#FFD000" opacity=".85"/>
+            <circle cx="58"  cy="102" r="3.5" fill="#FFD000" opacity=".85"/>
+            <circle cx="102" cy="102" r="3.5" fill="#FFD000" opacity=".85"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-identity-ja"><div class="card-title">アイデンティティ<br>レゾリューション</div></div>
+              <div data-lc="card-identity-ko" style="display:none"><div class="card-title">아이덴티티<br>레졸루션</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-identity" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-identity" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-identity-ja">
+            <p class="card-sub">4つのソースシステムに散在するレコードが照合ルール（メール一致・氏名+電話一致）によって 1つの Unified Individual に統合されるプロセスを 5ステップでシミュレーションします。</p>
+          </div>
+          <div data-lc="card-identity-ko" style="display:none">
+            <p class="card-sub">4개 소스 시스템에 분산된 레코드가 매칭 룰(이메일 일치·이름+전화 일치)로 하나의 Unified Individual로 통합되는 과정을 5단계로 시뮬레이션합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-identity-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">Web (Adobe Analytics) — anon_id + email</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">CRM (Salesforce) — customer_id + name + phone</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Email (Marketing Cloud) — subscriber_id + email</span></div>
+              <div class="pline"><div class="pdot" style="background:#3CB879"></div><span class="ptext">Offline (POS) — pos_id + name + phone</span></div>
+            </div>
+            <div data-lc="card-identity-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">웹 (Adobe Analytics) — anon_id + 이메일</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">CRM (Salesforce) — customer_id + 이름 + 전화</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">이메일 (Marketing Cloud) — subscriber_id + 이메일</span></div>
+              <div class="pline"><div class="pdot" style="background:#3CB879"></div><span class="ptext">오프라인 (POS) — pos_id + 이름 + 전화</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Identity Resolution</span>
+            <span class="tag">Matching Rule</span>
+            <span class="tag">Unified Individual</span>
+            <span class="tag">Party Identification</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="data360-identity.html?lang=ja" id="btn-identity">Open Demo →</a>
+            <div class="card-stat">4 source systems<br>5-step simulation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 05: Real-time Unified Profile ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-sky">Demo 05</span>
+        <div class="sect-info">
+          <div class="sect-title">Unified Individual Profile</div>
+          <div class="sect-desc">Live event stream → real-time segment, LTV, and Einstein NBA updates</div>
+        </div>
+      </div>
+
+      <div id="card-profile" class="demo-card">
+        <div class="card-char char-sky">
+          <div class="char-orb" style="width:44px;height:44px;background:#00A1E0;opacity:.22;top:6%;right:6%;"></div>
+          <div class="char-orb" style="width:20px;height:20px;background:#FFD000;opacity:.40;bottom:10%;left:8%;"></div>
+          <div class="char-orb" style="width:28px;height:28px;background:#3CB879;opacity:.25;top:55%;right:14%;"></div>
+
+          <!-- Einstein owl (reuse) -->
+          <svg class="char-svg char-float" viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="65" cy="150" rx="36" ry="7" fill="#8B5CF6" opacity="0.20"/>
+            <line x1="97" y1="22" x2="109" y2="44" stroke="#FFD000" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="109" cy="48" r="5.5" fill="#FFD000"/>
+            <rect x="45" y="10" width="40" height="13" rx="3" fill="#032D60"/>
+            <rect x="22" y="21" width="86" height="10" rx="2.5" fill="#032D60"/>
+            <ellipse cx="14"  cy="108" rx="15" ry="28" fill="#7C3AED" transform="rotate(-14 14 108)"/>
+            <ellipse cx="116" cy="108" rx="15" ry="28" fill="#7C3AED" transform="rotate(14 116 108)"/>
+            <rect x="27" y="92" width="76" height="52" rx="24" fill="#8B5CF6"/>
+            <ellipse cx="65" cy="116" rx="26" ry="22" fill="#A78BFA" opacity="0.55"/>
+            <path d="M46 142 L40 150 M46 142 L47 151 M46 142 L54 149" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+            <path d="M84 142 L78 150 M84 142 L84 151 M84 142 L92 149" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+            <path d="M52 92 Q65 100 78 92 Q65 99 52 92 Z" fill="#FFD000" opacity="0.9"/>
+            <circle cx="65" cy="62" r="40" fill="#8B5CF6"/>
+            <ellipse cx="65" cy="67" rx="32" ry="27" fill="#A78BFA" opacity="0.60"/>
+            <path d="M31 30 Q24 14 34 11 Q37 26 38 31 Z" fill="#7C3AED"/>
+            <path d="M99 30 Q106 14 96 11 Q93 26 92 31 Z" fill="#7C3AED"/>
+            <rect x="33" y="47" width="26" height="20" rx="10" stroke="#FFD000" stroke-width="2.5" fill="none"/>
+            <rect x="71" y="47" width="26" height="20" rx="10" stroke="#FFD000" stroke-width="2.5" fill="none"/>
+            <line x1="59" y1="57" x2="71" y2="57" stroke="#FFD000" stroke-width="2.5"/>
+            <line x1="33" y1="57" x2="27" y2="54" stroke="#FFD000" stroke-width="2" stroke-linecap="round"/>
+            <line x1="97" y1="57" x2="103" y2="54" stroke="#FFD000" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="46" cy="57" r="10" fill="white"/>
+            <circle cx="84" cy="57" r="10" fill="white"/>
+            <circle cx="46" cy="57" r="6.5" fill="#032D60"/>
+            <circle cx="84" cy="57" r="6.5" fill="#032D60"/>
+            <circle cx="46" cy="57" r="3.8" fill="#8B5CF6"/>
+            <circle cx="84" cy="57" r="3.8" fill="#8B5CF6"/>
+            <circle cx="46" cy="57" r="2"   fill="#032D60"/>
+            <circle cx="84" cy="57" r="2"   fill="#032D60"/>
+            <circle cx="49" cy="53" r="2.5" fill="white"/>
+            <circle cx="87" cy="53" r="2.5" fill="white"/>
+            <path d="M57 72 L65 80 L73 72 Z" fill="#FFD000"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-profile-ja"><div class="card-title">リアルタイム統合<br>個人プロファイル</div></div>
+              <div data-lc="card-profile-ko" style="display:none"><div class="card-title">실시간 통합<br>개인 프로파일</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-profile" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-profile" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-profile-ja">
+            <p class="card-sub">8件のイベントがストリーミングされるたびに、セグメント・LTV・優先チャネル・Einstein NBA がリアルタイムで更新される様子を体験します。</p>
+          </div>
+          <div data-lc="card-profile-ko" style="display:none">
+            <p class="card-sub">8개 이벤트가 스트리밍될 때마다 세그먼트·LTV·선호 채널·Einstein NBA가 실시간으로 업데이트되는 과정을 시각화합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-profile-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">LTV リアルタイム更新 — 購入イベントで即時加算</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">セグメント変化 — VIPカスタマー セグメント追加</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">Einstein NBA 更新 — VIP招待イベントへ変更</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">優先チャネル変化 — メール → モバイルアプリ</span></div>
+            </div>
+            <div data-lc="card-profile-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">LTV 실시간 업데이트 — 구매 이벤트로 즉시 증가</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">세그먼트 변화 — VIP 고객 세그먼트 추가</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">Einstein NBA 변경 — VIP 초대 이벤트로 업데이트</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">선호 채널 변화 — 이메일 → 모바일 앱</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Unified Individual</span>
+            <span class="tag">Data Stream</span>
+            <span class="tag">Segment Membership</span>
+            <span class="tag">Einstein NBA</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-violet" href="data360-realtime-profile.html?lang=ja" id="btn-profile">Open Demo →</a>
+            <div class="card-stat">8 events<br>4 profile updates</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 06: Calculated Insights ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-violet">Demo 06</span>
+        <div class="sect-info">
+          <div class="sect-title">Calculated Insights</div>
+          <div class="sect-desc">Batch SQL → RFM Score · Purchase Frequency · Category Affinity</div>
+        </div>
+      </div>
+
+      <div id="card-insights" class="demo-card">
+        <div class="card-char char-violet">
+          <div class="char-orb" style="width:46px;height:46px;background:#8B5CF6;opacity:.22;top:6%;left:5%;"></div>
+          <div class="char-orb" style="width:20px;height:20px;background:#FFD000;opacity:.40;bottom:12%;right:10%;"></div>
+          <div class="char-orb" style="width:26px;height:26px;background:#0070D2;opacity:.18;top:54%;right:6%;"></div>
+
+          <!-- Codey bear (reuse) -->
+          <svg class="char-svg char-float-2" viewBox="0 0 130 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="65" cy="145" rx="38" ry="7" fill="#0070D2" opacity="0.15"/>
+            <rect x="18" y="84" width="94" height="56" rx="22" fill="#0070D2"/>
+            <rect x="40" y="104" width="50" height="26" rx="10" fill="#032D60"/>
+            <rect x="12" y="122" width="106" height="22" rx="7" fill="#032D60"/>
+            <rect x="16" y="125" width="98" height="16" rx="4" fill="#1589EE"/>
+            <rect x="20" y="128" width="36" height="3.5" rx="1.5" fill="#00FF88" opacity="0.9"/>
+            <rect x="20" y="134" width="50" height="3.5" rx="1.5" fill="#FFD000" opacity="0.9"/>
+            <rect x="62" y="128" width="28" height="3.5" rx="1.5" fill="#FF8B00" opacity="0.9"/>
+            <rect x="62" y="134" width="44" height="3.5" rx="1.5" fill="#00A1E0" opacity="0.9"/>
+            <circle cx="65" cy="56" r="40" fill="#00A1E0"/>
+            <circle cx="34" cy="24" r="14" fill="#00A1E0"/>
+            <circle cx="34" cy="24" r="8"  fill="#0070D2"/>
+            <circle cx="96" cy="24" r="14" fill="#00A1E0"/>
+            <circle cx="96" cy="24" r="8"  fill="#0070D2"/>
+            <ellipse cx="65" cy="62" rx="28" ry="22" fill="white" opacity="0.22"/>
+            <circle cx="51" cy="50" r="7.5" fill="white"/>
+            <circle cx="79" cy="50" r="7.5" fill="white"/>
+            <circle cx="52.5" cy="51" r="4.5" fill="#032D60"/>
+            <circle cx="80.5" cy="51" r="4.5" fill="#032D60"/>
+            <circle cx="54"  cy="49" r="2"   fill="white"/>
+            <circle cx="82"  cy="49" r="2"   fill="white"/>
+            <ellipse cx="65" cy="64" rx="5" ry="3.5" fill="#032D60"/>
+            <path d="M54 71 Q65 80 76 71" stroke="#032D60" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="38" cy="62" rx="9" ry="5" fill="#FF9B8A" opacity="0.32"/>
+            <ellipse cx="92" cy="62" rx="9" ry="5" fill="#FF9B8A" opacity="0.32"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-insights-ja"><div class="card-title">Calculated Insights<br>ダッシュボード</div></div>
+              <div data-lc="card-insights-ko" style="display:none"><div class="card-title">Calculated Insights<br>대시보드</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-insights" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-insights" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-insights-ja">
+            <p class="card-sub">定期実行バッチ SQL で RFM スコア・30日購買頻度・カテゴリ親和度を算出し、Unified Individual に付与する Data 360 の中核機能です。SQL エディターで実際のクエリを確認できます。</p>
+          </div>
+          <div data-lc="card-insights-ko" style="display:none">
+            <p class="card-sub">정기 실행 배치 SQL로 RFM 스코어·30일 구매 빈도·카테고리 친화도를 계산하고 Unified Individual에 부착하는 Data 360 핵심 기능입니다. SQL 에디터로 실제 쿼리를 확인할 수 있습니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-insights-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">RFM スコア — NTILE / DATEDIFF / SUM</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">30日購買頻度 — DATEADD / COUNT / AVG</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">カテゴリ親和度 — CASE WHEN / JOIN / ROUND</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">結果: バーチャート + 顧客ランキングテーブル</span></div>
+            </div>
+            <div data-lc="card-insights-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">RFM 스코어 — NTILE / DATEDIFF / SUM</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">30일 구매 빈도 — DATEADD / COUNT / AVG</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">카테고리 친화도 — CASE WHEN / JOIN / ROUND</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">결과: 막대차트 + 고객 순위 테이블</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Calculated Insights</span>
+            <span class="tag">RFM Score</span>
+            <span class="tag">Sales Order DMO</span>
+            <span class="tag">Batch SQL</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-green" href="data360-calculated-insights.html?lang=ja" id="btn-insights">Open Demo →</a>
+            <div class="card-stat">3 insight types<br>12 customers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 07: DMO Explorer ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-green">Demo 07</span>
+        <div class="sect-info">
+          <div class="sect-title">Data Model Object (DMO) Explorer</div>
+          <div class="sect-desc">Interactive ER diagram · 9 core DMOs · field-level reference</div>
+        </div>
+      </div>
+
+      <div id="card-dmo" class="demo-card">
+        <div class="card-char char-brand">
+          <div class="char-orb" style="width:44px;height:44px;background:#0070D2;opacity:.20;top:7%;right:5%;"></div>
+          <div class="char-orb" style="width:22px;height:22px;background:#FFD000;opacity:.38;bottom:10%;left:9%;"></div>
+          <div class="char-orb" style="width:28px;height:28px;background:#8B5CF6;opacity:.22;top:52%;right:14%;"></div>
+
+          <!-- DMO abstract: node graph icon -->
+          <svg class="char-svg char-float" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Outer nodes -->
+            <circle cx="26"  cy="45"  r="14" fill="#00A1E0" opacity=".85"/>
+            <circle cx="134" cy="45"  r="14" fill="#3CB879" opacity=".85"/>
+            <circle cx="26"  cy="115" r="14" fill="#8B5CF6" opacity=".85"/>
+            <circle cx="134" cy="115" r="14" fill="#FF8B00" opacity=".85"/>
+            <circle cx="80"  cy="18"  r="11" fill="#FFD000" opacity=".85"/>
+            <circle cx="80"  cy="142" r="11" fill="#9BAFC8" opacity=".85"/>
+            <!-- Lines to center -->
+            <line x1="38"  y1="50"  x2="68"  y2="72"  stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <line x1="122" y1="50"  x2="92"  y2="72"  stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <line x1="38"  y1="110" x2="68"  y2="88"  stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <line x1="122" y1="110" x2="92"  y2="88"  stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <line x1="80"  y1="29"  x2="80"  y2="68"  stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <line x1="80"  y1="92"  x2="80"  y2="131" stroke="#0070D2" stroke-width="1.8" opacity=".4"/>
+            <!-- Center: Unified Individual -->
+            <rect x="54" y="66" width="52" height="28" rx="8" fill="#0070D2"/>
+            <text x="80" y="78"  text-anchor="middle" font-size="7.5" fill="white" font-family="monospace">Unified</text>
+            <text x="80" y="88"  text-anchor="middle" font-size="7.5" fill="white" font-family="monospace">Individual</text>
+            <!-- Node labels -->
+            <text x="26"  y="49"  text-anchor="middle" font-size="6.5" fill="white" font-family="monospace">CP</text>
+            <text x="134" y="49"  text-anchor="middle" font-size="6.5" fill="white" font-family="monospace">SOs</text>
+            <text x="26"  y="119" text-anchor="middle" font-size="6.5" fill="white" font-family="monospace">Eng</text>
+            <text x="134" y="119" text-anchor="middle" font-size="6.5" fill="white" font-family="monospace">Party</text>
+            <text x="80"  y="22"  text-anchor="middle" font-size="6"   fill="#032D60" font-family="monospace">Indiv</text>
+            <text x="80"  y="146" text-anchor="middle" font-size="6"   fill="white"   font-family="monospace">PartyID</text>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-dmo-ja"><div class="card-title">DMO エクスプローラー</div></div>
+              <div data-lc="card-dmo-ko" style="display:none"><div class="card-title">DMO 탐색기</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-dmo" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-dmo" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-dmo-ja">
+            <p class="card-sub">Data 360 の 9つのコア DMO をインタラクティブな ER 図で探索します。各オブジェクトをクリックするとフィールド一覧・説明・カテゴリが表示されます。</p>
+          </div>
+          <div data-lc="card-dmo-ko" style="display:none">
+            <p class="card-sub">Data 360의 9개 핵심 DMO를 인터랙티브 ER 다이어그램으로 탐색합니다. 각 오브젝트를 클릭하면 필드 목록·설명·카테고리가 표시됩니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-dmo-ja">
+              <div class="pline"><div class="pdot" style="background:#0070D2"></div><span class="ptext">Unified Individual — 統合個人 (Identity · 中心)</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">Contact Point Email / Phone / Address</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Sales Order · Engagement Interaction</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">Party · Individual · Party Identification</span></div>
+            </div>
+            <div data-lc="card-dmo-ko" style="display:none">
+              <div class="pline"><div class="pdot" style="background:#0070D2"></div><span class="ptext">Unified Individual — 통합 개인 (Identity · 중심)</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">Contact Point Email / Phone / Address</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Sales Order · Engagement Interaction</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">Party · Individual · Party Identification</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Data Model Object</span>
+            <span class="tag">Unified Individual</span>
+            <span class="tag">Contact Point</span>
+            <span class="tag">Engagement</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="data360-dmo-explorer.html?lang=ja" id="btn-dmo">Open Demo →</a>
+            <div class="card-stat">9 DMO objects<br>37 fields</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -846,12 +1238,20 @@ footer {
 <script>
 (function(){
   const LINKS = {
-    'card-streaming': { ja: 'streaming-insights-ja.html', ko: 'streaming-insights-demo.html' },
-    'card-timeline':  { ja: 'data360-timeline-ja.html',   ko: 'data360-timeline.html' }
+    'card-streaming': { ja: 'streaming-insights-ja.html',             ko: 'streaming-insights-demo.html' },
+    'card-timeline':  { ja: 'data360-timeline-ja.html',               ko: 'data360-timeline.html' },
+    'card-identity':  { ja: 'data360-identity.html?lang=ja',          ko: 'data360-identity.html?lang=ko' },
+    'card-profile':   { ja: 'data360-realtime-profile.html?lang=ja',  ko: 'data360-realtime-profile.html?lang=ko' },
+    'card-insights':  { ja: 'data360-calculated-insights.html?lang=ja', ko: 'data360-calculated-insights.html?lang=ko' },
+    'card-dmo':       { ja: 'data360-dmo-explorer.html?lang=ja',      ko: 'data360-dmo-explorer.html?lang=ko' }
   };
   const BTNS = {
     'card-streaming': document.getElementById('btn-streaming'),
-    'card-timeline':  document.getElementById('btn-timeline')
+    'card-timeline':  document.getElementById('btn-timeline'),
+    'card-identity':  document.getElementById('btn-identity'),
+    'card-profile':   document.getElementById('btn-profile'),
+    'card-insights':  document.getElementById('btn-insights'),
+    'card-dmo':       document.getElementById('btn-dmo')
   };
 
   function switchLang(cardId, lang) {
@@ -874,6 +1274,10 @@ footer {
 
   switchLang('card-streaming', 'ja');
   switchLang('card-timeline',  'ja');
+  switchLang('card-identity',  'ja');
+  switchLang('card-profile',   'ja');
+  switchLang('card-insights',  'ja');
+  switchLang('card-dmo',       'ja');
 })();
 </script>
 

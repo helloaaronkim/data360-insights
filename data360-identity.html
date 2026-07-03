@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Identity Resolution — Salesforce Data 360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F0F6FF;
+    --card: #FFFFFF;
+    --navy: #032D60;
+    --secondary: #546D8F;
+    --tertiary: #9BAFC8;
+    --blue: #0070D2;
+    --sky: #00A1E0;
+    --violet: #8B5CF6;
+    --green: #3CB879;
+    --orange: #FF8B00;
+    --yellow: #FFD000;
+    --border: rgba(0,112,210,.14);
+    --shadow: 0 8px 32px rgba(3,45,96,.11);
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── APP BAR ── */
+  .app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(3,45,96,.08);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .app-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sf-box {
+    width: 32px;
+    height: 32px;
+    background: var(--blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .app-bar-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--navy);
+  }
+
+  .app-bar-sub {
+    color: var(--secondary);
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .app-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── LANG TOGGLE ── */
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .lang-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    color: var(--secondary);
+    background: transparent;
+    transition: background .18s, color .18s, box-shadow .18s;
+  }
+
+  .lang-btn.active {
+    background: #fff;
+    color: var(--navy);
+    box-shadow: 0 1px 6px rgba(3,45,96,.14);
+  }
+
+  .back-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background .18s;
+  }
+
+  .back-btn:hover { background: rgba(0,112,210,.06); }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    flex: 1;
+    padding: 0 0 48px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: #fff;
+    padding: 56px 48px 40px;
+  }
+
+  .hero-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--blue);
+    background: rgba(0,112,210,.08);
+    border: 1px solid rgba(0,112,210,.18);
+    border-radius: 100px;
+    padding: 4px 12px;
+    letter-spacing: .04em;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--secondary);
+    line-height: 1.7;
+    max-width: 680px;
+  }
+
+  /* ── DEMO SECTION ── */
+  .demo-section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 36px 48px 0;
+  }
+
+  .demo-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 32px;
+    position: relative;
+  }
+
+  /* step controls */
+  .step-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .step-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--blue);
+    background: rgba(0,112,210,.08);
+    border: 1px solid rgba(0,112,210,.18);
+    border-radius: 100px;
+    padding: 5px 14px;
+  }
+
+  .step-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--blue);
+    border: none;
+    border-radius: 100px;
+    padding: 9px 22px;
+    cursor: pointer;
+    transition: background .18s, transform .12s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .step-btn:hover { background: #005bb5; transform: translateY(-1px); }
+  .step-btn:active { transform: translateY(0); }
+
+  /* tooltip */
+  .tooltip-bubble {
+    display: none;
+    background: var(--navy);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .tooltip-bubble.visible { display: inline-block; }
+
+  /* 3-col grid */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 30% 26% 44%;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* col headings */
+  .col-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tertiary);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── SOURCE RECORD CARDS ── */
+  .source-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .src-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    border-left-width: 4px;
+    border-left-style: solid;
+    transition: box-shadow .3s ease, transform .3s ease, opacity .3s ease;
+    position: relative;
+  }
+
+  .src-card.web  { border-left-color: var(--sky); }
+  .src-card.crm  { border-left-color: var(--blue); }
+  .src-card.email{ border-left-color: var(--violet); }
+  .src-card.pos  { border-left-color: var(--orange); }
+
+  /* glow states */
+  .src-card.glow-sky   { box-shadow: 0 0 0 2px var(--sky), 0 4px 18px rgba(0,161,224,.22); transform: scale(1.02); }
+  .src-card.glow-green { box-shadow: 0 0 0 2px var(--green), 0 4px 18px rgba(60,184,121,.22); transform: scale(1.02); }
+  .src-card.merged     { transform: scale(0.92); opacity: 0.7; }
+
+  .src-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 100px;
+    padding: 2px 8px;
+    margin-bottom: 8px;
+  }
+
+  .src-card.web  .src-badge { background: rgba(0,161,224,.12); color: #007bb5; }
+  .src-card.crm  .src-badge { background: rgba(0,112,210,.12); color: #005bb5; }
+  .src-card.email .src-badge{ background: rgba(139,92,246,.12); color: #6d3fcf; }
+  .src-card.pos  .src-badge { background: rgba(255,139,0,.12);  color: #c95e00; }
+
+  .src-field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--secondary);
+    line-height: 1.6;
+    padding: 1px 3px;
+    border-radius: 4px;
+    transition: background .3s ease;
+  }
+
+  .src-field span.key { color: var(--tertiary); }
+  .src-field.highlight { background: rgba(255,208,0,.45); }
+
+  /* ── MATCHING RULES ── */
+  .rules-col {}
+  .rule-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(240,246,255,.7);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    transition: background .3s ease;
+  }
+
+  .rule-row.active { background: rgba(60,184,121,.08); border-color: rgba(60,184,121,.3); }
+
+  .rule-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--tertiary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .3s ease, background .3s ease;
+    margin-top: 1px;
+  }
+
+  .rule-row.active .rule-icon {
+    border-color: var(--green);
+    background: var(--green);
+  }
+
+  .rule-icon-check {
+    display: none;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .rule-row.active .rule-icon-check { display: block; }
+
+  .rule-info {}
+
+  .rule-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.4;
+  }
+
+  .rule-confidence {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--tertiary);
+    margin-top: 2px;
+  }
+
+  .rule-row.active .rule-confidence { color: var(--green); }
+
+  /* ── UNIFIED INDIVIDUAL ── */
+  .unified-col {}
+
+  .unified-placeholder {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--tertiary);
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 180px;
+  }
+
+  .placeholder-icon {
+    font-size: 28px;
+    opacity: .4;
+  }
+
+  .unified-card {
+    display: none;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(3,45,96,.1);
+    animation: popIn .4s ease forwards;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  .unified-header {
+    background: var(--blue);
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .unified-header-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .unified-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: rgba(255,255,255,.18);
+    border-radius: 100px;
+    padding: 2px 8px;
+  }
+
+  .unified-body {
+    padding: 16px;
+    background: #fff;
+  }
+
+  .unified-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .unified-field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--secondary);
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(0,112,210,.07);
+  }
+
+  .unified-field:last-of-type { border-bottom: none; }
+  .unified-field span.uk { color: var(--tertiary); }
+
+  .confidence-bar-wrap {
+    margin: 12px 0 10px;
+  }
+
+  .confidence-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--secondary);
+    margin-bottom: 5px;
+  }
+
+  .confidence-bar-bg {
+    height: 7px;
+    background: rgba(0,112,210,.1);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .confidence-bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--blue), var(--sky));
+    border-radius: 100px;
+    transition: width .8s ease;
+  }
+
+  .confidence-bar-fill.loaded { width: 98.2%; }
+
+  .source-ids-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--tertiary);
+    letter-spacing: .06em;
+    margin: 10px 0 6px;
+    text-transform: uppercase;
+  }
+
+  .source-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .sid-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 100px;
+    padding: 3px 9px;
+  }
+
+  .sid-pill.web   { background: rgba(0,161,224,.12); color: #007bb5; }
+  .sid-pill.crm   { background: rgba(0,112,210,.12); color: #005bb5; }
+  .sid-pill.email { background: rgba(139,92,246,.12); color: #6d3fcf; }
+  .sid-pill.pos   { background: rgba(255,139,0,.12);  color: #c95e00; }
+
+  .done-badge {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 100px;
+    padding: 4px 12px;
+    margin-top: 12px;
+  }
+
+  /* spinner */
+  .spinner-wrap {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(240,246,255,.7);
+    border-radius: 14px;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .spinner-wrap.active { display: flex; }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(0,112,210,.2);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .spinner-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  /* ── SUMMARY PANEL ── */
+  .summary-panel {
+    display: none;
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(60,184,121,.08), rgba(0,112,210,.08));
+    border: 1px solid rgba(60,184,121,.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    animation: fadeIn .5s ease;
+  }
+
+  .summary-panel.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .summary-text {
+    font-size: 14px;
+    color: var(--navy);
+    line-height: 1.7;
+    font-weight: 500;
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-section {
+    max-width: 1080px;
+    margin: 36px auto 0;
+    padding: 0 48px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .concept-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(3,45,96,.06);
+  }
+
+  .concept-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--blue);
+    background: rgba(0,112,210,.08);
+    border-radius: 100px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .concept-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .concept-desc {
+    font-size: 12.5px;
+    color: var(--secondary);
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer-text {
+    color: rgba(255,255,255,.7);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .footer-text strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .footer-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,.35);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .demo-grid { grid-template-columns: 1fr; }
+    .concept-grid { grid-template-columns: repeat(2, 1fr); }
+    .app-bar { padding: 0 20px; }
+    .hero { padding: 36px 20px 28px; }
+    .demo-section, .concept-section { padding-left: 20px; padding-right: 20px; }
+    footer { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ APP BAR ══ -->
+<header class="app-bar">
+  <div class="app-bar-left">
+    <div class="sf-box">SF</div>
+    <span class="app-bar-title">Data 360</span>
+    <span class="app-bar-sub">/ Identity Resolution</span>
+  </div>
+  <div class="app-bar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btn-ko" onclick="switchLang('ko')">KO</button>
+      <button class="lang-btn" id="btn-ja" onclick="switchLang('ja')">JA</button>
+    </div>
+    <a href="index.html" class="back-btn">
+      ← <span data-ko>데모 목록</span><span data-ja>デモ一覧</span>
+    </a>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow-pill">SALESFORCE DATA 360 · Demo 04</div>
+      <h1>
+        <span data-ko>아이덴티티 레졸루션 시뮬레이터</span>
+        <span data-ja>ID 解決シミュレーター</span>
+      </h1>
+      <p>
+        <span data-ko>여러 소스 시스템의 분산된 레코드가 하나의 Unified Individual로 통합되는 과정을 단계별로 시각화합니다.</span>
+        <span data-ja>複数のソースシステムに散在するレコードが、1つの Unified Individual に統合される仕組みをステップで体験します。</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section class="demo-section">
+    <div class="demo-card" id="demo-card">
+
+      <!-- spinner overlay -->
+      <div class="spinner-wrap" id="spinner-wrap">
+        <div class="spinner"></div>
+        <div class="spinner-label">
+          <span data-ko>통합 중...</span>
+          <span data-ja>統合中...</span>
+        </div>
+      </div>
+
+      <!-- step controls -->
+      <div class="step-controls">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="step-pill" id="step-pill">Step 1 / 5</div>
+          <div class="tooltip-bubble" id="tooltip-bubble">
+            <span data-ko></span><span data-ja></span>
+          </div>
+        </div>
+        <button class="step-btn" id="step-btn" onclick="advanceStep()">
+          <span data-ko>다음 단계</span><span data-ja>次のステップ</span>
+          <span id="step-btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- 3-col grid -->
+      <div class="demo-grid">
+
+        <!-- COL 1: Source Records -->
+        <div>
+          <div class="col-heading">
+            <span data-ko>소스 레코드</span>
+            <span data-ja>ソースレコード</span>
+          </div>
+          <div class="source-cards">
+
+            <!-- Card A: Web -->
+            <div class="src-card web" id="card-a">
+              <div class="src-badge">
+                <span data-ko>웹사이트 · Adobe Analytics</span>
+                <span data-ja>ウェブサイト · Adobe Analytics</span>
+              </div>
+              <div class="src-field"><span class="key">anon_id:    </span>web_a9k2m</div>
+              <div class="src-field highlight-email"><span class="key">email:      </span>minj.kim@example.com</div>
+              <div class="src-field"><span class="key">first_seen: </span>2026-03-15</div>
+            </div>
+
+            <!-- Card B: CRM -->
+            <div class="src-card crm" id="card-b">
+              <div class="src-badge">CRM · Salesforce</div>
+              <div class="src-field"><span class="key">customer_id: </span>CRM-2847</div>
+              <div class="src-field highlight-name"><span class="key">name:        </span><span data-ko>김민준</span><span data-ja>金 ミンジュン</span></div>
+              <div class="src-field highlight-phone"><span class="key">phone:       </span>010-9876-5432</div>
+              <div class="src-field"><span class="key">city:        </span><span data-ko>서울</span><span data-ja>ソウル</span></div>
+            </div>
+
+            <!-- Card C: Email -->
+            <div class="src-card email" id="card-c">
+              <div class="src-badge">
+                <span data-ko>이메일 · Marketing Cloud</span>
+                <span data-ja>Email · Marketing Cloud</span>
+              </div>
+              <div class="src-field"><span class="key">subscriber_id: </span>MC-9923</div>
+              <div class="src-field highlight-name"><span class="key">name:          </span><span data-ko>김민준</span><span data-ja>金 ミンジュン</span></div>
+              <div class="src-field highlight-email"><span class="key">email:         </span>minj.kim@example.com</div>
+              <div class="src-field"><span class="key">opt_in:        </span>true</div>
+            </div>
+
+            <!-- Card D: POS -->
+            <div class="src-card pos" id="card-d">
+              <div class="src-badge">
+                <span data-ko>오프라인 · POS</span>
+                <span data-ja>オフライン · POS</span>
+              </div>
+              <div class="src-field"><span class="key">pos_id:        </span>POS-384</div>
+              <div class="src-field highlight-name"><span class="key">name:          </span><span data-ko>김민준</span><span data-ja>金 ミンジュン</span></div>
+              <div class="src-field highlight-phone"><span class="key">phone:         </span>010-9876-5432</div>
+              <div class="src-field"><span class="key">last_purchase: </span>2026-06-20</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- COL 2: Matching Rules -->
+        <div class="rules-col">
+          <div class="col-heading">
+            <span data-ko>매칭 룰</span>
+            <span data-ja>照合ルール</span>
+          </div>
+
+          <div class="rule-row" id="rule-1">
+            <div class="rule-icon">
+              <span class="rule-icon-check">✓</span>
+            </div>
+            <div class="rule-info">
+              <div class="rule-name">
+                <span data-ko>이메일 완전 일치</span>
+                <span data-ja>メール完全一致</span>
+              </div>
+              <div class="rule-confidence">confidence: 99%</div>
+            </div>
+          </div>
+
+          <div class="rule-row" id="rule-2">
+            <div class="rule-icon">
+              <span class="rule-icon-check">✓</span>
+            </div>
+            <div class="rule-info">
+              <div class="rule-name">
+                <span data-ko>이름 + 전화번호 일치</span>
+                <span data-ja>氏名+電話番号一致</span>
+              </div>
+              <div class="rule-confidence">confidence: 96%</div>
+            </div>
+          </div>
+
+          <div class="rule-row" id="rule-3">
+            <div class="rule-icon">
+              <span class="rule-icon-check">✓</span>
+            </div>
+            <div class="rule-info">
+              <div class="rule-name">
+                <span data-ko>교차 소스 통합</span>
+                <span data-ja>クロスソース統合</span>
+              </div>
+              <div class="rule-confidence">confidence: 98.2%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: Unified Individual -->
+        <div class="unified-col">
+          <div class="col-heading">Unified Individual</div>
+
+          <!-- placeholder -->
+          <div class="unified-placeholder" id="unified-placeholder">
+            <div class="placeholder-icon">⬡</div>
+            <span data-ko>Unified Individual 생성 예정</span>
+            <span data-ja>Unified Individual 生成予定</span>
+          </div>
+
+          <!-- unified card (hidden until step 4) -->
+          <div class="unified-card" id="unified-card">
+            <div class="unified-header">
+              <span class="unified-header-title">Unified Individual</span>
+              <span class="unified-id">UI-100847</span>
+            </div>
+            <div class="unified-body">
+              <div class="unified-name">
+                <span data-ko>김민준</span>
+                <span data-ja>金 ミンジュン</span>
+              </div>
+              <div class="unified-field"><span class="uk">email:   </span>minj.kim@example.com</div>
+              <div class="unified-field"><span class="uk">phone:   </span>010-9876-5432</div>
+
+              <div class="confidence-bar-wrap">
+                <div class="confidence-label">
+                  <span>Confidence</span>
+                  <span>98.2%</span>
+                </div>
+                <div class="confidence-bar-bg">
+                  <div class="confidence-bar-fill" id="conf-bar"></div>
+                </div>
+              </div>
+
+              <div class="source-ids-label">SOURCE IDs</div>
+              <div class="source-pills">
+                <span class="sid-pill web">web_a9k2m</span>
+                <span class="sid-pill crm">CRM-2847</span>
+                <span class="sid-pill email">MC-9923</span>
+                <span class="sid-pill pos">POS-384</span>
+              </div>
+              <div class="done-badge">
+                <span data-ko>통합 완료 ✓</span>
+                <span data-ja>統合完了 ✓</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /unified-col -->
+      </div><!-- /demo-grid -->
+
+      <!-- SUMMARY PANEL -->
+      <div class="summary-panel" id="summary-panel">
+        <div class="summary-text">
+          <span data-ko>✓ 4개 소스 레코드 → 1개의 Unified Individual로 통합되었습니다. 적용된 매칭 룰: 이메일 완전 일치, 이름+전화번호 일치. 최종 신뢰도: 98.2%</span>
+          <span data-ja>✓ 4件のソースレコードが 1件の Unified Individual に統合されました。適用された照合ルール：メール完全一致、氏名+電話番号一致。最終信頼度：98.2%</span>
+        </div>
+      </div>
+
+    </div><!-- /demo-card -->
+  </section>
+
+  <!-- CONCEPT CARDS -->
+  <section class="concept-section">
+    <div class="section-title">
+      <span data-ko>핵심 개념 참조</span>
+      <span data-ja>コア概念リファレンス</span>
+    </div>
+    <div class="concept-grid">
+
+      <div class="concept-card">
+        <div class="concept-tag">CORE CONCEPT</div>
+        <div class="concept-title">Identity Resolution<br>
+          <span data-ko style="font-weight:400; font-size:12px; color: var(--secondary);">아이덴티티 레졸루션</span>
+          <span data-ja style="font-weight:400; font-size:12px; color: var(--secondary);">ID 解決</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko>여러 소스 시스템의 레코드를 동일인물로 인식하고 Unified Individual을 생성·유지하는 Data 360 핵심 프로세스</span>
+          <span data-ja>複数のソースシステムのレコードを同一人物と認識し、Unified Individual を生成・維持する Data 360 のコアプロセス</span>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-tag">MATCHING</div>
+        <div class="concept-title">Matching Rule<br>
+          <span data-ko style="font-weight:400; font-size:12px; color: var(--secondary);">매칭 룰</span>
+          <span data-ja style="font-weight:400; font-size:12px; color: var(--secondary);">照合ルール</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko>레코드 간 일치 여부를 판단하는 규칙. 이메일 완전 일치, 이름+전화 퍼지 일치 등으로 구성</span>
+          <span data-ja>レコード間の一致判定に使うルール。メール完全一致、氏名+電話ファジー一致などで構成</span>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-tag">OUTPUT</div>
+        <div class="concept-title">Unified Individual<br>
+          <span data-ko style="font-weight:400; font-size:12px; color: var(--secondary);">통합 개인</span>
+          <span data-ja style="font-weight:400; font-size:12px; color: var(--secondary);">統合個人</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko>ID 해석을 통해 생성된 단일 고객 레코드. 모든 소스 시스템의 데이터가 이 오브젝트로 수렴</span>
+          <span data-ja>ID 解決によって生成される単一顧客レコード。全ソースのデータがこのオブジェクトに集約</span>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-tag">CROSS-REF</div>
+        <div class="concept-title">Party Identification<br>
+          <span data-ko style="font-weight:400; font-size:12px; color: var(--secondary);">파티 식별</span>
+          <span data-ja style="font-weight:400; font-size:12px; color: var(--secondary);">パーティ識別</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko>각 소스 시스템의 고유 ID를 저장하는 오브젝트. Unified Individual과 소스 레코드를 연결하는 교차 참조 테이블</span>
+          <span data-ja>各ソースシステムの固有 ID を保持するオブジェクト。Unified Individual とソースレコードをつなぐ相互参照テーブル</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-left">
+    <div class="sf-box">SF</div>
+    <div class="footer-text">
+      <strong>Salesforce Data 360 · Identity Resolution Demo</strong><br>
+      All data is fictional and for demonstration purposes only.
+    </div>
+  </div>
+  <div class="footer-right">2026 · data360-insights</div>
+</footer>
+
+<script>
+  // ── LANG SYSTEM ──────────────────────────────────────────────────────────
+  const LANG_KEY = 'data360_lang';
+
+  function switchLang(lang) {
+    // show/hide
+    document.querySelectorAll('[data-ko]').forEach(el => {
+      el.style.display = lang === 'ko' ? '' : 'none';
+    });
+    document.querySelectorAll('[data-ja]').forEach(el => {
+      el.style.display = lang === 'ja' ? '' : 'none';
+    });
+    // toggle button active state
+    document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+    document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
+    // persist in session
+    try { sessionStorage.setItem(LANG_KEY, lang); } catch(e) {}
+    // update html lang
+    document.documentElement.lang = lang;
+  }
+
+  // ── STEP SYSTEM ──────────────────────────────────────────────────────────
+  let step = 1;
+  const TOTAL = 5;
+
+  // helpers
+  const el = id => document.getElementById(id);
+  const cls = (id, ...classes) => el(id).classList.add(...classes);
+  const uncls = (id, ...classes) => el(id).classList.remove(...classes);
+
+  function getHighlightEls(type) {
+    return document.querySelectorAll('.highlight-' + type);
+  }
+
+  function showTooltip(koText, jaText) {
+    const tb = el('tooltip-bubble');
+    tb.querySelector('[data-ko]').textContent = koText;
+    tb.querySelector('[data-ja]').textContent = jaText;
+    tb.classList.add('visible');
+  }
+
+  function hideTooltip() {
+    el('tooltip-bubble').classList.remove('visible');
+  }
+
+  function updateStepUI() {
+    el('step-pill').textContent = 'Step ' + step + ' / ' + TOTAL;
+
+    const btnKo = el('step-btn').querySelector('[data-ko]');
+    const btnJa = el('step-btn').querySelector('[data-ja]');
+    const arrow = el('step-btn-arrow');
+
+    if (step > TOTAL) {
+      if (btnKo) btnKo.textContent = '다시 시작';
+      if (btnJa) btnJa.textContent = 'リセット';
+      if (arrow) arrow.textContent = '↺';
+    } else {
+      if (btnKo) btnKo.textContent = '다음 단계';
+      if (btnJa) btnJa.textContent = '次のステップ';
+      if (arrow) arrow.textContent = '→';
+    }
+  }
+
+  function applyStep(n) {
+    // reset all first if coming from reset
+    if (n === 1) {
+      resetAll();
+      return;
+    }
+
+    if (n === 2) {
+      // Cards A + C glow sky, highlight email fields
+      cls('card-a', 'glow-sky');
+      cls('card-c', 'glow-sky');
+      getHighlightEls('email').forEach(e => e.classList.add('highlight'));
+      cls('rule-1', 'active');
+      showTooltip('이메일 일치 감지!', 'メール一致を検出！');
+    }
+
+    if (n === 3) {
+      // Cards B + D glow green, highlight name+phone
+      cls('card-b', 'glow-green');
+      cls('card-d', 'glow-green');
+      getHighlightEls('name').forEach(e => e.classList.add('highlight'));
+      getHighlightEls('phone').forEach(e => e.classList.add('highlight'));
+      cls('rule-2', 'active');
+      showTooltip('이름+전화 일치 감지!', '氏名+電話一致を検出！');
+    }
+
+    if (n === 4) {
+      hideTooltip();
+      // scale down all cards + show spinner
+      ['card-a','card-b','card-c','card-d'].forEach(id => {
+        uncls(id, 'glow-sky', 'glow-green');
+        cls(id, 'merged');
+      });
+      cls('spinner-wrap', 'active');
+
+      // after 1s: activate rule 3, show unified card
+      setTimeout(() => {
+        uncls('spinner-wrap', 'active');
+        cls('rule-3', 'active');
+        el('unified-placeholder').style.display = 'none';
+        el('unified-card').style.display = 'block';
+        // trigger confidence bar
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cls('conf-bar', 'loaded');
+          });
+        });
+      }, 1000);
+    }
+
+    if (n === 5) {
+      cls('summary-panel', 'visible');
+    }
+  }
+
+  function advanceStep() {
+    if (step > TOTAL) {
+      // reset
+      step = 1;
+      resetAll();
+      updateStepUI();
+      return;
+    }
+
+    applyStep(step);
+    step++;
+    updateStepUI();
+  }
+
+  function resetAll() {
+    // cards
+    ['card-a','card-b','card-c','card-d'].forEach(id => {
+      el(id).classList.remove('glow-sky','glow-green','merged');
+    });
+    // highlights
+    ['email','name','phone'].forEach(type => {
+      getHighlightEls(type).forEach(e => e.classList.remove('highlight'));
+    });
+    // rules
+    ['rule-1','rule-2','rule-3'].forEach(id => uncls(id, 'active'));
+    // tooltip
+    hideTooltip();
+    // spinner
+    uncls('spinner-wrap', 'active');
+    // unified
+    el('unified-placeholder').style.display = '';
+    el('unified-card').style.display = 'none';
+    uncls('conf-bar', 'loaded');
+    // summary
+    uncls('summary-panel', 'visible');
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────────
+  (function init() {
+    // determine language
+    const urlLang = new URLSearchParams(location.search).get('lang');
+    const storedLang = (() => { try { return sessionStorage.getItem(LANG_KEY); } catch(e) { return null; } })();
+    const lang = urlLang || storedLang || 'ja';
+    switchLang(lang);
+
+    // init step UI
+    updateStepUI();
+  })();
+</script>
+</body>
+</html>

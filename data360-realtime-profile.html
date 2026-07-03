@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data 360 – Unified Individual Profile Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F0F6FF;
+    --white: #FFFFFF;
+    --navy: #032D60;
+    --secondary: #546D8F;
+    --tertiary: #9BAFC8;
+    --brand-blue: #0070D2;
+    --sky: #00A1E0;
+    --violet: #8B5CF6;
+    --green: #3CB879;
+    --orange: #FF8B00;
+    --yellow: #FFD000;
+    --border: rgba(0, 112, 210, 0.14);
+    --shadow: 0 8px 32px rgba(3, 45, 96, 0.11);
+    --radius-card: 14px;
+    --radius-pill: 100px;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ─── APP BAR ─── */
+  .app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(3,45,96,.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    gap: 16px;
+  }
+
+  .app-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sf-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--brand-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .app-bar-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .app-bar-title .sep { color: var(--tertiary); font-weight: 400; }
+  .app-bar-title .sub { color: var(--secondary); font-weight: 500; }
+
+  .app-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .lang-toggle {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    background: var(--white);
+  }
+
+  .lang-toggle button {
+    padding: 5px 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tertiary);
+    transition: all .2s;
+  }
+
+  .lang-toggle button.active {
+    background: var(--brand-blue);
+    color: white;
+  }
+
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--white);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--secondary);
+    transition: all .2s;
+  }
+
+  .back-link:hover {
+    border-color: var(--brand-blue);
+    color: var(--brand-blue);
+    background: rgba(0,112,210,.04);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--white);
+    padding: 56px 48px 40px;
+  }
+
+  .hero-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 14px;
+    background: rgba(0,112,210,.08);
+    border: 1px solid rgba(0,112,210,.18);
+    border-radius: var(--radius-pill);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--brand-blue);
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    color: var(--secondary);
+    line-height: 1.65;
+    max-width: 680px;
+  }
+
+  /* ─── DEMO AREA ─── */
+  .demo-area {
+    padding: 40px 48px;
+    background: var(--bg);
+  }
+
+  .demo-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ─── PROFILE CARD ─── */
+  .profile-card {
+    background: var(--white);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 80px;
+    overflow: hidden;
+  }
+
+  .profile-section {
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .profile-section:last-child { border-bottom: none; }
+
+  /* Avatar */
+  .avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0070D2, #00A1E0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .identity-text { flex: 1; min-width: 0; }
+
+  .customer-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .customer-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--tertiary);
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .stat-box {
+    flex: 1;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: all .3s;
+  }
+
+  .stat-box.flash-green {
+    animation: flash-green .8s ease;
+  }
+
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    transition: color .3s;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--tertiary);
+    letter-spacing: 0.3px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--tertiary);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Segments */
+  .segments-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .segment-pill {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .segment-pill.green  { background: rgba(60,184,121,.12);  color: #1f7a50; border: 1px solid rgba(60,184,121,.3); }
+  .segment-pill.violet { background: rgba(139,92,246,.10); color: #6d35e8; border: 1px solid rgba(139,92,246,.28); }
+  .segment-pill.orange { background: rgba(255,139,0,.10);  color: #c66a00; border: 1px solid rgba(255,139,0,.28);
+    animation: pill-pop .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  /* Preferred channel */
+  .channel-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    transition: all .3s;
+  }
+
+  /* NBA box */
+  .nba-box {
+    background: rgba(139,92,246,.08);
+    border-left: 3px solid var(--violet);
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+
+  .nba-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    line-height: 1.5;
+    transition: all .3s;
+  }
+
+  /* Contact points */
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+  }
+
+  .contact-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(0,112,210,.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .contact-text {
+    font-size: 12.5px;
+    color: var(--secondary);
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ─── EVENT STREAM PANEL ─── */
+  .event-panel {
+    background: var(--white);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-panel-header {
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .panel-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .panel-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all .2s;
+  }
+
+  .btn-start {
+    background: var(--green);
+    color: white;
+  }
+  .btn-start:hover { background: #2fa368; }
+
+  .btn-stop {
+    background: rgba(3,45,96,.08);
+    color: var(--secondary);
+    display: none;
+  }
+  .btn-stop:hover { background: rgba(3,45,96,.14); }
+
+  .event-list {
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 12px 0;
+    flex: 1;
+  }
+
+  .event-list::-webkit-scrollbar { width: 4px; }
+  .event-list::-webkit-scrollbar-track { background: transparent; }
+  .event-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .event-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 12px;
+  }
+
+  .event-placeholder-icon { font-size: 36px; opacity: .4; }
+
+  .event-placeholder-text {
+    font-size: 13px;
+    color: var(--tertiary);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .event-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 22px;
+    border-bottom: 1px solid rgba(0,112,210,.06);
+    animation: event-in .3s ease;
+  }
+
+  .event-row:last-child { border-bottom: none; }
+
+  .event-ts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--tertiary);
+    white-space: nowrap;
+    margin-top: 2px;
+    min-width: 52px;
+  }
+
+  .source-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .source-dot.sky    { background: var(--sky); }
+  .source-dot.green  { background: var(--green); }
+  .source-dot.violet { background: var(--violet); }
+  .source-dot.orange { background: var(--orange); }
+  .source-dot.gray   { background: #9BAFC8; }
+
+  .event-content { flex: 1; min-width: 0; }
+
+  .event-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--brand-blue);
+    margin-bottom: 2px;
+  }
+
+  .event-desc {
+    font-size: 12.5px;
+    color: var(--secondary);
+    line-height: 1.45;
+  }
+
+  .profile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 2px 8px;
+    background: rgba(0,112,210,.09);
+    border: 1px solid rgba(0,112,210,.2);
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--brand-blue);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.4px;
+  }
+
+  .complete-msg {
+    padding: 16px 22px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--secondary);
+    background: rgba(0,112,210,.04);
+    border-top: 1px solid var(--border);
+    line-height: 1.55;
+  }
+
+  /* ─── CONCEPT CARDS ─── */
+  .concepts-section {
+    padding: 0 48px 48px;
+    background: var(--bg);
+  }
+
+  .concepts-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .concepts-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .concept-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 16px rgba(3,45,96,.06);
+  }
+
+  .concept-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .concept-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .concept-desc {
+    font-size: 12px;
+    color: var(--secondary);
+    line-height: 1.6;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--navy);
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.8);
+  }
+
+  .footer-note {
+    font-size: 12px;
+    color: rgba(255,255,255,.4);
+  }
+
+  /* ─── TOAST ─── */
+  .toast-container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--brand-blue);
+    border-radius: 10px;
+    padding: 12px 18px;
+    box-shadow: 0 8px 28px rgba(3,45,96,.18);
+    min-width: 260px;
+    max-width: 320px;
+    animation: toast-in .3s ease;
+    pointer-events: auto;
+  }
+
+  .toast.fade-out {
+    animation: toast-out .4s ease forwards;
+  }
+
+  .toast-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-blue);
+    margin-bottom: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .toast-body {
+    font-size: 12px;
+    color: var(--secondary);
+    line-height: 1.45;
+  }
+
+  /* ─── KEYFRAMES ─── */
+  @keyframes flash-green {
+    0%,100% { background: white; }
+    50%      { background: rgba(60,184,121,.15); }
+  }
+
+  @keyframes pill-pop {
+    0%   { transform: scale(0); opacity: 0; }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes event-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes toast-out {
+    to { opacity: 0; transform: translateX(24px); }
+  }
+
+  /* Responsive */
+  @media (max-width: 820px) {
+    .demo-inner {
+      grid-template-columns: 1fr;
+    }
+    .profile-card {
+      position: static;
+    }
+    .concepts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- APP BAR -->
+<header class="app-bar">
+  <div class="app-bar-left">
+    <div class="sf-logo">SF</div>
+    <div class="app-bar-title">
+      <span>Data 360</span>
+      <span class="sep">/</span>
+      <span class="sub" data-ko="통합 개인 프로파일" data-ja="統合個人プロファイル">統合個人プロファイル</span>
+    </div>
+  </div>
+  <div class="app-bar-right">
+    <div class="lang-toggle">
+      <button id="btn-ko" onclick="switchLang('ko')">KO</button>
+      <button id="btn-ja" onclick="switchLang('ja')" class="active">JA</button>
+    </div>
+    <a href="index.html" class="back-link">
+      <span>←</span>
+      <span data-ko="데모 목록" data-ja="デモ一覧">デモ一覧</span>
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow-pill">SALESFORCE DATA 360 · Demo 05</div>
+    <h1 class="hero-title">
+      <span data-ko="실시간 통합 개인 프로파일" data-ja="リアルタイム統合個人プロファイル">リアルタイム統合個人プロファイル</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span data-ko="이벤트가 수신될 때마다 세그먼트·속성·Einstein NBA가 즉시 업데이트되는 Data 360의 핵심 개념을 체험합니다." data-ja="イベントが流入するたびにセグメント・属性・Einstein NBA がリアルタイムで更新される Data 360 のコア概念を体験します。">イベントが流入するたびにセグメント・属性・Einstein NBA がリアルタイムで更新される Data 360 のコア概念を体験します。</span>
+    </p>
+  </div>
+</section>
+
+<!-- MAIN DEMO -->
+<div class="demo-area">
+  <div class="demo-inner">
+
+    <!-- LEFT: PROFILE CARD -->
+    <div class="profile-card">
+
+      <!-- Avatar + Identity -->
+      <div class="profile-section">
+        <div class="avatar-row">
+          <div class="avatar" id="avatar-initials">鈴</div>
+          <div class="identity-text">
+            <div class="customer-name" id="customer-name">
+              <span data-ko="박지수 (Ji-soo Park)" data-ja="鈴木雄太 (Yuta Suzuki)">鈴木雄太 (Yuta Suzuki)</span>
+            </div>
+            <div class="customer-id" id="customer-id">
+              <span data-ko="UI-293847" data-ja="UI-183622">UI-183622</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-section">
+        <div class="stats-row">
+          <div class="stat-box" id="stat-ltv">
+            <div class="stat-value" id="ltv-value">
+              <span data-ko="₩485,000" data-ja="¥68,500">¥68,500</span>
+            </div>
+            <div class="stat-label">LTV</div>
+          </div>
+          <div class="stat-box" id="stat-events">
+            <div class="stat-value" id="event-count">247</div>
+            <div class="stat-label">
+              <span data-ko="총 이벤트" data-ja="総イベント">総イベント</span>
+            </div>
+          </div>
+          <div class="stat-box" id="stat-last">
+            <div class="stat-value" id="last-activity">
+              <span data-ko="3분 전" data-ja="3分前">3分前</span>
+            </div>
+            <div class="stat-label">
+              <span data-ko="최근 활동" data-ja="最終活動">最終活動</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Segments -->
+      <div class="profile-section">
+        <div class="section-label">
+          <span data-ko="활성 세그먼트" data-ja="アクティブセグメント">アクティブセグメント</span>
+        </div>
+        <div class="segments-pills" id="segments-container">
+          <span class="segment-pill green" data-ko="로열티 회원" data-ja="ロイヤル会員">ロイヤル会員</span>
+          <span class="segment-pill violet" data-ko="패션 관심" data-ja="ファッション関心">ファッション関心</span>
+        </div>
+      </div>
+
+      <!-- Preferred Channel -->
+      <div class="profile-section">
+        <div class="section-label">
+          <span data-ko="선호 채널" data-ja="優先チャネル">優先チャネル</span>
+        </div>
+        <div class="channel-value" id="preferred-channel">
+          <span data-ko="이메일 📧" data-ja="メール 📧">メール 📧</span>
+        </div>
+      </div>
+
+      <!-- Next Best Action -->
+      <div class="profile-section">
+        <div class="section-label">Next Best Action</div>
+        <div class="nba-box">
+          <div class="nba-text" id="nba-text">
+            <span data-ko="프리미엄 멤버십 업그레이드 추천" data-ja="プレミアム会員へのアップグレードを提案">プレミアム会員へのアップグレードを提案</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Points -->
+      <div class="profile-section">
+        <div class="section-label">
+          <span data-ko="연락처" data-ja="連絡先">連絡先</span>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">📧</div>
+          <div class="contact-text" id="contact-email">
+            <span data-ko="jisoo.park@example.com" data-ja="yuta.suzuki@example.co.jp">yuta.suzuki@example.co.jp</span>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">📱</div>
+          <div class="contact-text" id="contact-phone">
+            <span data-ko="010-1234-5678" data-ja="090-8765-4321">090-8765-4321</span>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">📍</div>
+          <div class="contact-text" id="contact-loc">
+            <span data-ko="서울 강남구" data-ja="東京都渋谷区">東京都渋谷区</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: EVENT STREAM PANEL -->
+    <div class="event-panel">
+      <div class="event-panel-header">
+        <div class="panel-title">
+          <span data-ko="이벤트 스트림" data-ja="イベントストリーム">イベントストリーム</span>
+        </div>
+        <div class="panel-controls">
+          <button class="btn btn-start" id="btn-start" onclick="startStreaming()">
+            ▶ <span data-ko="스트리밍 시작" data-ja="ストリーミング開始">ストリーミング開始</span>
+          </button>
+          <button class="btn btn-stop" id="btn-stop" onclick="stopStreaming()">
+            ⏹ <span data-ko="정지" data-ja="停止">停止</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="event-list" id="event-list">
+        <div class="event-placeholder" id="event-placeholder">
+          <div class="event-placeholder-icon">📡</div>
+          <div class="event-placeholder-text">
+            <span data-ko="스트리밍 시작 버튼을 눌러<br>이벤트 시뮬레이션을 시작합니다." data-ja="ストリーミング開始ボタンを押して<br>イベントシミュレーションを開始します。">ストリーミング開始ボタンを押して<br>イベントシミュレーションを開始します。</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="complete-msg" id="complete-msg" style="display:none;">
+        <span data-ko="8개 이벤트 완료. 다시 시작하려면 스트리밍 시작을 누르세요." data-ja="8件のイベント完了。再開するにはストリーミング開始を押してください。">8件のイベント完了。再開するにはストリーミング開始を押してください。</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONCEPT CARDS -->
+<section class="concepts-section">
+  <div class="concepts-inner">
+    <div class="concepts-title">
+      <span data-ko="핵심 개념" data-ja="コアコンセプト">コアコンセプト</span>
+    </div>
+    <div class="concepts-grid">
+      <div class="concept-card">
+        <div class="concept-icon">👤</div>
+        <div class="concept-title">
+          <span data-ko="통합 개인" data-ja="統合個人">統合個人</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko="여러 소스 시스템의 데이터를 하나로 통합한 단일 고객 레코드. 모든 활동과 속성이 이 레코드에 집약됩니다." data-ja="複数ソースのデータを統合した単一顧客レコード。全活動と属性がこのレコードに集約されます。">複数ソースのデータを統合した単一顧客レコード。全活動と属性がこのレコードに集約されます。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔄</div>
+        <div class="concept-title">
+          <span data-ko="데이터 스트림" data-ja="データストリーム">データストリーム</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko="외부 시스템에서 Data 360으로 실시간 데이터를 전송하는 연결 채널. Web, App, CRM 등을 연결합니다." data-ja="外部システムから Data 360 へリアルタイムでデータを送るチャネル。Web・App・CRM などを接続します。">外部システムから Data 360 へリアルタイムでデータを送るチャネル。Web・App・CRM などを接続します。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🏷️</div>
+        <div class="concept-title">
+          <span data-ko="세그먼트 멤버십" data-ja="セグメントメンバーシップ">セグメントメンバーシップ</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko="고객이 특정 세그먼트 조건을 충족할 때 자동으로 멤버십이 추가·제거됩니다. 이벤트에 의해 실시간으로 재평가됩니다." data-ja="特定セグメント条件を満たすと自動でメンバーシップが追加・削除されます。イベントに応じてリアルタイムで再評価されます。">特定セグメント条件を満たすと自動でメンバーシップが追加・削除されます。イベントに応じてリアルタイムで再評価されます。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🤖</div>
+        <div class="concept-title">
+          <span data-ko="아인슈타인 NBA" data-ja="Einstein NBA">Einstein NBA</span>
+        </div>
+        <div class="concept-desc">
+          <span data-ko="고객의 최신 행동 패턴을 분석하여 가장 적절한 다음 행동을 실시간으로 추천하는 AI 기능입니다." data-ja="顧客の最新行動パターンを分析し、最適な次のアクションをリアルタイムで推奨する AI 機能です。">顧客の最新行動パターンを分析し、最適な次のアクションをリアルタイムで推奨する AI 機能です。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Salesforce Data 360 · Unified Individual Profile Demo</div>
+  <div class="footer-note">All data is fictional.</div>
+</footer>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const initialState = {
+  ko: { ltv: 485000, ltvStr: '₩485,000', currency: '₩', ltvBase: 485000, vipThreshold: 600000 },
+  ja: { ltv: 68500,  ltvStr: '¥68,500',  currency: '¥', ltvBase: 68500,  vipThreshold: 85000  }
+};
+
+let currentLang   = new URLSearchParams(location.search).get('lang') || 'ja';
+let streaming     = false;
+let streamTimer   = null;
+let eventIndex    = 0;
+let eventCount    = 247;
+let pageViewCount = 0;
+let channelUpdated = false;
+let nbaUpdated     = false;
+let vipAdded       = false;
+let currentLTV     = { ko: 485000, ja: 68500 };
+
+// ─── EVENT SEQUENCE ──────────────────────────────────────────────────────────
+const events = [
+  {
+    type: 'page_view',
+    source: 'sky',
+    ko: { desc: '상품 페이지 조회: 나이키 에어맥스' },
+    ja: { desc: '商品ページ閲覧: ナイキ エアマックス' },
+    triggers: ['pageView']
+  },
+  {
+    type: 'page_view',
+    source: 'sky',
+    ko: { desc: '상품 페이지 조회: 아디다스 클라우드폼' },
+    ja: { desc: '商品ページ閲覧: アディダス クラウドフォーム' },
+    triggers: ['pageView']
+  },
+  {
+    type: 'app_open',
+    source: 'green',
+    ko: { desc: '모바일 앱 오픈' },
+    ja: { desc: 'モバイルアプリ起動' },
+    triggers: ['channelUpdate']
+  },
+  {
+    type: 'page_view',
+    source: 'sky',
+    ko: { desc: '상품 페이지 조회: 뉴발란스 574' },
+    ja: { desc: '商品ページ閲覧: ニューバランス 574' },
+    triggers: ['pageView', 'nbaUpdate']
+  },
+  {
+    type: 'purchase',
+    source: 'orange',
+    ko: { desc: '구매 완료: ₩42,000 (나이키 에어맥스)', amount: 42000 },
+    ja: { desc: '購入完了: ¥5,800 (ナイキ エアマックス)', amount: 5800 },
+    triggers: ['ltvUpdate']
+  },
+  {
+    type: 'email_open',
+    source: 'violet',
+    ko: { desc: '이메일 오픈: 신규 컬렉션 안내' },
+    ja: { desc: 'メール開封: 新コレクションのご案内' },
+    triggers: []
+  },
+  {
+    type: 'purchase',
+    source: 'orange',
+    ko: { desc: '구매 완료: ₩78,000 (조거 팬츠)', amount: 78000 },
+    ja: { desc: '購入完了: ¥10,800 (ジョガーパンツ)', amount: 10800 },
+    triggers: ['ltvUpdate', 'vipCheck']
+  },
+  {
+    type: 'store_visit',
+    source: 'gray',
+    ko: { desc: '오프라인 매장 방문: 강남점' },
+    ja: { desc: 'オフライン来店: 渋谷店' },
+    triggers: []
+  }
+];
+
+// ─── LANGUAGE ────────────────────────────────────────────────────────────────
+function switchLang(l) {
+  currentLang = l;
+  document.documentElement.lang = l;
+
+  document.querySelectorAll('[data-ko],[data-ja]').forEach(el => {
+    const val = el.getAttribute('data-' + l);
+    if (val !== null) {
+      el.innerHTML = val;
+    }
+    // visibility: show element if it has this lang's attr
+    if (el.hasAttribute('data-ko') || el.hasAttribute('data-ja')) {
+      el.style.display = '';
+    }
+  });
+
+  // Toggle buttons
+  document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+  document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+
+  // Update avatar initials
+  document.getElementById('avatar-initials').textContent = l === 'ko' ? '박' : '鈴';
+}
+
+// ─── STREAMING ───────────────────────────────────────────────────────────────
+function startStreaming() {
+  if (streaming) return;
+
+  // Reset state first
+  resetProfile();
+  document.getElementById('event-placeholder').style.display = 'none';
+  document.getElementById('complete-msg').style.display = 'none';
+  clearEventList();
+
+  streaming = true;
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-stop').style.display = '';
+
+  eventIndex = 0;
+  streamTimer = setInterval(fireNextEvent, 2500);
+  fireNextEvent(); // fire immediately
+}
+
+function stopStreaming() {
+  streaming = false;
+  clearInterval(streamTimer);
+  streamTimer = null;
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-stop').style.display = 'none';
+}
+
+function clearEventList() {
+  const list = document.getElementById('event-list');
+  // Keep placeholder and remove other rows
+  const rows = list.querySelectorAll('.event-row');
+  rows.forEach(r => r.remove());
+}
+
+function fireNextEvent() {
+  if (eventIndex >= events.length) {
+    clearInterval(streamTimer);
+    streamTimer = null;
+    streaming = false;
+    document.getElementById('btn-start').style.display = '';
+    document.getElementById('btn-stop').style.display = 'none';
+    document.getElementById('complete-msg').style.display = 'block';
+    return;
+  }
+
+  const evt = events[eventIndex];
+  const l   = currentLang;
+  const data = evt[l];
+  const profileChanges = [];
+
+  // — Apply triggers —
+  if (evt.triggers.includes('pageView')) {
+    pageViewCount++;
+  }
+  if (evt.triggers.includes('channelUpdate') && !channelUpdated) {
+    channelUpdated = true;
+    updateChannel();
+    profileChanges.push(
+      l === 'ko' ? '선호 채널 → 모바일 앱 📱' : '優先チャネル → モバイルアプリ 📱'
+    );
+  }
+  if (evt.triggers.includes('nbaUpdate') && pageViewCount >= 3 && !nbaUpdated) {
+    nbaUpdated = true;
+    updateNBA();
+    profileChanges.push(
+      l === 'ko' ? 'NBA → VIP 초대 이벤트 안내 발송' : 'NBA → VIP招待イベントのご案内を配信'
+    );
+  }
+  if (evt.triggers.includes('ltvUpdate')) {
+    const amount = data.amount;
+    currentLTV[l] += amount;
+    updateLTV(amount);
+    profileChanges.push(
+      l === 'ko'
+        ? `LTV +₩${amount.toLocaleString()} → ₩${currentLTV[l].toLocaleString()}`
+        : `LTV +¥${amount.toLocaleString()} → ¥${currentLTV[l].toLocaleString()}`
+    );
+  }
+  if (evt.triggers.includes('vipCheck') && !vipAdded) {
+    const state = initialState[l];
+    if (currentLTV[l] >= state.vipThreshold) {
+      vipAdded = true;
+      addVIPSegment();
+      profileChanges.push(
+        l === 'ko' ? '세그먼트 추가: VIP 고객 🎉' : 'セグメント追加: VIPカスタマー 🎉'
+      );
+    }
+  }
+
+  // — Update event count + last activity —
+  eventCount++;
+  document.getElementById('event-count').textContent = eventCount;
+
+  const lastEl = document.getElementById('last-activity');
+  lastEl.innerHTML = l === 'ko' ? '방금 전' : 'たった今';
+
+  // — Render event row —
+  prependEventRow(evt, data.desc, profileChanges);
+
+  // — Toasts —
+  profileChanges.forEach(msg => showToast(msg));
+
+  eventIndex++;
+
+  // Stop interval after last event
+  if (eventIndex >= events.length) {
+    clearInterval(streamTimer);
+    streamTimer = null;
+    streaming = false;
+    setTimeout(() => {
+      document.getElementById('btn-start').style.display = '';
+      document.getElementById('btn-stop').style.display = 'none';
+      document.getElementById('complete-msg').style.display = 'block';
+    }, 600);
+  }
+}
+
+function prependEventRow(evt, desc, profileChanges) {
+  const l = currentLang;
+  const list = document.getElementById('event-list');
+
+  const row = document.createElement('div');
+  row.className = 'event-row';
+
+  const ts = l === 'ko' ? '방금 전' : 'たった今';
+
+  let badgeHTML = '';
+  if (profileChanges.length > 0) {
+    badgeHTML = `<div class="profile-badge">● PROFILE UPDATED</div>`;
+  }
+
+  row.innerHTML = `
+    <div class="event-ts">${ts}</div>
+    <div class="source-dot ${evt.source}"></div>
+    <div class="event-content">
+      <div class="event-type">${evt.type}</div>
+      <div class="event-desc">${desc}</div>
+      ${badgeHTML}
+    </div>
+  `;
+
+  // Insert after placeholder (at top)
+  const placeholder = document.getElementById('event-placeholder');
+  list.insertBefore(row, placeholder.nextSibling);
+
+  // Scroll to top
+  list.scrollTop = 0;
+}
+
+// ─── PROFILE UPDATES ─────────────────────────────────────────────────────────
+function updateLTV(amount) {
+  const l = currentLang;
+  const ltvEl = document.getElementById('ltv-value');
+  const formatted = l === 'ko'
+    ? `₩${currentLTV[l].toLocaleString()}`
+    : `¥${currentLTV[l].toLocaleString()}`;
+  ltvEl.innerHTML = formatted;
+
+  const box = document.getElementById('stat-ltv');
+  box.classList.remove('flash-green');
+  void box.offsetWidth; // reflow
+  box.classList.add('flash-green');
+  setTimeout(() => box.classList.remove('flash-green'), 900);
+}
+
+function updateChannel() {
+  const l = currentLang;
+  const el = document.getElementById('preferred-channel');
+  el.innerHTML = l === 'ko' ? '모바일 앱 📱' : 'モバイルアプリ 📱';
+}
+
+function updateNBA() {
+  const l = currentLang;
+  const el = document.getElementById('nba-text');
+  el.innerHTML = l === 'ko'
+    ? 'VIP 초대 이벤트 안내 발송'
+    : 'VIP招待イベントのご案内を配信';
+}
+
+function addVIPSegment() {
+  const l = currentLang;
+  const container = document.getElementById('segments-container');
+
+  // Check if already exists
+  if (container.querySelector('.vip-pill')) return;
+
+  const pill = document.createElement('span');
+  pill.className = 'segment-pill orange vip-pill';
+  pill.textContent = l === 'ko' ? 'VIP 고객' : 'VIPカスタマー';
+  container.appendChild(pill);
+}
+
+function resetProfile() {
+  const l = currentLang;
+
+  // LTV
+  currentLTV.ko = 485000;
+  currentLTV.ja = 68500;
+  const ltvEl = document.getElementById('ltv-value');
+  ltvEl.innerHTML = l === 'ko' ? '₩485,000' : '¥68,500';
+
+  // Event count
+  eventCount = 247;
+  document.getElementById('event-count').textContent = 247;
+
+  // Last activity
+  const lastEl = document.getElementById('last-activity');
+  lastEl.innerHTML = l === 'ko' ? '3분 전' : '3分前';
+
+  // Segments
+  const container = document.getElementById('segments-container');
+  const vipPill = container.querySelector('.vip-pill');
+  if (vipPill) vipPill.remove();
+
+  // Channel
+  const channelEl = document.getElementById('preferred-channel');
+  channelEl.innerHTML = l === 'ko' ? '이메일 📧' : 'メール 📧';
+
+  // NBA
+  const nbaEl = document.getElementById('nba-text');
+  nbaEl.innerHTML = l === 'ko'
+    ? '프리미엄 멤버십 업그레이드 추천'
+    : 'プレミアム会員へのアップグレードを提案';
+
+  // Reset flags
+  pageViewCount  = 0;
+  channelUpdated = false;
+  nbaUpdated     = false;
+  vipAdded       = false;
+  eventIndex     = 0;
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const l = currentLang;
+  const container = document.getElementById('toast-container');
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+
+  const title = l === 'ko' ? '프로파일 업데이트됨 ✓' : 'プロファイル更新 ✓';
+  toast.innerHTML = `
+    <div class="toast-title">${title}</div>
+    <div class="toast-body">${msg}</div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 400);
+  }, 2500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+switchLang(currentLang);
+</script>
+</body>
+</html>

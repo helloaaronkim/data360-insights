@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DMO Explorer · Salesforce Data 360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #F0F6FF;
+      --card: #FFFFFF;
+      --navy: #032D60;
+      --secondary: #546D8F;
+      --tertiary: #9BAFC8;
+      --brand-blue: #0070D2;
+      --sky: #00A1E0;
+      --violet: #8B5CF6;
+      --green: #3CB879;
+      --orange: #FF8B00;
+      --yellow: #FFD000;
+      --border: rgba(0,112,210,.14);
+      --shadow: 0 8px 32px rgba(3,45,96,.11);
+      --radius: 14px;
+      --radius-pill: 100px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ── APP BAR ─────────────────────────────────────────── */
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+    }
+
+    .appbar-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--brand-blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .appbar-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--navy);
+    }
+
+    .appbar-sep {
+      color: var(--tertiary);
+      margin: 0 2px;
+    }
+
+    .appbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      padding: 4px 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--secondary);
+      transition: background .15s, color .15s;
+    }
+
+    .lang-btn.active {
+      background: var(--brand-blue);
+      color: #fff;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--secondary);
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+
+    .back-link:hover {
+      background: var(--bg);
+      color: var(--navy);
+    }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 40px;
+    }
+
+    .hero-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      color: var(--tertiary);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--secondary);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ── DEMO SECTION ────────────────────────────────────── */
+    .demo-section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 48px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── CARD BASE ───────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    /* ── LEFT COLUMN: SVG DIAGRAM ────────────────────────── */
+    .diagram-card {
+      padding: 24px;
+    }
+
+    .diagram-instruction {
+      font-size: 12px;
+      color: var(--tertiary);
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    .svg-wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .svg-wrap svg {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+
+    /* ── LEGEND ──────────────────────────────────────────── */
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .legend-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .legend-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.55);
+      flex-shrink: 0;
+    }
+
+    .legend-pill-label {
+      font-weight: 600;
+      margin-right: 2px;
+    }
+
+    /* ── QUICK STATS ─────────────────────────────────────── */
+    .quick-stats {
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: var(--secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── RIGHT COLUMN: DETAIL PANEL ──────────────────────── */
+    .detail-card {
+      padding: 24px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--tertiary);
+      text-align: center;
+    }
+
+    .detail-empty-emoji {
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    .detail-empty-text {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .detail-content {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .detail-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .detail-en-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+      margin-top: 2px;
+    }
+
+    .detail-translated-name {
+      font-size: 13px;
+      color: var(--brand-blue);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .detail-desc {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--secondary);
+      margin-bottom: 20px;
+    }
+
+    .detail-section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 10px;
+    }
+
+    .fields-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .fields-table th {
+      background: var(--bg);
+      color: var(--secondary);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fields-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(0,112,210,.07);
+      vertical-align: top;
+    }
+
+    .fields-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .field-api {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--brand-blue);
+      background: rgba(0,112,210,.07);
+      padding: 2px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .field-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--violet);
+      white-space: nowrap;
+    }
+
+    .field-desc {
+      color: var(--secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── CONCEPT CARDS ───────────────────────────────────── */
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 32px;
+    }
+
+    .concept-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+    }
+
+    .concept-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .concept-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .concept-body {
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--secondary);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      margin-top: 48px;
+    }
+
+    footer strong {
+      color: rgba(255,255,255,.85);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .demo-section { padding: 24px 16px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .concepts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── APP BAR ──────────────────────────────────────────── -->
+<header class="appbar">
+  <div class="appbar-logo">SF</div>
+  <span class="appbar-title">Data 360</span>
+  <span class="appbar-sep">/</span>
+  <span class="appbar-title">DMO Explorer</span>
+  <div class="appbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btn-ko" onclick="switchLang('ko')">KO</button>
+      <button class="lang-btn" id="btn-ja" onclick="switchLang('ja')">JA</button>
+    </div>
+    <a class="back-link" href="index.html">
+      <span data-ko>← 데모 목록</span>
+      <span data-ja>← デモ一覧</span>
+    </a>
+  </div>
+</header>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">SALESFORCE DATA 360 · Demo 07</p>
+    <h1 class="hero-title">
+      <span data-ko>데이터 모델 오브젝트 (DMO) 탐색기</span>
+      <span data-ja>データモデルオブジェクト (DMO) エクスプローラー</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span data-ko>Data 360 핵심 데이터 모델 구조를 인터랙티브하게 탐색합니다. 오브젝트를 클릭하면 필드 목록과 상세 설명이 표시됩니다.</span>
+      <span data-ja>Data 360 のコアデータモデル構造をインタラクティブに探索します。オブジェクトをクリックするとフィールド一覧と詳細が表示されます。</span>
+    </p>
+  </div>
+</section>
+
+<!-- ── DEMO SECTION ──────────────────────────────────────── -->
+<main class="demo-section">
+  <div class="demo-grid">
+
+    <!-- LEFT: SVG Diagram -->
+    <div>
+      <div class="card diagram-card">
+        <p class="diagram-instruction">
+          <span data-ko>← 오브젝트를 클릭하세요</span>
+          <span data-ja>← オブジェクトをクリックしてください</span>
+        </p>
+        <div class="svg-wrap">
+          <svg id="dmo-svg" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- Connection lines from Unified Individual center (210+80=290, 220+26=246) -->
+            <!-- To Individual center (30+70=100, 30+23=53) -->
+            <line x1="290" y1="246" x2="100" y2="53" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Party center (360+70=430, 30+23=53) -->
+            <line x1="290" y1="246" x2="430" y2="53" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Party Identification center (30+70=100, 180+23=203) -->
+            <line x1="290" y1="246" x2="100" y2="203" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Contact Point Email center (30+70=100, 330+23=353) -->
+            <line x1="290" y1="246" x2="100" y2="353" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Contact Point Phone center (160+70=230, 400+23=423) -->
+            <line x1="290" y1="246" x2="230" y2="423" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Contact Point Address center (310+70=380, 400+23=423) -->
+            <line x1="290" y1="246" x2="380" y2="423" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Sales Order center (360+70=430, 180+23=203) -->
+            <line x1="290" y1="246" x2="430" y2="203" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- To Engagement Interaction center (370+70=440, 310+23=333) -->
+            <line x1="290" y1="246" x2="440" y2="333" stroke="rgba(0,112,210,.22)" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+            <!-- CENTER NODE: Unified Individual -->
+            <g id="node-unified-individual" class="dmo-node" onclick="selectNode('unified-individual')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-unified-individual" x="210" y="220" width="160" height="52" rx="10"
+                    fill="#0070D2" stroke="#0070D2" stroke-width="1.5"/>
+              <text x="290" y="240" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="8.5" fill="rgba(255,255,255,.8)">Unified Individual</text>
+              <text id="label-unified-individual" x="290" y="256" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10.5" fill="#ffffff" font-weight="600">統合個人</text>
+            </g>
+
+            <!-- NODE 1: Individual -->
+            <g id="node-individual" class="dmo-node" onclick="selectNode('individual')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-individual" x="30" y="30" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#0070D2" stroke-width="1.5"/>
+              <text x="100" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Individual</text>
+              <text id="label-individual" x="100" y="62" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">個人</text>
+            </g>
+
+            <!-- NODE 2: Party -->
+            <g id="node-party" class="dmo-node" onclick="selectNode('party')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-party" x="360" y="30" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#0070D2" stroke-width="1.5"/>
+              <text x="430" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Party</text>
+              <text id="label-party" x="430" y="62" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">パーティ</text>
+            </g>
+
+            <!-- NODE 3: Party Identification -->
+            <g id="node-party-identification" class="dmo-node" onclick="selectNode('party-identification')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-party-identification" x="30" y="180" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#8B5CF6" stroke-width="1.5"/>
+              <text x="100" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Party Identification</text>
+              <text id="label-party-identification" x="100" y="212" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">パーティ識別</text>
+            </g>
+
+            <!-- NODE 4: Contact Point Email -->
+            <g id="node-cp-email" class="dmo-node" onclick="selectNode('cp-email')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-cp-email" x="30" y="330" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#3CB879" stroke-width="1.5"/>
+              <text x="100" y="348" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Contact Point Email</text>
+              <text id="label-cp-email" x="100" y="362" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">コンタクトポイントメール</text>
+            </g>
+
+            <!-- NODE 5: Contact Point Phone -->
+            <g id="node-cp-phone" class="dmo-node" onclick="selectNode('cp-phone')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-cp-phone" x="160" y="400" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#3CB879" stroke-width="1.5"/>
+              <text x="230" y="418" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Contact Point Phone</text>
+              <text id="label-cp-phone" x="230" y="432" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">コンタクトポイント電話</text>
+            </g>
+
+            <!-- NODE 6: Contact Point Address -->
+            <g id="node-cp-address" class="dmo-node" onclick="selectNode('cp-address')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-cp-address" x="310" y="400" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#3CB879" stroke-width="1.5"/>
+              <text x="380" y="418" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Contact Point Address</text>
+              <text id="label-cp-address" x="380" y="432" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">コンタクトポイント住所</text>
+            </g>
+
+            <!-- NODE 7: Sales Order -->
+            <g id="node-sales-order" class="dmo-node" onclick="selectNode('sales-order')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-sales-order" x="360" y="180" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#FF8B00" stroke-width="1.5"/>
+              <text x="430" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Sales Order</text>
+              <text id="label-sales-order" x="430" y="212" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">受注</text>
+            </g>
+
+            <!-- NODE 8: Engagement Interaction -->
+            <g id="node-engagement-interaction" class="dmo-node" onclick="selectNode('engagement-interaction')"
+               onmouseenter="nodeHover(this, true)" onmouseleave="nodeHover(this, false)">
+              <rect id="rect-engagement-interaction" x="370" y="310" width="140" height="46" rx="10"
+                    fill="#F0F6FF" stroke="#FF8B00" stroke-width="1.5"/>
+              <text x="440" y="328" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    font-size="9.5" fill="#546D8F">Engagement Interaction</text>
+              <text id="label-engagement-interaction" x="440" y="342" text-anchor="middle"
+                    font-family="'Inter',sans-serif" font-size="10" fill="#032D60" font-weight="500">エンゲージメント</text>
+            </g>
+
+          </svg>
+        </div>
+
+        <!-- Legend Row -->
+        <div class="legend-row">
+          <div class="legend-pill" style="background:#0070D2;">
+            <div class="legend-pill-dot"></div>
+            <span class="legend-pill-label">Standard</span>
+            <span data-ko style="font-size:10.5px; opacity:.85;">표준 DMO · Data 360 기본 제공</span>
+            <span data-ja style="font-size:10.5px; opacity:.85;">標準 DMO · Data 360 標準提供</span>
+          </div>
+          <div class="legend-pill" style="background:#8B5CF6;">
+            <div class="legend-pill-dot"></div>
+            <span class="legend-pill-label">Identity</span>
+            <span data-ko style="font-size:10.5px; opacity:.85;">ID 해석 관련 DMO</span>
+            <span data-ja style="font-size:10.5px; opacity:.85;">ID 解決関連 DMO</span>
+          </div>
+          <div class="legend-pill" style="background:#3CB879;">
+            <div class="legend-pill-dot"></div>
+            <span class="legend-pill-label">Contact</span>
+            <span data-ko style="font-size:10.5px; opacity:.85;">연락처 DMO</span>
+            <span data-ja style="font-size:10.5px; opacity:.85;">連絡先 DMO</span>
+          </div>
+          <div class="legend-pill" style="background:#FF8B00;">
+            <div class="legend-pill-dot"></div>
+            <span class="legend-pill-label">Commerce / Engagement</span>
+            <span data-ko style="font-size:10.5px; opacity:.85;">거래·인게이지먼트 DMO</span>
+            <span data-ja style="font-size:10.5px; opacity:.85;">取引・エンゲージメント DMO</span>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+          <span data-ko>표준 DMO 9개 · 표시 필드 37개 · Salesforce Data 360 v51+ 기준 · 클릭하여 탐색</span>
+          <span data-ja>標準 DMO 9件 · 表示フィールド 37件 · Salesforce Data 360 v51+ 基準 · クリックして探索</span>
+        </div>
+      </div>
+    </div><!-- /LEFT -->
+
+    <!-- RIGHT: Detail Panel -->
+    <div>
+      <div class="card detail-card" id="detail-panel">
+
+        <!-- Default empty state -->
+        <div class="detail-empty" id="detail-empty">
+          <div class="detail-empty-emoji">🔍</div>
+          <div class="detail-empty-text">
+            <span data-ko>오브젝트를 선택하면<br>상세 정보가 표시됩니다</span>
+            <span data-ja>オブジェクトを選択すると<br>詳細が表示されます</span>
+          </div>
+        </div>
+
+        <!-- Detail content (populated by JS) -->
+        <div class="detail-content" id="detail-content"></div>
+
+      </div>
+    </div><!-- /RIGHT -->
+
+  </div><!-- /demo-grid -->
+
+  <!-- Concept Cards -->
+  <div class="concepts-grid">
+
+    <div class="concept-card">
+      <div class="concept-icon">📦</div>
+      <div class="concept-title">
+        <span data-ko>DMO란 무엇인가?</span>
+        <span data-ja>DMO とは？</span>
+      </div>
+      <p class="concept-body">
+        <span data-ko>Data Model Object의 약자로, Data 360의 데이터를 저장하는 표준화된 오브젝트입니다. Salesforce가 정의한 스키마를 따르며 소스 데이터가 DMO에 매핑됩니다.</span>
+        <span data-ja>Data Model Object の略で、Data 360 のデータを格納する標準化オブジェクトです。Salesforce が定義したスキーマに従い、ソースデータが DMO にマッピングされます。</span>
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <div class="concept-icon">🎯</div>
+      <div class="concept-title">
+        <span data-ko>Unified Individual이 중심인 이유</span>
+        <span data-ja>Unified Individual が中心の理由</span>
+      </div>
+      <p class="concept-body">
+        <span data-ko>모든 DMO는 결국 Unified Individual을 중심으로 연결됩니다. 고객의 구매·인터랙션·연락처 데이터가 모두 Unified Individual ID를 통해 통합됩니다.</span>
+        <span data-ja>すべての DMO は最終的に Unified Individual を中心に結びつきます。購買・インタラクション・連絡先データがすべて Unified Individual ID を通じて統合されます。</span>
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <div class="concept-icon">🔧</div>
+      <div class="concept-title">
+        <span data-ko>커스텀 DMO</span>
+        <span data-ja>カスタム DMO</span>
+      </div>
+      <p class="concept-body">
+        <span data-ko>표준 DMO 외에도 비즈니스 요구에 맞는 커스텀 DMO를 생성할 수 있습니다. 커스텀 DMO도 Unified Individual과 관계를 맺어 Calculated Insights에서 활용됩니다.</span>
+        <span data-ja>標準 DMO のほか、ビジネス要件に合わせたカスタム DMO を作成できます。カスタム DMO も Unified Individual とリレーションを持ち、Calculated Insights で活用できます。</span>
+      </p>
+    </div>
+
+  </div><!-- /concepts-grid -->
+
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <strong>Salesforce Data 360 · DMO Explorer</strong><br/>
+  <span>All data is fictional.</span>
+</footer>
+
+<!-- ── SCRIPT ─────────────────────────────────────────────── -->
+<script>
+  /* ── DMO Data ─────────────────────────────────────────── */
+  const DMO_DATA = {
+    'unified-individual': {
+      en: 'Unified Individual',
+      ko: '통합 개인',
+      ja: '統合個人',
+      category: 'Standard · Identity',
+      categoryColor: '#0070D2',
+      ko_desc: '여러 소스 시스템의 개인 레코드를 하나로 통합한 Data 360의 핵심 오브젝트입니다. ID 해석 프로세스를 통해 자동으로 생성·업데이트됩니다.',
+      ja_desc: '複数のソースシステムの個人レコードを1つに統합した Data 360 のコアオブジェクトです。ID 解決プロセスにより自動生成・更新されます。',
+      fields: [
+        { api: 'UnifiedRecordId',    type: 'ID',       ko: '통합 개인 고유 식별자',  ja: '統合個人の一意識別子' },
+        { api: 'FirstName',          type: 'Text',     ko: '이름',                   ja: '名' },
+        { api: 'LastName',           type: 'Text',     ko: '성',                     ja: '姓' },
+        { api: 'BirthDate',          type: 'Date',     ko: '생년월일',               ja: '生年月日' },
+        { api: 'IndividualAgeGroup', type: 'Picklist', ko: '연령대',                 ja: '年齢層' }
+      ]
+    },
+    'individual': {
+      en: 'Individual',
+      ko: '개인',
+      ja: '個人',
+      category: 'Standard',
+      categoryColor: '#546D8F',
+      ko_desc: '소스 시스템에서 수집된 개인 레코드입니다. 각 소스 시스템마다 별도의 Individual 레코드가 존재할 수 있으며, ID 해석을 통해 Unified Individual에 연결됩니다.',
+      ja_desc: 'ソースシステムから取り込んだ個人レコードです。ソースシステムごとに Individual レコードが存在し、ID 解決を通じて Unified Individual に紐付けられます。',
+      fields: [
+        { api: 'IndividualId',       type: 'ID',     ko: '개인 고유 식별자',      ja: '個人の一意識別子' },
+        { api: 'DataSourceObjectId', type: 'Lookup', ko: '소스 오브젝트 참조',     ja: 'ソースオブジェクト参照' },
+        { api: 'FirstName',          type: 'Text',   ko: '이름',                  ja: '名' },
+        { api: 'LastName',           type: 'Text',   ko: '성',                    ja: '姓' }
+      ]
+    },
+    'party': {
+      en: 'Party',
+      ko: '파티',
+      ja: 'パーティ',
+      category: 'Standard',
+      categoryColor: '#546D8F',
+      ko_desc: '사람 또는 조직을 나타내는 최상위 레코드입니다. Individual은 Party의 한 유형이며, Party는 Data Cloud의 개인 데이터 모델 기반입니다.',
+      ja_desc: '人物または組織を表す最上位レコードです。Individual は Party の一種であり、Party は Data Cloud の個人データモデルの基盤です。',
+      fields: [
+        { api: 'PartyId',   type: 'ID',       ko: '파티 고유 식별자',          ja: 'パーティ識別子' },
+        { api: 'PartyType', type: 'Picklist', ko: '파티 유형 (개인/조직)',      ja: 'パーティタイプ（個人/組織）' },
+        { api: 'Name',      type: 'Text',     ko: '이름/회사명',               ja: '名前/社名' }
+      ]
+    },
+    'party-identification': {
+      en: 'Party Identification',
+      ko: '파티 식별',
+      ja: 'パーティ識別',
+      category: 'Related · Identity',
+      categoryColor: '#8B5CF6',
+      ko_desc: '각 소스 시스템에서 사용하는 고유 ID를 저장합니다. 이 레코드가 아이덴티티 레졸루션의 매칭 기반이 되며, 소스와 Unified Individual을 연결합니다.',
+      ja_desc: '各ソースシステムで使用する固有 ID を保持します。このレコードが ID 解決の照合基盤になり、ソースと Unified Individual をつなぎます。',
+      fields: [
+        { api: 'PartyIdentificationId', type: 'ID',       ko: '식별 레코드 ID',            ja: '識別レコード ID' },
+        { api: 'IdentificationNumber',  type: 'Text',     ko: '소스 시스템 ID 값',          ja: 'ソースシステム ID 値' },
+        { api: 'IdentificationType',    type: 'Picklist', ko: 'ID 유형 (Email/Phone/CRM_ID)', ja: 'ID タイプ' },
+        { api: 'PartyId',               type: 'Lookup',   ko: '연결된 파티',               ja: '紐付けパーティ' }
+      ]
+    },
+    'cp-email': {
+      en: 'Contact Point Email',
+      ko: '이메일 연락처',
+      ja: 'コンタクトポイントメール',
+      category: 'Related · Contact',
+      categoryColor: '#3CB879',
+      ko_desc: 'Unified Individual에 연결된 이메일 주소 레코드입니다. 한 고객이 여러 이메일 주소를 가질 수 있으며 주 연락처를 지정할 수 있습니다.',
+      ja_desc: 'Unified Individual に紐付けられたメールアドレスレコードです。1顧客が複数のメールアドレスを持てます。',
+      fields: [
+        { api: 'ContactPointEmailId', type: 'ID',      ko: '이메일 레코드 ID',  ja: 'メールレコード ID' },
+        { api: 'EmailAddress',        type: 'Email',   ko: '이메일 주소',       ja: 'メールアドレス' },
+        { api: 'IsPrimary',           type: 'Boolean', ko: '주 연락처 여부',    ja: '主連絡先フラグ' },
+        { api: 'PartyId',             type: 'Lookup',  ko: '연결된 파티',       ja: '紐付けパーティ' }
+      ]
+    },
+    'cp-phone': {
+      en: 'Contact Point Phone',
+      ko: '전화 연락처',
+      ja: 'コンタクトポイント電話',
+      category: 'Related · Contact',
+      categoryColor: '#3CB879',
+      ko_desc: 'Unified Individual에 연결된 전화번호 레코드입니다. 휴대폰, 유선 등 유형을 지정하고 복수의 번호를 관리할 수 있습니다.',
+      ja_desc: 'Unified Individual に紐付けられた電話番号レコードです。携帯・固定など種別を指定し複数番号を管理できます。',
+      fields: [
+        { api: 'ContactPointPhoneId', type: 'ID',       ko: '전화 레코드 ID',            ja: '電話レコード ID' },
+        { api: 'TelephoneNumber',     type: 'Phone',    ko: '전화번호',                  ja: '電話番号' },
+        { api: 'PhoneType',           type: 'Picklist', ko: '전화 유형 (휴대폰/유선)',    ja: '電話タイプ（携帯/固定）' },
+        { api: 'IsPrimary',           type: 'Boolean',  ko: '주 연락처 여부',            ja: '主連絡先フラグ' }
+      ]
+    },
+    'cp-address': {
+      en: 'Contact Point Address',
+      ko: '주소 연락처',
+      ja: 'コンタクトポイント住所',
+      category: 'Related · Contact',
+      categoryColor: '#3CB879',
+      ko_desc: 'Unified Individual에 연결된 주소 레코드입니다. 청구지·배송지 등 여러 주소 유형을 관리합니다.',
+      ja_desc: 'Unified Individual に紐付けられた住所レコードです。請求先・配送先など複数の住所タイプを管理します。',
+      fields: [
+        { api: 'ContactPointAddressId', type: 'ID',       ko: '주소 레코드 ID',             ja: '住所レコード ID' },
+        { api: 'AddressLine1',          type: 'Text',     ko: '주소 1행',                   ja: '住所1行目' },
+        { api: 'City',                  type: 'Text',     ko: '시/도시',                    ja: '市区町村' },
+        { api: 'AddressType',           type: 'Picklist', ko: '주소 유형 (청구지/배송지)',   ja: '住所タイプ' }
+      ]
+    },
+    'sales-order': {
+      en: 'Sales Order',
+      ko: '판매 주문',
+      ja: '受注',
+      category: 'Standard · Commerce',
+      categoryColor: '#FF8B00',
+      ko_desc: '고객의 구매 주문 데이터를 저장하는 표준 오브젝트입니다. Calculated Insights와 Streaming Insights에서 핵심 데이터 소스로 활용됩니다.',
+      ja_desc: '顧客の購買注文データを保持する標準オブジェクトです。Calculated Insights・Streaming Insights の主要データソースとして活用されます。',
+      fields: [
+        { api: 'SalesOrderId',         type: 'ID',       ko: '주문 ID',           ja: '注文 ID' },
+        { api: 'OrderedDate',          type: 'DateTime', ko: '주문 일시',         ja: '注文日時' },
+        { api: 'TotalAmount',          type: 'Currency', ko: '주문 금액',         ja: '注文金額' },
+        { api: 'Status',               type: 'Picklist', ko: '주문 상태',         ja: '注文ステータス' },
+        { api: 'UnifiedIndividualId',  type: 'Lookup',   ko: '고객 참조',         ja: '顧客参照' }
+      ]
+    },
+    'engagement-interaction': {
+      en: 'Engagement Interaction',
+      ko: '인게이지먼트 인터랙션',
+      ja: 'エンゲージメントインタラクション',
+      category: 'Standard · Engagement',
+      categoryColor: '#FF8B00',
+      ko_desc: '웹·앱·이메일 등 모든 채널의 고객 인터랙션 이벤트를 저장합니다. Streaming Insights의 핵심 데이터 소스로, 실시간 이벤트 평가에 사용됩니다.',
+      ja_desc: 'Web・アプリ・メールなど全チャネルの顧客インタラクションイベントを保持します。Streaming Insights の主要データソースとして、リアルタイムイベント評価に使用されます。',
+      fields: [
+        { api: 'EngagementInteractionId',   type: 'ID',       ko: '인터랙션 ID',      ja: 'インタラクション ID' },
+        { api: 'EngagementChannelActionId', type: 'Lookup',   ko: '채널 액션 참조',   ja: 'チャネルアクション参照' },
+        { api: 'EngagementDateTime',        type: 'DateTime', ko: '발생 일시',        ja: '発生日時' },
+        { api: 'UnifiedIndividualId',       type: 'Lookup',   ko: '고객 참조',        ja: '顧客参照' }
+      ]
+    }
+  };
+
+  /* ── Language state ────────────────────────────────────── */
+  let currentLang = new URLSearchParams(location.search).get('lang') || 'ja';
+  let selectedNodeKey = null;
+
+  /* ── Node stroke colors map ────────────────────────────── */
+  const NODE_STROKE = {
+    'unified-individual':       '#0070D2',
+    'individual':               '#0070D2',
+    'party':                    '#0070D2',
+    'party-identification':     '#8B5CF6',
+    'cp-email':                 '#3CB879',
+    'cp-phone':                 '#3CB879',
+    'cp-address':               '#3CB879',
+    'sales-order':              '#FF8B00',
+    'engagement-interaction':   '#FF8B00'
+  };
+
+  /* ── Node label map ─────────────────────────────────────── */
+  const NODE_LABELS = {
+    'unified-individual':     { svgId: 'label-unified-individual',     ko: '통합 개인',                    ja: '統合個人' },
+    'individual':             { svgId: 'label-individual',             ko: '개인',                         ja: '個人' },
+    'party':                  { svgId: 'label-party',                  ko: '파티',                         ja: 'パーティ' },
+    'party-identification':   { svgId: 'label-party-identification',   ko: '파티 식별',                    ja: 'パーティ識別' },
+    'cp-email':               { svgId: 'label-cp-email',               ko: '이메일 연락처',                ja: 'コンタクトポイントメール' },
+    'cp-phone':               { svgId: 'label-cp-phone',               ko: '전화 연락처',                  ja: 'コンタクトポイント電話' },
+    'cp-address':             { svgId: 'label-cp-address',             ko: '주소 연락처',                  ja: 'コンタクトポイント住所' },
+    'sales-order':            { svgId: 'label-sales-order',            ko: '판매 주문',                    ja: '受注' },
+    'engagement-interaction': { svgId: 'label-engagement-interaction', ko: '인게이지먼트 인터랙션',         ja: 'エンゲージメント' }
+  };
+
+  /* ── switchLang ─────────────────────────────────────────── */
+  function switchLang(l) {
+    currentLang = l;
+
+    // Toggle button state
+    document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+    document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+
+    // Show/hide [data-ko] / [data-ja] elements
+    document.querySelectorAll('[data-ko]').forEach(el => {
+      el.style.display = (l === 'ko') ? '' : 'none';
+    });
+    document.querySelectorAll('[data-ja]').forEach(el => {
+      el.style.display = (l === 'ja') ? '' : 'none';
+    });
+
+    // Update SVG labels
+    updateDiagramLabels();
+
+    // Refresh detail panel if a node is selected
+    if (selectedNodeKey) {
+      renderDetailPanel(selectedNodeKey);
+    }
+  }
+
+  /* ── updateDiagramLabels ────────────────────────────────── */
+  function updateDiagramLabels() {
+    Object.keys(NODE_LABELS).forEach(key => {
+      const info = NODE_LABELS[key];
+      const el = document.getElementById(info.svgId);
+      if (el) {
+        el.textContent = info[currentLang];
+      }
+    });
+  }
+
+  /* ── nodeHover ──────────────────────────────────────────── */
+  function nodeHover(gEl, isEnter) {
+    const nodeKey = gEl.id.replace('node-', '');
+    if (nodeKey === selectedNodeKey) return; // keep glow if selected
+    const rect = gEl.querySelector('rect');
+    if (!rect) return;
+    const color = NODE_STROKE[nodeKey] || '#0070D2';
+    if (isEnter) {
+      rect.style.filter = `drop-shadow(0 0 5px ${color}88)`;
+    } else {
+      rect.style.filter = '';
+    }
+  }
+
+  /* ── selectNode ─────────────────────────────────────────── */
+  function selectNode(key) {
+    // Remove glow from all nodes
+    Object.keys(NODE_STROKE).forEach(k => {
+      const rect = document.getElementById('rect-' + k);
+      if (rect) rect.style.filter = '';
+    });
+
+    selectedNodeKey = key;
+
+    // Apply glow to clicked node
+    const rect = document.getElementById('rect-' + key);
+    if (rect) {
+      const color = NODE_STROKE[key] || '#0070D2';
+      rect.style.filter = `drop-shadow(0 0 7px ${color})`;
+    }
+
+    renderDetailPanel(key);
+  }
+
+  /* ── renderDetailPanel ──────────────────────────────────── */
+  function renderDetailPanel(key) {
+    const data = DMO_DATA[key];
+    if (!data) return;
+
+    const l = currentLang;
+    const name = l === 'ko' ? data.ko : data.ja;
+    const desc = l === 'ko' ? data.ko_desc : data.ja_desc;
+
+    const apiLabel     = l === 'ko' ? 'API 명'   : 'API 名';
+    const typeLabel    = l === 'ko' ? '타입'      : 'タイプ';
+    const descLabel    = l === 'ko' ? '설명'      : '説明';
+    const fieldsTitle  = l === 'ko' ? 'Key Fields' : 'Key Fields';
+
+    // Build fields rows
+    const rows = data.fields.map(f => {
+      const fdesc = l === 'ko' ? f.ko : f.ja;
+      return `
+        <tr>
+          <td><span class="field-api">${f.api}</span></td>
+          <td><span class="field-type">${f.type}</span></td>
+          <td class="field-desc">${fdesc}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const html = `
+      <div class="detail-header">
+        <div style="flex:1;"></div>
+        <span class="detail-badge" style="background:${data.categoryColor};">${data.category}</span>
+      </div>
+      <div class="detail-en-name">${data.en}</div>
+      <div class="detail-translated-name">${name}</div>
+      <div class="detail-desc">${desc}</div>
+      <div class="detail-section-title">${fieldsTitle}</div>
+      <table class="fields-table">
+        <thead>
+          <tr>
+            <th>${apiLabel}</th>
+            <th>${typeLabel}</th>
+            <th>${descLabel}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    document.getElementById('detail-empty').style.display = 'none';
+    const content = document.getElementById('detail-content');
+    content.style.display = 'flex';
+    content.innerHTML = html;
+  }
+
+  /* ── INIT ────────────────────────────────────────────────── */
+  (function init() {
+    switchLang(currentLang);
+  })();
+</script>
+
+</body>
+</html>
