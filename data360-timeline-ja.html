@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Cloud · カスタマージャーニー タイムライン</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --brand:#0070d2; --brand-dark:#005fb2; --brand-deep:#014486; --brand-light:#eaf5fe;
+      --text-1:#3e3e3c; --text-2:#706e6b; --text-3:#aeaeac;
+      --border:#dddbda; --border-lt:#f0eeee; --bg:#f3f2f2; --white:#ffffff;
+      --success:#04844b; --success-bg:#ecfdf5;
+      --warn:#ffb75d; --warn-bg:#fffbf5;
+      --danger:#c23934; --danger-bg:#fef1f1;
+      --shadow-sm:0 1px 4px rgba(0,0,0,.08); --shadow:0 2px 8px rgba(0,0,0,.10); --shadow-md:0 4px 16px rgba(0,0,0,.12);
+      --web-c:#0070d2; --web-bg:#eaf5fe;
+      --app-c:#04844b; --app-bg:#ecfdf5;
+      --crm-c:#e05c2e; --crm-bg:#fff5f2;
+      --email-c:#7b39d4; --email-bg:#f5eeff;
+      --offline-c:#8a6f00; --offline-bg:#fffbee;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
+         background:var(--bg);color:var(--text-1);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+    .app-bar{background:var(--brand-deep);color:#fff;height:52px;padding:0 20px;
+             display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;}
+    .app-bar-left{display:flex;align-items:center;gap:10px;}
+    .sf-badge{width:26px;height:26px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--brand-deep);}
+    .app-bar-title{font-size:15px;font-weight:600;}
+    .app-bar-sub{font-size:12px;opacity:.6;margin-left:4px;}
+    .app-bar-right{font-size:11px;opacity:.65;display:flex;align-items:center;gap:16px;}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:#4fd07c;display:inline-block;margin-right:4px;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,208,124,.5);}50%{box-shadow:0 0 0 4px rgba(79,208,124,0);}}
+    .app-body{display:flex;flex:1;overflow:hidden;}
+    .sidebar{width:272px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-top{padding:14px 16px 12px;border-bottom:1px solid var(--border);}
+    .sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-2);margin-bottom:10px;}
+    .search-wrap{position:relative;}
+    .search-wrap input{width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;color:var(--text-1);outline:none;transition:border-color .15s;}
+    .search-wrap input:focus{border-color:var(--brand);}
+    .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-3);pointer-events:none;}
+    .seg-pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;}
+    .seg-pill{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;}
+    .seg-pill.all{background:var(--brand);color:#fff;}
+    .seg-pill.high-value{background:var(--danger-bg);color:var(--danger);border-color:#f8c6c4;}
+    .seg-pill.loyal{background:var(--success-bg);color:var(--success);border-color:#a3e6c3;}
+    .seg-pill.at-risk{background:var(--warn-bg);color:#7d4a00;border-color:#f5c97a;}
+    .seg-pill.new{background:var(--brand-light);color:var(--brand);border-color:#9dd7fb;}
+    .seg-pill.regular{background:#f5f5f5;color:var(--text-2);border-color:var(--border);}
+    .seg-pill.active{outline:2px solid var(--brand);outline-offset:1px;}
+    .cust-list{overflow-y:auto;flex:1;}
+    .cust-item{padding:11px 16px;cursor:pointer;border-bottom:1px solid var(--border-lt);display:flex;align-items:center;gap:11px;transition:background .1s;border-left:3px solid transparent;}
+    .cust-item:hover{background:var(--bg);}
+    .cust-item.active{background:var(--brand-light);border-left-color:var(--brand);}
+    .cust-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+    .cust-details{flex:1;min-width:0;}
+    .cust-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cust-meta{font-size:11px;color:var(--text-2);margin-top:2px;display:flex;align-items:center;gap:5px;}
+    .seg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .cust-ltv{font-size:11px;color:var(--text-2);margin-left:auto;white-space:nowrap;}
+    .main{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;}
+    .profile-card{background:var(--white);border-radius:8px;box-shadow:var(--shadow);padding:20px 24px;display:flex;align-items:flex-start;gap:18px;}
+    .profile-ava{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0;}
+    .profile-info{flex:1;}
+    .profile-name{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .seg-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+    .profile-contacts{display:flex;gap:18px;margin-top:7px;flex-wrap:wrap;}
+    .contact-item{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:4px;}
+    .profile-nba{margin-top:10px;padding:8px 12px;border-radius:6px;background:#fffbee;border:1px solid #f5d87a;font-size:12px;color:#6b5200;display:flex;align-items:flex-start;gap:6px;}
+    .profile-stats{display:flex;border-left:1px solid var(--border);margin-left:8px;padding-left:4px;}
+    .stat-box{padding:6px 18px;border-right:1px solid var(--border);text-align:center;}
+    .stat-box:last-child{border-right:none;}
+    .stat-val{font-size:20px;font-weight:700;color:var(--brand);line-height:1;}
+    .stat-lbl{font-size:11px;color:var(--text-2);margin-top:4px;}
+    .sources-bar{background:var(--white);border-radius:8px;box-shadow:var(--shadow-sm);padding:14px 20px;}
+    .sources-bar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-2);margin-bottom:10px;}
+    .src-tags{display:flex;gap:8px;flex-wrap:wrap;}
+    .src-tag{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;}
+    .src-tag.all{background:var(--brand);color:#fff;}
+    .src-tag.web{background:var(--web-bg);color:var(--web-c);border-color:#b3d9f5;}
+    .src-tag.app{background:var(--app-bg);color:var(--app-c);border-color:#a3e6c3;}
+    .src-tag.crm{background:var(--crm-bg);color:var(--crm-c);border-color:#fcc2b0;}
+    .src-tag.email{background:var(--email-bg);color:var(--email-c);border-color:#d0aaff;}
+    .src-tag.offline{background:var(--offline-bg);color:var(--offline-c);border-color:#f5d87a;}
+    .src-tag:hover{transform:translateY(-1px);}
+    .src-tag.active{outline:2px solid currentColor;outline-offset:2px;font-weight:700;}
+    .src-cnt{background:rgba(0,0,0,.08);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;}
+    .timeline-card{background:var(--white);border-radius:8px;box-shadow:var(--shadow);padding:20px;}
+    .tl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .tl-title{font-size:14px;font-weight:600;}
+    .tl-cnt{font-size:12px;color:var(--text-2);}
+    .timeline{position:relative;}
+    .timeline::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:2px;background:var(--border);}
+    .date-group{margin-bottom:22px;}
+    .date-heading{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-2);padding-left:44px;margin-bottom:12px;}
+    .tl-event{display:flex;gap:14px;margin-bottom:14px;animation:fadeUp .25s ease-out;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    .evt-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:5px;margin-left:12px;border:2.5px solid var(--white);position:relative;z-index:1;}
+    .evt-dot.web{background:var(--web-c);box-shadow:0 0 0 2px var(--web-c);}
+    .evt-dot.app{background:var(--app-c);box-shadow:0 0 0 2px var(--app-c);}
+    .evt-dot.crm{background:var(--crm-c);box-shadow:0 0 0 2px var(--crm-c);}
+    .evt-dot.email{background:var(--email-c);box-shadow:0 0 0 2px var(--email-c);}
+    .evt-dot.offline{background:var(--offline-c);box-shadow:0 0 0 2px var(--offline-c);}
+    .evt-card{flex:1;border:1px solid var(--border);border-radius:8px;padding:11px 14px;transition:box-shadow .15s;}
+    .evt-card:hover{box-shadow:var(--shadow);}
+    .evt-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+    .evt-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+    .badge-web{background:var(--web-bg);color:var(--web-c);}
+    .badge-app{background:var(--app-bg);color:var(--app-c);}
+    .badge-crm{background:var(--crm-bg);color:var(--crm-c);}
+    .badge-email{background:var(--email-bg);color:var(--email-c);}
+    .badge-offline{background:var(--offline-bg);color:var(--offline-c);}
+    .evt-time{font-size:11px;color:var(--text-3);white-space:nowrap;}
+    .evt-title{font-size:13px;font-weight:600;margin-top:6px;}
+    .evt-desc{font-size:12px;color:var(--text-2);margin-top:3px;line-height:1.5;}
+    .evt-chips{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+    .evt-chip{font-size:11px;color:var(--text-2);background:var(--bg);padding:2px 8px;border-radius:10px;display:flex;align-items:center;gap:3px;}
+    .sys-tag{font-size:10px;color:var(--text-3);background:var(--bg);padding:1px 7px;border-radius:3px;margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-family:'SF Mono',monospace;}
+    .empty-wrap{display:flex;flex-direction:column;align-items:center;padding:80px 20px;}
+    .empty-icon{font-size:46px;margin-bottom:14px;}
+    .empty-title{font-size:16px;font-weight:600;}
+    .empty-desc{font-size:13px;color:var(--text-2);margin-top:6px;}
+    .no-select{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-2);gap:12px;}
+    .no-select-icon{font-size:52px;opacity:.4;}
+    .no-select-txt{font-size:14px;}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--text-3);}
+  </style>
+</head>
+<body>
+
+<header class="app-bar">
+  <div class="app-bar-left">
+    <div class="sf-badge">SF</div>
+    <span class="app-bar-title">Salesforce Data Cloud</span>
+    <span class="app-bar-sub">· カスタマージャーニー タイムライン</span>
+  </div>
+  <div class="app-bar-right">
+    <span><span class="live-dot"></span>リアルタイム連携</span>
+    <span>StyleHub Japan Production Org</span>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">顧客リスト</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="名前またはメールで検索…" oninput="renderList()" />
+      </div>
+      <div class="seg-pills" id="segPills"></div>
+    </div>
+    <div class="cust-list" id="custList"></div>
+  </aside>
+
+  <main class="main" id="mainPane">
+    <div class="no-select">
+      <div class="no-select-icon">👤</div>
+      <div class="no-select-txt">左側から顧客を選択してください</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const CUSTOMERS = [
+  {
+    id:1, name:"田中さくら", initials:"田",
+    email:"sakura.tanaka@luxe.jp", phone:"090-2341-5678",
+    color:"#e91e8c", segment:"high-value", segmentLabel:"高価値顧客",
+    joinDate:"2022-03-15", ltv:482000,
+    preferredChannel:"app", nba:"Platinum会員記念スペシャルオファー送付",
+    interests:["ファッション","ビューティー"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-22",time:"14:23",source:"web",system:"Adobe Analytics",
+       title:"スプリングコレクション カートへ追加",
+       desc:"マルニ フラワープリント ワンピース (¥68,000) をカートに追加",
+       chips:["🛒 カート追加","💰 ¥68,000"]},
+      {date:"2026-03-21",time:"09:11",source:"email",system:"Salesforce Marketing Cloud",
+       title:"VIP春セールキャンペーン リンククリック",
+       desc:"スプリングコレクション特価メールを開封後、商品リンク3件クリック",
+       chips:["📩 開封","🔗 3件クリック"]},
+      {date:"2026-03-20",time:"18:05",source:"app",system:"Mobile App SDK",
+       title:"プッシュ通知受信後アプリ起動",
+       desc:"「お気に入り商品が再入荷しました」プッシュ通知をタップしてアプリへ。5分間閲覧",
+       chips:["🔔 プッシュクリック","⏱ 5分"]},
+      {date:"2026-02-14",time:"15:30",source:"offline",system:"POS System",
+       title:"銀座フラッグシップ バレンタイン来店購入",
+       desc:"ミュウミュウ ミニバッグ (¥185,000) オフライン購入完了",
+       chips:["🏪 銀座店","💳 ¥185,000"]},
+      {date:"2026-02-10",time:"10:00",source:"crm",system:"Salesforce CRM",
+       title:"VIPグレード Gold → Platinum アップグレード",
+       desc:"累計購入額基準でPlatinumへ自動アップグレード。専任CS担当者配置完了",
+       chips:["⬆ グレード変更","👑 Platinum"]},
+      {date:"2026-01-25",time:"20:14",source:"web",system:"Web SDK",
+       title:"ウィンターアウター 購入完了",
+       desc:"マックスマーラ キャメルコート (¥289,000) 購入完了。お支払い：クレジットカード",
+       chips:["✅ 購入","💰 ¥289,000"]},
+      {date:"2026-01-03",time:"08:45",source:"email",system:"Salesforce Marketing Cloud",
+       title:"新春セールキャンペーン 開封",
+       desc:"「2026年 初売りセール」メール開封。キャンペーン開封率32.4%を上回る優良顧客",
+       chips:["📩 開封"]},
+      {date:"2025-12-24",time:"22:10",source:"app",system:"Mobile App SDK",
+       title:"クリスマス企画展 ウィッシュリスト追加",
+       desc:"年末企画展商品7点をウィッシュリストへ追加。アプリ滞在21分",
+       chips:["⭐ ウィッシュリスト +7","⏱ 21分"]},
+      {date:"2025-11-20",time:"14:05",source:"crm",system:"Service Cloud",
+       title:"配送遅延 問い合わせ受付・解決",
+       desc:"配送遅延に関するインバウンド問い合わせ。24時間以内解決、満足度5/5",
+       chips:["🎧 解決済み","⭐ 5/5"]},
+      {date:"2025-10-08",time:"11:30",source:"offline",system:"POS System",
+       title:"渋谷ポップアップ参加・購入",
+       desc:"秋新作ポップアップストアへ参加。スカーフ (¥9,500) 購入",
+       chips:["🏪 渋谷ポップアップ","💰 ¥9,500"]}
+    ]
+  },
+  {
+    id:2, name:"鈴木雄太", initials:"鈴",
+    email:"yuta.suzuki@sports.jp", phone:"090-5541-2233",
+    color:"#2196f3", segment:"at-risk", segmentLabel:"離脱リスク",
+    joinDate:"2023-03-10", ltv:43000,
+    preferredChannel:"web", nba:"60日間非活性 Win-Backキャンペーン即時発送",
+    interests:["スポーツ","アウトドア"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-15",time:"10:22",source:"crm",system:"Service Cloud",
+       title:"返金リクエスト受付（スニーカーサイズ不満）",
+       desc:"アディダス ウルトラブーストのサイズ不満により返金申請。現在処理中",
+       chips:["🔄 返金申請","⚠ 処理中"]},
+      {date:"2026-02-28",time:"19:50",source:"web",system:"Adobe Analytics",
+       title:"商品ページ閲覧後 直帰",
+       desc:"ナイキ ペガサス41を閲覧後30秒以内に離脱。価格比較の可能性",
+       chips:["👁 閲覧","🚪 離脱"]},
+      {date:"2026-01-20",time:"08:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"再購買促進キャンペーン — 未開封",
+       desc:"「また会いましょう ❤」メール送信。開封履歴なし（30日目）",
+       chips:["📵 未開封"]},
+      {date:"2025-12-05",time:"20:14",source:"app",system:"Mobile App SDK",
+       title:"最後のアプリ起動（以降 非活性）",
+       desc:"アプリ起動後スポーツカテゴリを3分閲覧。以降60日以上非活性",
+       chips:["⚠ 非活性 60日以上"]},
+      {date:"2025-12-02",time:"15:10",source:"web",system:"Web SDK",
+       title:"アディダス トラックスーツ 購入完了",
+       desc:"アディダス トラックスーツ (¥14,500) 購入。初回購入後2回目",
+       chips:["✅ 購入","💰 ¥14,500"]},
+      {date:"2025-11-24",time:"11:30",source:"email",system:"Salesforce Marketing Cloud",
+       title:"ブラックフライデー スポーツ特価 リンククリック",
+       desc:"ブラックフライデーキャンペーン開封後、ランニングシューズカテゴリをクリック",
+       chips:["📩 開封","🔗 クリック"]},
+      {date:"2025-11-10",time:"16:45",source:"app",system:"Mobile App SDK",
+       title:"ナイキ ランニングシューズ カート放棄",
+       desc:"ナイキ ズーム ペガサス (¥18,900) をカートへ追加後、決済未完了",
+       chips:["🛒 放棄","💰 ¥18,900"]},
+      {date:"2025-10-15",time:"14:00",source:"offline",system:"POS System",
+       title:"新宿ポップアップストア 来店",
+       desc:"スポーツブランドポップアップ来店。購入なし、体験イベント参加",
+       chips:["🏪 新宿ポップアップ"]}
+    ]
+  },
+  {
+    id:3, name:"佐藤美咲", initials:"佐",
+    email:"misaki.sato@navi.jp", phone:"090-7723-4456",
+    color:"#9c27b0", segment:"new", segmentLabel:"新規顧客",
+    joinDate:"2026-03-10", ltv:62000,
+    preferredChannel:"web", nba:"初回購入30日後ビューティーカテゴリクーポン送付",
+    interests:["家電","ビューティー"],
+    sources:["web","app","crm","email"],
+    events:[
+      {date:"2026-03-22",time:"11:55",source:"web",system:"Web SDK",
+       title:"購入後レビュー投稿（5点）",
+       desc:"ダイソン エアラップ購入後、詳細レビュー投稿。「大満足」の口コミ登録",
+       chips:["⭐ レビュー5点"]},
+      {date:"2026-03-20",time:"14:30",source:"email",system:"Salesforce Marketing Cloud",
+       title:"顧客満足度調査メール クリック",
+       desc:"購入後満足度調査リンクをクリック。NPS 9点回答",
+       chips:["📩 クリック","🌟 NPS 9点"]},
+      {date:"2026-03-17",time:"09:30",source:"crm",system:"Service Cloud",
+       title:"配送状況 チャット問い合わせ",
+       desc:"「配送はいつ届きますか？」チャット問い合わせ。3分以内返答。満足度5/5",
+       chips:["💬 チャット対応","✅ 解決"]},
+      {date:"2026-03-15",time:"20:44",source:"web",system:"Web SDK",
+       title:"ダイソン エアラップ 購入完了",
+       desc:"ダイソン エアラップ コンプリート (¥62,000) 初回購入。15%クーポン適用",
+       chips:["✅ 初回購入","💰 ¥52,700（割引適用）"]},
+      {date:"2026-03-14",time:"16:20",source:"email",system:"Salesforce Marketing Cloud",
+       title:"新規登録 15%割引クーポンメール クリック",
+       desc:"ウェルカムシリーズ2通目。割引クーポンリンクをクリックしてサイト訪問",
+       chips:["🔗 クーポンクリック"]},
+      {date:"2026-03-13",time:"22:10",source:"app",system:"Mobile App SDK",
+       title:"アプリダウンロード・初回起動",
+       desc:"App Storeからアプリをインストール。家電カテゴリを閲覧（8分）",
+       chips:["📱 初回起動","⏱ 8分"]},
+      {date:"2026-03-12",time:"19:35",source:"web",system:"Adobe Analytics",
+       title:"ダイソン エアラップ 商品ページ 集中閲覧",
+       desc:"エアラップ詳細ページ 5分12秒滞在。レビュー37件すべて閲覧",
+       chips:["👁 閲覧","⏱ 5分12秒"]},
+      {date:"2026-03-10",time:"10:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"ウェルカムメール 開封",
+       desc:"登録直後に送信されたウェルカムメール開封。ブランド紹介・初回購入特典案内",
+       chips:["📩 ウェルカム開封"]},
+      {date:"2026-03-10",time:"09:48",source:"web",system:"Web SDK",
+       title:"新規会員登録",
+       desc:"Googleソーシャルログインで会員登録完了。流入経路：Yahoo!検索",
+       chips:["👤 新規登録","🔗 Yahoo!検索流入"]}
+    ]
+  },
+  {
+    id:4, name:"山田健太", initials:"山",
+    email:"kenta.yamada@techie.jp", phone:"090-9912-3377",
+    color:"#00897b", segment:"loyal", segmentLabel:"ロイヤル顧客",
+    joinDate:"2021-07-22", ltv:634000,
+    preferredChannel:"web", nba:"iPhone 17 Pro発売先行予約通知送付",
+    interests:["ITデバイス","ガジェット"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-18",time:"23:01",source:"app",system:"Mobile App SDK",
+       title:"iPhone 17 Pro ウィッシュリスト追加",
+       desc:"iPhone 17 Pro 256GB チタンブラックをウィッシュリストへ追加・発売通知設定",
+       chips:["⭐ ウィッシュリスト","🔔 通知設定"]},
+      {date:"2026-03-17",time:"08:55",source:"email",system:"Salesforce Marketing Cloud",
+       title:"iPhone 17 発売メール 開封",
+       desc:"新製品発売メール送信1時間後に開封。スペック比較リンク2回クリック",
+       chips:["📩 即時開封","🔗 2回クリック"]},
+      {date:"2026-02-20",time:"19:40",source:"web",system:"Web SDK",
+       title:"iPad Pro M4 購入",
+       desc:"Apple iPad Pro M4 256GB (¥164,800) 購入。24回分割払い",
+       chips:["✅ 購入","💰 ¥164,800"]},
+      {date:"2026-02-10",time:"15:00",source:"offline",system:"POS System",
+       title:"銀座 Apple Store 来店",
+       desc:"Apple Store銀座来店。MacBook Pro M4 Maxを試用",
+       chips:["🏪 銀座 Apple Store"]},
+      {date:"2026-01-15",time:"10:30",source:"crm",system:"Salesforce CRM",
+       title:"AppleCare+ 保証延長 申請処理完了",
+       desc:"昨年購入製品のAppleCare+ 1年延長申請。自動処理完了",
+       chips:["✅ 保証延長"]},
+      {date:"2026-01-10",time:"21:20",source:"app",system:"Mobile App SDK",
+       title:"AirPods Pro 2 vs Sony WF-1000XM6 比較",
+       desc:"アプリ内製品比較機能使用。10分間スペック比較・コミュニティレビュー閲覧",
+       chips:["🔍 比較閲覧","⏱ 10分"]},
+      {date:"2025-12-24",time:"14:15",source:"web",system:"Web SDK",
+       title:"iPhone 16 Pro 購入",
+       desc:"iPhone 16 Pro 256GB ナチュラルチタン (¥159,800) 購入",
+       chips:["✅ 購入","💰 ¥159,800"]},
+      {date:"2025-10-01",time:"13:00",source:"app",system:"Mobile App SDK",
+       title:"商品レビュー8件 連続投稿",
+       desc:"購入製品のレビュー8件投稿。コミュニティ貢献者バッジ獲得",
+       chips:["✍ レビュー8件","🏅 バッジ獲得"]}
+    ]
+  },
+  {
+    id:5, name:"渡辺奈々", initials:"渡",
+    email:"nana.watanabe@homestyle.jp", phone:"090-3356-8890",
+    color:"#ff7043", segment:"regular", segmentLabel:"一般顧客",
+    joinDate:"2022-11-05", ltv:87600,
+    preferredChannel:"web", nba:"ホームリビング季節新作ニュースレター送付",
+    interests:["ホームリビング","インテリア"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-20",time:"21:10",source:"web",system:"Adobe Analytics",
+       title:"無印良品スタイル 収納ボックス 検索・閲覧",
+       desc:"「MUJI スタイル 収納」キーワード検索後、商品12点を閲覧。滞在8分",
+       chips:["🔍 検索","⏱ 8分"]},
+      {date:"2026-03-18",time:"09:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"週刊ホームリビング おすすめニュースレター 開封",
+       desc:"「今週のベストホームリビング」ニュースレター開封。収納関連商品リンクをクリック",
+       chips:["📩 開封","🔗 クリック"]},
+      {date:"2026-02-22",time:"14:00",source:"offline",system:"POS System",
+       title:"IKEA コラボポップアップ 参加",
+       desc:"IKEAコラボポップアップイベントへ参加。購入なし、体験とノベルティ受取",
+       chips:["🏪 IKEAポップアップ"]},
+      {date:"2026-02-14",time:"20:44",source:"web",system:"Web SDK",
+       title:"プレミアム 寝具セット 購入",
+       desc:"エジプト綿400本 寝具セット キングサイズ (¥18,900) 購入完了",
+       chips:["✅ 購入","💰 ¥18,900"]},
+      {date:"2026-01-20",time:"16:30",source:"crm",system:"Service Cloud",
+       title:"洗濯方法 商品問い合わせ",
+       desc:"寝具の洗濯方法に関するチャット問い合わせ。ケアラベル案内後に解決",
+       chips:["💬 問い合わせ","✅ 解決"]},
+      {date:"2025-12-20",time:"19:55",source:"web",system:"Web SDK",
+       title:"クリスマス ホームデコ 購入",
+       desc:"クリスマスツリー＆ホームデコセット (¥8,700) 購入。期間限定10%割引適用",
+       chips:["✅ 購入","💰 ¥8,700"]},
+      {date:"2025-11-05",time:"22:30",source:"app",system:"Mobile App SDK",
+       title:"お気に入り商品12点 追加",
+       desc:"ホームリビングセクション閲覧中、ソファカバー・クッションなど12点をウィッシュリストへ追加",
+       chips:["⭐ ウィッシュリスト +12"]}
+    ]
+  },
+  {
+    id:6, name:"伊藤大輔", initials:"伊",
+    email:"daisuke.ito@vip.jp", phone:"090-1122-9900",
+    color:"#37474f", segment:"high-value", segmentLabel:"高価値顧客",
+    joinDate:"2020-06-01", ltv:1860000,
+    preferredChannel:"offline", nba:"グッチ 新コレクション プライベートプレビュー招待",
+    interests:["ラグジュアリー","メンズファッション"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-25",time:"16:40",source:"web",system:"Adobe Analytics",
+       title:"グッチ マーモント バッグ 商品詳細閲覧",
+       desc:"グッチ マーモント ミニショルダーバッグ詳細ページを7分閲覧。3色比較",
+       chips:["👁 商品閲覧","⏱ 7分"]},
+      {date:"2026-03-22",time:"19:00",source:"offline",system:"POS System",
+       title:"VIP 春コレクション プレビューイベント 参加",
+       desc:"表参道VIPラウンジ プレビューイベント参加。シャンパンレセプション・新作プレゼンテーション",
+       chips:["🎪 VIPイベント"]},
+      {date:"2026-02-28",time:"14:20",source:"crm",system:"Salesforce CRM",
+       title:"専任スタイリスト 相談予約",
+       desc:"春シーズン パーソナルスタイリング 1:1予約確定。3月 表参道ショールーム予定",
+       chips:["📅 予約完了"]},
+      {date:"2026-02-20",time:"17:30",source:"web",system:"Web SDK",
+       title:"モンクレール マヤ ダウン 購入",
+       desc:"モンクレール マヤ ダウンジャケット ブラック (¥289,000) 購入。当日配送申込",
+       chips:["✅ 購入","💰 ¥289,000"]},
+      {date:"2026-02-19",time:"10:05",source:"email",system:"Salesforce Marketing Cloud",
+       title:"VIP 新作先行公開メール 開封",
+       desc:"モンクレール新作先行公開メール。送信2時間以内に開封・購入転換",
+       chips:["📩 即時開封","⚡ 2時間以内転換"]},
+      {date:"2026-01-15",time:"13:00",source:"offline",system:"POS System",
+       title:"伊勢丹新宿 ラグジュアリーフロア 購入",
+       desc:"セリーヌ トリオ バッグ ミニ (¥125,000) 伊勢丹新宿ラグジュアリーフロアにて購入",
+       chips:["🏪 伊勢丹新宿","💰 ¥125,000"]},
+      {date:"2025-12-30",time:"09:00",source:"crm",system:"Salesforce CRM",
+       title:"Platinum グレード 年間維持 確認",
+       desc:"2025年間購入総額に基づきPlatinumグレード維持確定。2026年特典案内",
+       chips:["👑 Platinum維持"]}
+    ]
+  },
+  {
+    id:7, name:"中村あいり", initials:"中",
+    email:"airi.nakamura@skincare.jp", phone:"090-6688-2214",
+    color:"#ad1457", segment:"at-risk", segmentLabel:"離脱リスク",
+    joinDate:"2023-09-01", ltv:28500,
+    preferredChannel:"web", nba:"パーソナライズスキンケアクイズ＋無料サンプルオファー",
+    interests:["スキンケア","ビューティー"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-10",time:"08:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"再来店誘導クーポンメール — 未開封（3連続）",
+       desc:"離脱防止 Win-Backキャンペーン 3回目送信。開封履歴なし",
+       chips:["📵 未開封 3連続","⚠ 離脱リスク"]},
+      {date:"2026-02-15",time:"11:20",source:"crm",system:"Service Cloud",
+       title:"SNS クレーム投稿 受付・対応",
+       desc:"Instagramに製品クレーム投稿。ソーシャルリスニング検知後CS担当者が連絡",
+       chips:["📢 SNSクレーム","⚠ モニタリング"]},
+      {date:"2026-02-01",time:"09:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"肌タイプ別おすすめキャンペーン 開封（リンク未クリック）",
+       desc:"パーソナライズスキンケアおすすめメール開封確認。ただしリンククリックなし離脱",
+       chips:["📩 開封のみ","🚪 クリックなし"]},
+      {date:"2026-01-10",time:"20:30",source:"web",system:"Adobe Analytics",
+       title:"競合他社価格比較後 サイト離脱",
+       desc:"同一美容液商品検索中、競合他社ポップアップ広告をクリックして離脱と推測",
+       chips:["🚪 競合離脱推測"]},
+      {date:"2025-12-10",time:"21:05",source:"app",system:"Mobile App SDK",
+       title:"最後のアプリ起動（以降90日非活性）",
+       desc:"アプリ起動後、美容液カテゴリを2分閲覧。以降90日以上非活性",
+       chips:["⚠ 非活性 90日以上"]},
+      {date:"2025-12-05",time:"16:40",source:"web",system:"Web SDK",
+       title:"SHISEIDO クレ・ド・ポー 美容液 購入",
+       desc:"クレ・ド・ポー ボーテ セラム 50ml (¥18,500) 購入。初回購入クーポン適用",
+       chips:["✅ 購入","💰 ¥18,500"]},
+      {date:"2025-11-22",time:"10:30",source:"email",system:"Salesforce Marketing Cloud",
+       title:"ビューティーアワード 商品キャンペーン リンククリック",
+       desc:"「今年のビューティーアワード」メール開封後、美容液カテゴリリンクをクリック",
+       chips:["📩 開封","🔗 クリック"]},
+      {date:"2025-09-05",time:"13:30",source:"offline",system:"POS System",
+       title:"伊勢丹 コスメポップアップ 来店",
+       desc:"伊勢丹ビューティーフェスティバルポップアップ参加。サンプル受取・体験",
+       chips:["🏪 伊勢丹ポップアップ"]}
+    ]
+  },
+  {
+    id:8, name:"小林翔太", initials:"小",
+    email:"shota.kobayashi@runner.jp", phone:"090-4455-6677",
+    color:"#1565c0", segment:"new", segmentLabel:"新規顧客",
+    joinDate:"2026-03-01", ltv:18900,
+    preferredChannel:"web", nba:"購入2週間後 ランニングアクセサリー クロスセル推奨",
+    interests:["ランニング","スポーツ"],
+    sources:["web","app","crm","email"],
+    events:[
+      {date:"2026-03-20",time:"18:10",source:"crm",system:"Service Cloud",
+       title:"サイズ交換リクエスト 処理完了（26.5→27.0）",
+       desc:"HOKA KAHA 2 26.5cm → 27.0cm 交換依頼。翌日配送で処理完了",
+       chips:["🔄 交換完了","✅ 迅速処理"]},
+      {date:"2026-03-15",time:"12:05",source:"app",system:"Mobile App SDK",
+       title:"配送状況 アプリから確認",
+       desc:"アプリで注文配送状況を2回確認。「HOKA KAHA2」キーワードでコミュニティ検索",
+       chips:["📦 配送確認"]},
+      {date:"2026-03-13",time:"21:55",source:"web",system:"Web SDK",
+       title:"HOKA KAHA 2 購入完了",
+       desc:"HOKA Kahana 2 27.0cm ブラック (¥18,900) 初回購入。送料無料適用",
+       chips:["✅ 初回購入","💰 ¥18,900"]},
+      {date:"2026-03-12",time:"19:20",source:"email",system:"Salesforce Marketing Cloud",
+       title:"春ランニングシーズン特価キャンペーン リンククリック",
+       desc:"「春ランニングシーズン開幕」メールクリック。HOKA・ASICS・ニューバランスを比較",
+       chips:["📩 クリック","🔗 商品比較"]},
+      {date:"2026-03-10",time:"11:00",source:"app",system:"Mobile App SDK",
+       title:"アプリインストール・初回起動",
+       desc:"Androidアプリインストール。ランニングシューズカテゴリを閲覧（6分）",
+       chips:["📱 初回起動","⏱ 6分"]},
+      {date:"2026-03-01",time:"09:30",source:"email",system:"Salesforce Marketing Cloud",
+       title:"ウェルカムメール 開封",
+       desc:"新規登録ウェルカムメール開封。ブランド紹介・初回購入割引案内",
+       chips:["📩 ウェルカム開封"]},
+      {date:"2026-03-01",time:"09:15",source:"web",system:"Web SDK",
+       title:"Google ソーシャルログインで新規登録",
+       desc:"Google検索「HOKA KAHA2 最安値」クリック後、ソーシャルログイン登録",
+       chips:["👤 新規登録","🔗 Google流入"]}
+    ]
+  },
+  {
+    id:9, name:"加藤みどり", initials:"加",
+    email:"midori.kato@beauty.jp", phone:"090-8821-5544",
+    color:"#6a1b9a", segment:"loyal", segmentLabel:"ロイヤル顧客",
+    joinDate:"2021-04-10", ltv:543000,
+    preferredChannel:"app", nba:"ビューティーVIPクラブ 年間メンバーシップ更新オファー",
+    interests:["ビューティー","スキンケア","香水"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-25",time:"10:00",source:"app",system:"Mobile App SDK",
+       title:"ビューティーボックス 定期購読 6ヶ月更新",
+       desc:"プレミアムビューティーボックス定期購読6ヶ月更新 (¥19,800)。特典商品選択完了",
+       chips:["🔄 定期購読更新","💰 ¥19,800"]},
+      {date:"2026-03-22",time:"08:30",source:"email",system:"Salesforce Marketing Cloud",
+       title:"週刊ビューティーニュースレター 開封＋リンク3件クリック",
+       desc:"ビューティーウィークリーニュースレター開封。新作ファンデ・美容液・リップ全リンクをクリック",
+       chips:["📩 開封","🔗 3件クリック"]},
+      {date:"2026-02-25",time:"19:45",source:"web",system:"Web SDK",
+       title:"クレ・ド・ポー ファンデーション 購入",
+       desc:"クレ・ド・ポー ボーテ ラ ポードル オショ ファンデーション (¥13,000) 購入",
+       chips:["✅ 購入","💰 ¥13,000"]},
+      {date:"2026-02-10",time:"14:00",source:"app",system:"Mobile App SDK",
+       title:"ビューティーコミュニティ 投稿10件 作成",
+       desc:"2月使用レビュー＆ビューティーTips投稿10件アップロード。フォロワー1,240人達成",
+       chips:["✍ 投稿10件","👥 フォロワー1,240"]},
+      {date:"2026-01-20",time:"11:00",source:"offline",system:"POS System",
+       title:"プレミアムビューティークラス イベント参加",
+       desc:"プロメイクアップアーティスト招待クラス参加。体験商品3点購入 (¥8,900)",
+       chips:["🎨 ビューティークラス","💰 ¥8,900"]},
+      {date:"2026-01-05",time:"09:30",source:"crm",system:"Salesforce CRM",
+       title:"VIPビューティーメンバーシップ 1年延長",
+       desc:"ビューティーVIPクラブ年間メンバーシップ1年再加入。Gold → Platinum自動昇格",
+       chips:["👑 Platinum昇格","🔄 1年延長"]},
+      {date:"2025-12-20",time:"20:15",source:"web",system:"Web SDK",
+       title:"年末ラグジュアリービューティー ギフトセット 購入",
+       desc:"Jo Malone London ホリデーギフトコレクション (¥35,000) 購入。クリスマスプレゼント用",
+       chips:["✅ 購入","💰 ¥35,000","🎁 ギフト包装"]}
+    ]
+  },
+  {
+    id:10, name:"山本拓海", initials:"山",
+    email:"takumi.yamamoto@techguy.jp", phone:"090-2200-4488",
+    color:"#0277bd", segment:"regular", segmentLabel:"一般顧客",
+    joinDate:"2022-05-18", ltv:143000,
+    preferredChannel:"web", nba:"LG OLED TV 再訪問誘導＋分割払い特典案内",
+    interests:["家電","テレビ","ITデバイス"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-22",time:"22:30",source:"web",system:"Adobe Analytics",
+       title:"LG OLED TV 55型 vs 65型 比較閲覧",
+       desc:"LG C4 OLED 55型、65型の商品ページを15分比較閲覧。スペックシートダウンロード",
+       chips:["🔍 比較閲覧","⏱ 15分"]},
+      {date:"2026-03-20",time:"09:10",source:"email",system:"Salesforce Marketing Cloud",
+       title:"春家電特価ニュースレター 開封",
+       desc:"「春の家電買い替え特価」メール開封。TVセクションリンクをクリック",
+       chips:["📩 開封","🔗 TVクリック"]},
+      {date:"2026-02-15",time:"20:45",source:"app",system:"Mobile App SDK",
+       title:"パナソニック 掃除機 購入レビュー投稿（4点）",
+       desc:"Panasonic コードレス掃除機 使用2週間後アプリでレビュー投稿。「吸引力は高いが重さが惜しい」",
+       chips:["✍ レビュー4点"]},
+      {date:"2026-02-01",time:"19:05",source:"web",system:"Web SDK",
+       title:"パナソニック コードレス掃除機 購入",
+       desc:"Panasonic コードレス掃除機 (¥45,000) 購入。クーポン5,000円適用",
+       chips:["✅ 購入","💰 ¥40,000（割引適用）"]},
+      {date:"2026-01-25",time:"14:30",source:"crm",system:"Service Cloud",
+       title:"ノートPCアダプター 不良 修理受付 処理完了",
+       desc:"富士通 FMV ノートPCアダプター断線 修理受付。無償交換完了（3日間）",
+       chips:["🔧 修理完了","✅ 無償交換"]},
+      {date:"2025-12-10",time:"16:00",source:"offline",system:"POS System",
+       title:"ヨドバシカメラ 店舗 モニター購入",
+       desc:"LG UltraWide 34型モニター (¥38,000) ヨドバシカメラ現地購入",
+       chips:["🏪 ヨドバシカメラ","💰 ¥38,000"]},
+      {date:"2025-11-01",time:"21:00",source:"app",system:"Mobile App SDK",
+       title:"LG 65型 TV カート保存（未決済）",
+       desc:"LG C4 OLED 65型 (¥198,000) をカートに保存。決済未完了",
+       chips:["🛒 カート保存","⚠ 未決済"]}
+    ]
+  },
+  {
+    id:11, name:"松本えりか", initials:"松",
+    email:"erika.matsumoto@fashion.vip", phone:"090-3300-5511",
+    color:"#880e4f", segment:"high-value", segmentLabel:"高価値顧客",
+    joinDate:"2020-01-08", ltv:2240000,
+    preferredChannel:"offline", nba:"2026 SSコレクション 独占先行購入招待状送付",
+    interests:["プレミアムファッション","ハイエンドブランド"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-28",time:"15:00",source:"offline",system:"POS System",
+       title:"表参道 VIPショールーム 春シーズン訪問",
+       desc:"表参道VIPラウンジ訪問。バレンシアガ・セリーヌ 2026SS新作フィッティング＆予約注文",
+       chips:["🏪 表参道VIPショールーム"]},
+      {date:"2026-03-20",time:"11:00",source:"app",system:"Mobile App SDK",
+       title:"バレンシアガ トリプルS 新色 事前予約",
+       desc:"バレンシアガ トリプルS 2026新色をアプリで事前予約。入金待ち",
+       chips:["📋 事前予約","⏳ 入金待ち"]},
+      {date:"2026-02-25",time:"16:30",source:"web",system:"Web SDK",
+       title:"バレンシアガ トリプルS スニーカー 購入",
+       desc:"バレンシアガ トリプルS 37サイズ ブラック (¥105,000) 購入完了",
+       chips:["✅ 購入","💰 ¥105,000"]},
+      {date:"2026-02-20",time:"10:00",source:"crm",system:"Salesforce CRM",
+       title:"パーソナルスタイリングサービス 予約",
+       desc:"専任スタイリスト 1:1 春シーズンスタイリング相談予約確定",
+       chips:["📅 スタイリング予約"]},
+      {date:"2026-02-15",time:"08:45",source:"email",system:"Salesforce Marketing Cloud",
+       title:"松本えりか様専用 キュレーションメール 開封",
+       desc:"AI個人最適化キュレーションメール開封。全リンククリック後ショールーム予約",
+       chips:["📩 即時開封","🔗 全件クリック"]},
+      {date:"2026-01-15",time:"11:00",source:"offline",system:"POS System",
+       title:"2026 SS ファッションウィーク プレビューイベント 参加",
+       desc:"国内ファッションウィーク VIPシーズンプレビューイベント参加。3ブランドプレゼンテーション観覧",
+       chips:["🎪 ファッションウィーク VIP"]},
+      {date:"2025-12-22",time:"14:20",source:"crm",system:"Salesforce CRM",
+       title:"年間購入総額基準 Platinum++ グレード 付与",
+       desc:"2025年間購入総額 1,800万円以上。Platinum++ 最上位グレード付与",
+       chips:["👑 Platinum++","💎 最上位グレード"]},
+      {date:"2025-11-10",time:"20:10",source:"web",system:"Web SDK",
+       title:"プレミアム ウールコート 購入",
+       desc:"マックスマーラ 101801 アイコニックコート アイボリー (¥320,000) 購入",
+       chips:["✅ 購入","💰 ¥320,000"]}
+    ]
+  },
+  {
+    id:12, name:"石川康介", initials:"石",
+    email:"kosuke.ishikawa@outdoor.jp", phone:"090-6612-3344",
+    color:"#558b2f", segment:"at-risk", segmentLabel:"離脱リスク",
+    joinDate:"2023-08-20", ltv:28500,
+    preferredChannel:"app", nba:"アークテリクス カート放棄 限定10%クーポン送付",
+    interests:["アウトドア","登山","キャンプ"],
+    sources:["web","app","crm","email","offline"],
+    events:[
+      {date:"2026-03-18",time:"08:00",source:"email",system:"Salesforce Marketing Cloud",
+       title:"春アウトドア特価メール — 未開封（3連続）",
+       desc:"Win-Backキャンペーン 3回目メール送信。90日間開封履歴なし",
+       chips:["📵 未開封 3連続","⚠ 90日無反応"]},
+      {date:"2026-02-10",time:"10:00",source:"crm",system:"Salesforce CRM",
+       title:"離脱シグナル検知 → Win-Backキャンペーン 自動発動",
+       desc:"Data Cloud 離脱予測モデルスコア87%到達。自動Win-Backワークフロー開始",
+       chips:["🤖 Einstein 検知","⚡ 自動キャンペーン発動"]},
+      {date:"2026-01-20",time:"14:25",source:"web",system:"Adobe Analytics",
+       title:"サイト訪問後30秒以内 直帰",
+       desc:"ホーム画面表示後30秒以内に離脱。直接URL入力流入（ブランドリコールあり）",
+       chips:["🚪 即時離脱","⏱ 30秒未満"]},
+      {date:"2025-12-08",time:"21:30",source:"app",system:"Mobile App SDK",
+       title:"最後のアプリ起動（以降120日以上 非活性）",
+       desc:"アウトドアカテゴリを2分閲覧後アプリ終了。以降120日以上非活性",
+       chips:["⚠ 非活性 120日以上"]},
+      {date:"2025-11-15",time:"22:10",source:"web",system:"Web SDK",
+       title:"アークテリクス ベータSL ジャケット カート放棄",
+       desc:"アークテリクス ベータSL ジャケット ブラック Mサイズ (¥89,000) カート追加後離脱",
+       chips:["🛒 カート放棄","💰 ¥89,000"]},
+      {date:"2025-10-22",time:"11:00",source:"offline",system:"POS System",
+       title:"高尾山 アウトドアフェスティバル 参加",
+       desc:"高尾山アウトドアフェスティバル参加。スタンプイベント参加、割引クーポン受取",
+       chips:["🏔 フェスティバル参加"]},
+      {date:"2025-09-05",time:"19:30",source:"web",system:"Web SDK",
+       title:"サロモン XA Pro 3D 登山靴 購入",
+       desc:"Salomon XA Pro 3D GTX 27.0cm (¥28,500) 購入。秋登山シーズン準備",
+       chips:["✅ 購入","💰 ¥28,500"]},
+      {date:"2025-08-25",time:"14:00",source:"crm",system:"Service Cloud",
+       title:"新規登録時 好みブランド 相談",
+       desc:"ウェルカムコール実施。アークテリクス・サロモン・ノースフェイス 好み確認。CRMプロフィール更新",
+       chips:["📞 ウェルカムコール","📋 好みブランド登録"]}
+    ]
+  }
+];
+
+let selectedId = null;
+let activeSeg  = 'all';
+let activeSrc  = 'all';
+
+function fmtMoney(n){ return '¥' + n.toLocaleString('ja-JP'); }
+function segColor(seg){
+  return {'high-value':'#c23934','loyal':'#04844b','at-risk':'#8a5200','new':'#0070d2','regular':'#706e6b'}[seg]||'#706e6b';
+}
+function srcIcon(src){ return {web:'🌐',app:'📱',crm:'💼',email:'📧',offline:'🏪'}[src]||'●'; }
+function srcLabel(src){ return {web:'Web',app:'アプリ',crm:'CRM',email:'メール',offline:'オフライン'}[src]||src; }
+
+function groupByMonth(events){
+  const map={};
+  events.forEach(e=>{ const k=e.date.slice(0,7); if(!map[k])map[k]=[]; map[k].push(e); });
+  return map;
+}
+function monthLabel(ym){
+  const [y,m]=ym.split('-');
+  const mo=['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  return `${y}年 ${mo[parseInt(m)]}`;
+}
+
+function renderList(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const ul=document.getElementById('custList');
+  ul.innerHTML='';
+  const filtered=CUSTOMERS.filter(c=>{
+    const ms=activeSeg==='all'||c.segment===activeSeg;
+    const mq=!q||c.name.includes(q)||c.email.includes(q);
+    return ms&&mq;
+  });
+  if(!filtered.length){
+    ul.innerHTML=`<div style="padding:24px 16px;text-align:center;color:var(--text-2);font-size:13px;">検索結果なし</div>`;
+    return;
+  }
+  filtered.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='cust-item'+(c.id===selectedId?' active':'');
+    div.onclick=()=>selectCustomer(c.id);
+    div.innerHTML=`
+      <div class="cust-avatar" style="background:${c.color}">${c.initials}</div>
+      <div class="cust-details">
+        <div class="cust-name">${c.name}</div>
+        <div class="cust-meta"><span class="seg-dot" style="background:${segColor(c.segment)}"></span>${c.segmentLabel}</div>
+      </div>
+      <div class="cust-ltv">${fmtMoney(c.ltv)}</div>`;
+    ul.appendChild(div);
+  });
+}
+
+function renderSegPills(){
+  const segs=[
+    {key:'all',label:'すべて'},{key:'high-value',label:'高価値'},
+    {key:'loyal',label:'ロイヤル'},{key:'at-risk',label:'リスク'},
+    {key:'new',label:'新規'},{key:'regular',label:'一般'}
+  ];
+  document.getElementById('segPills').innerHTML=segs.map(s=>
+    `<span class="seg-pill ${s.key}${activeSeg===s.key?' active':''}" onclick="setSegFilter('${s.key}')">${s.label}</span>`
+  ).join('');
+}
+function setSegFilter(seg){ activeSeg=seg; renderSegPills(); renderList(); }
+function selectCustomer(id){ selectedId=id; activeSrc='all'; renderList(); renderMain(); }
+
+function renderMain(){
+  const c=CUSTOMERS.find(x=>x.id===selectedId);
+  if(!c)return;
+  const main=document.getElementById('mainPane');
+  const events=activeSrc==='all'?c.events:c.events.filter(e=>e.source===activeSrc);
+  const srcCounts={};
+  c.events.forEach(e=>{ srcCounts[e.source]=(srcCounts[e.source]||0)+1; });
+  const daysSince=Math.floor((Date.now()-new Date(c.joinDate))/86400000);
+  const months=Math.max(1,Math.round(daysSince/30));
+  const avgMonthly=Math.round(c.ltv/months/1000)*1000;
+
+  main.innerHTML=`
+    <div class="profile-card">
+      <div class="profile-ava" style="background:${c.color}">${c.initials}</div>
+      <div class="profile-info">
+        <div class="profile-name">
+          ${c.name}
+          <span class="seg-badge" style="background:${segColor(c.segment)}22;color:${segColor(c.segment)}">${c.segmentLabel}</span>
+        </div>
+        <div class="profile-contacts">
+          <span class="contact-item">📧 ${c.email}</span>
+          <span class="contact-item">📅 登録日 ${c.joinDate}</span>
+        </div>
+        <div class="profile-nba">
+          <span>⚡</span>
+          <span><strong>推奨アクション (Einstein NBA):</strong> ${c.nba}</span>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-box"><div class="stat-val">${c.events.length}</div><div class="stat-lbl">総イベント</div></div>
+        <div class="stat-box"><div class="stat-val">${c.sources.length}</div><div class="stat-lbl">連携ソース</div></div>
+        <div class="stat-box"><div class="stat-val">${fmtMoney(c.ltv)}</div><div class="stat-lbl">累計購入額</div></div>
+        <div class="stat-box"><div class="stat-val">${srcLabel(c.preferredChannel)}</div><div class="stat-lbl">優先チャネル</div></div>
+      </div>
+    </div>
+    <div class="sources-bar">
+      <div class="sources-bar-label">📡 Data Cloud 統合ソース — クリックでフィルター</div>
+      <div class="src-tags" id="srcTags"></div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-head">
+        <span class="tl-title">カスタマージャーニー タイムライン</span>
+        <span class="tl-cnt">${events.length}件のイベント表示中</span>
+      </div>
+      <div class="timeline" id="timelineEl"></div>
+    </div>`;
+
+  renderSrcTags(c,srcCounts);
+  renderTimeline(events);
+}
+
+function renderSrcTags(c,srcCounts){
+  const wrap=document.getElementById('srcTags');
+  let html=`<span class="src-tag all${activeSrc==='all'?' active':''}" onclick="setSrcFilter('all')">🔀 すべて <span class="src-cnt">${c.events.length}</span></span>`;
+  ['web','app','crm','email','offline'].forEach(s=>{
+    if(!c.sources.includes(s))return;
+    const cnt=srcCounts[s]||0;
+    html+=`<span class="src-tag ${s}${activeSrc===s?' active':''}" onclick="setSrcFilter('${s}')">
+      ${srcIcon(s)} ${srcLabel(s)} <span class="src-cnt">${cnt}</span></span>`;
+  });
+  wrap.innerHTML=html;
+}
+function setSrcFilter(src){
+  activeSrc=src;
+  const c=CUSTOMERS.find(x=>x.id===selectedId);
+  if(!c)return;
+  const srcCounts={};
+  c.events.forEach(e=>{ srcCounts[e.source]=(srcCounts[e.source]||0)+1; });
+  renderSrcTags(c,srcCounts);
+  const events=src==='all'?c.events:c.events.filter(e=>e.source===src);
+  document.querySelector('.tl-cnt').textContent=`${events.length}件のイベント表示中`;
+  renderTimeline(events);
+}
+
+function renderTimeline(events){
+  const el=document.getElementById('timelineEl');
+  if(!events.length){
+    el.innerHTML=`<div class="empty-wrap">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">このソースにイベントがありません</div>
+      <div class="empty-desc">別のソースフィルターを選択してください</div>
+    </div>`;
+    return;
+  }
+  const grouped=groupByMonth(events);
+  const sortedMonths=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  el.innerHTML=sortedMonths.map(ym=>{
+    const mEvts=grouped[ym].slice().sort((a,b)=>{
+      const da=a.date+'T'+a.time,db=b.date+'T'+b.time;
+      return db.localeCompare(da);
+    });
+    const evtHtml=mEvts.map(e=>`
+      <div class="tl-event">
+        <div class="evt-dot ${e.source}"></div>
+        <div class="evt-card">
+          <div class="evt-top">
+            <span class="evt-badge badge-${e.source}">${srcIcon(e.source)} ${srcLabel(e.source)}</span>
+            <span class="evt-time">${e.date} ${e.time}</span>
+          </div>
+          <div class="evt-title">${e.title}</div>
+          <div class="evt-desc">${e.desc}</div>
+          ${e.chips?.length?`<div class="evt-chips">${e.chips.map(ch=>`<span class="evt-chip">${ch}</span>`).join('')}</div>`:''}
+          <div class="sys-tag">🔌 ${e.system}</div>
+        </div>
+      </div>`).join('');
+    return `<div class="date-group"><div class="date-heading">${monthLabel(ym)}</div>${evtHtml}</div>`;
+  }).join('');
+}
+
+renderSegPills();
+renderList();
+selectCustomer(1);
+</script>
+</body>
+</html>

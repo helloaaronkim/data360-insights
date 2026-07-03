@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Cloud · Customer Journey Timeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --brand:       #0070d2;
+      --brand-dark:  #005fb2;
+      --brand-deep:  #014486;
+      --brand-light: #eaf5fe;
+      --text-1:      #3e3e3c;
+      --text-2:      #706e6b;
+      --text-3:      #aeaeac;
+      --border:      #dddbda;
+      --border-lt:   #f0eeee;
+      --bg:          #f3f2f2;
+      --white:       #ffffff;
+      --success:     #04844b;
+      --success-bg:  #ecfdf5;
+      --warn:        #ffb75d;
+      --warn-bg:     #fffbf5;
+      --danger:      #c23934;
+      --danger-bg:   #fef1f1;
+      --shadow-sm:   0 1px 4px rgba(0,0,0,.08);
+      --shadow:      0 2px 8px rgba(0,0,0,.10);
+      --shadow-md:   0 4px 16px rgba(0,0,0,.12);
+      --web-c:       #0070d2; --web-bg:     #eaf5fe;
+      --app-c:       #04844b; --app-bg:     #ecfdf5;
+      --crm-c:       #e05c2e; --crm-bg:     #fff5f2;
+      --email-c:     #7b39d4; --email-bg:   #f5eeff;
+      --offline-c:   #8a6f00; --offline-bg: #fffbee;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text-1);
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ─── Header ─── */
+    .app-bar {
+      background: var(--brand-deep); color: #fff;
+      height: 52px; padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; z-index: 10;
+    }
+    .app-bar-left { display: flex; align-items: center; gap: 10px; }
+    .sf-badge {
+      width: 26px; height: 26px; background: #fff; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: var(--brand-deep);
+    }
+    .app-bar-title { font-size: 15px; font-weight: 600; letter-spacing: -.2px; }
+    .app-bar-sub { font-size: 12px; opacity: .6; margin-left: 4px; }
+    .app-bar-right { font-size: 11px; opacity: .65; display: flex; align-items: center; gap: 16px; }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #4fd07c;
+      display: inline-block; margin-right: 4px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(79,208,124,.5); }
+      50%      { box-shadow: 0 0 0 4px rgba(79,208,124,0); }
+    }
+
+    /* ─── Body layout ─── */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      width: 272px; background: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .sidebar-top {
+      padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
+    }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-2); margin-bottom: 10px;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap input {
+      width: 100%; padding: 7px 10px 7px 30px;
+      border: 1px solid var(--border); border-radius: 4px;
+      font-size: 13px; font-family: inherit; color: var(--text-1);
+      outline: none; transition: border-color .15s;
+    }
+    .search-wrap input:focus { border-color: var(--brand); }
+    .search-icon {
+      position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+      font-size: 13px; color: var(--text-3); pointer-events: none;
+    }
+    .seg-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+    .seg-pill {
+      padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 500;
+      cursor: pointer; border: 1.5px solid transparent; transition: all .15s; user-select: none;
+    }
+    .seg-pill.all         { background: var(--brand); color: #fff; }
+    .seg-pill.high-value  { background: var(--danger-bg); color: var(--danger); border-color: #f8c6c4; }
+    .seg-pill.loyal       { background: var(--success-bg); color: var(--success); border-color: #a3e6c3; }
+    .seg-pill.at-risk     { background: var(--warn-bg); color: #7d4a00; border-color: #f5c97a; }
+    .seg-pill.new         { background: var(--brand-light); color: var(--brand); border-color: #9dd7fb; }
+    .seg-pill.regular     { background: #f5f5f5; color: var(--text-2); border-color: var(--border); }
+    .seg-pill.active { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+    .cust-list { overflow-y: auto; flex: 1; }
+    .cust-item {
+      padding: 11px 16px; cursor: pointer;
+      border-bottom: 1px solid var(--border-lt);
+      display: flex; align-items: center; gap: 11px;
+      transition: background .1s; border-left: 3px solid transparent;
+    }
+    .cust-item:hover { background: var(--bg); }
+    .cust-item.active { background: var(--brand-light); border-left-color: var(--brand); }
+    .cust-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .cust-details { flex: 1; min-width: 0; }
+    .cust-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cust-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+    .seg-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .cust-ltv { font-size: 11px; color: var(--text-2); margin-left: auto; white-space: nowrap; }
+
+    /* ─── Main ─── */
+    .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ─── Profile card ─── */
+    .profile-card {
+      background: var(--white); border-radius: 8px; box-shadow: var(--shadow);
+      padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px;
+    }
+    .profile-ava {
+      width: 60px; height: 60px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .profile-info { flex: 1; }
+    .profile-name {
+      font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .seg-badge {
+      padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .profile-contacts { display: flex; gap: 18px; margin-top: 7px; flex-wrap: wrap; }
+    .contact-item { font-size: 12px; color: var(--text-2); display: flex; align-items: center; gap: 4px; }
+    .profile-nba {
+      margin-top: 10px; padding: 8px 12px; border-radius: 6px;
+      background: #fffbee; border: 1px solid #f5d87a;
+      font-size: 12px; color: #6b5200; display: flex; align-items: flex-start; gap: 6px;
+    }
+    .profile-stats { display: flex; border-left: 1px solid var(--border); margin-left: 8px; padding-left: 4px; }
+    .stat-box { padding: 6px 18px; border-right: 1px solid var(--border); text-align: center; }
+    .stat-box:last-child { border-right: none; }
+    .stat-val { font-size: 20px; font-weight: 700; color: var(--brand); line-height: 1; }
+    .stat-lbl { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+
+    /* ─── Sources row ─── */
+    .sources-bar {
+      background: var(--white); border-radius: 8px; box-shadow: var(--shadow-sm);
+      padding: 14px 20px;
+    }
+    .sources-bar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-2); margin-bottom: 10px; }
+    .src-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .src-tag {
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 20px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 1.5px solid transparent; transition: all .15s; user-select: none;
+    }
+    .src-tag.all     { background: var(--brand); color: #fff; }
+    .src-tag.web     { background: var(--web-bg);     color: var(--web-c);     border-color: #b3d9f5; }
+    .src-tag.app     { background: var(--app-bg);     color: var(--app-c);     border-color: #a3e6c3; }
+    .src-tag.crm     { background: var(--crm-bg);     color: var(--crm-c);     border-color: #fcc2b0; }
+    .src-tag.email   { background: var(--email-bg);   color: var(--email-c);   border-color: #d0aaff; }
+    .src-tag.offline { background: var(--offline-bg); color: var(--offline-c); border-color: #f5d87a; }
+    .src-tag:hover { transform: translateY(-1px); }
+    .src-tag.active { outline: 2px solid currentColor; outline-offset: 2px; font-weight: 700; }
+    .src-cnt {
+      background: rgba(0,0,0,.08); padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 600;
+    }
+
+    /* ─── Timeline ─── */
+    .timeline-card {
+      background: var(--white); border-radius: 8px; box-shadow: var(--shadow); padding: 20px;
+    }
+    .tl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .tl-title { font-size: 14px; font-weight: 600; }
+    .tl-cnt { font-size: 12px; color: var(--text-2); }
+
+    .timeline { position: relative; }
+    .timeline::before {
+      content: ''; position: absolute; left: 19px; top: 0; bottom: 0; width: 2px; background: var(--border);
+    }
+    .date-group { margin-bottom: 22px; }
+    .date-heading {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px;
+      color: var(--text-2); padding-left: 44px; margin-bottom: 12px;
+    }
+    .tl-event { display: flex; gap: 14px; margin-bottom: 14px; animation: fadeUp .25s ease-out; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .evt-dot {
+      width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+      margin-top: 5px; margin-left: 12px; border: 2.5px solid var(--white);
+      position: relative; z-index: 1;
+    }
+    .evt-dot.web     { background: var(--web-c);     box-shadow: 0 0 0 2px var(--web-c); }
+    .evt-dot.app     { background: var(--app-c);     box-shadow: 0 0 0 2px var(--app-c); }
+    .evt-dot.crm     { background: var(--crm-c);     box-shadow: 0 0 0 2px var(--crm-c); }
+    .evt-dot.email   { background: var(--email-c);   box-shadow: 0 0 0 2px var(--email-c); }
+    .evt-dot.offline { background: var(--offline-c); box-shadow: 0 0 0 2px var(--offline-c); }
+    .evt-card {
+      flex: 1; border: 1px solid var(--border); border-radius: 8px;
+      padding: 11px 14px; transition: box-shadow .15s;
+    }
+    .evt-card:hover { box-shadow: var(--shadow); }
+    .evt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .evt-badge {
+      padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .badge-web     { background: var(--web-bg);     color: var(--web-c); }
+    .badge-app     { background: var(--app-bg);     color: var(--app-c); }
+    .badge-crm     { background: var(--crm-bg);     color: var(--crm-c); }
+    .badge-email   { background: var(--email-bg);   color: var(--email-c); }
+    .badge-offline { background: var(--offline-bg); color: var(--offline-c); }
+    .evt-time { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+    .evt-title { font-size: 13px; font-weight: 600; margin-top: 6px; }
+    .evt-desc { font-size: 12px; color: var(--text-2); margin-top: 3px; line-height: 1.5; }
+    .evt-chips { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .evt-chip {
+      font-size: 11px; color: var(--text-2); background: var(--bg);
+      padding: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 3px;
+    }
+    .sys-tag {
+      font-size: 10px; color: var(--text-3); background: var(--bg);
+      padding: 1px 7px; border-radius: 3px; margin-top: 6px;
+      display: inline-flex; align-items: center; gap: 4px; font-family: 'SF Mono', monospace;
+    }
+
+    /* ─── Empty ─── */
+    .empty-wrap { display: flex; flex-direction: column; align-items: center; padding: 80px 20px; }
+    .empty-icon { font-size: 46px; margin-bottom: 14px; }
+    .empty-title { font-size: 16px; font-weight: 600; }
+    .empty-desc  { font-size: 13px; color: var(--text-2); margin-top: 6px; }
+
+    /* ─── No selection ─── */
+    .no-select {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: var(--text-2); gap: 12px;
+    }
+    .no-select-icon { font-size: 52px; opacity: .4; }
+    .no-select-txt  { font-size: 14px; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+  </style>
+</head>
+<body>
+
+<!-- ── App Bar ── -->
+<header class="app-bar">
+  <div class="app-bar-left">
+    <div class="sf-badge">SF</div>
+    <span class="app-bar-title">Salesforce Data Cloud</span>
+    <span class="app-bar-sub">· Customer Journey Timeline</span>
+  </div>
+  <div class="app-bar-right">
+    <span><span class="live-dot"></span>실시간 연동</span>
+    <span>스타일허브 Production Org</span>
+  </div>
+</header>
+
+<!-- ── Body ── -->
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">고객 목록</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="이름 또는 이메일 검색…" oninput="renderList()" />
+      </div>
+      <div class="seg-pills" id="segPills"></div>
+    </div>
+    <div class="cust-list" id="custList"></div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="mainPane">
+    <div class="no-select">
+      <div class="no-select-icon">👤</div>
+      <div class="no-select-txt">왼쪽에서 고객을 선택하세요</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════ */
+const CUSTOMERS = [
+  {
+    id: 1, name: "김지수", initials: "김",
+    email: "jisoo.kim@email.com", phone: "010-2341-5678",
+    color: "#e91e8c", segment: "high-value", segmentLabel: "고가치 고객",
+    joinDate: "2022-03-15", ltv: 4820000,
+    preferredChannel: "app", nba: "Platinum 등급 전환 기념 스페셜 오퍼 발송",
+    interests: ["패션", "뷰티"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-22", time:"14:23", source:"web", system:"Adobe Analytics",
+        title:"스프링 컬렉션 상품 장바구니 담기",
+        desc:"마르니 플라워 프린트 원피스 (₩680,000) 장바구니에 추가",
+        chips:["🛒 장바구니","💰 ₩680,000"] },
+      { date:"2024-03-21", time:"09:11", source:"email", system:"Salesforce Marketing Cloud",
+        title:"VIP 봄 시즌 세일 캠페인 링크 클릭",
+        desc:"스프링 컬렉션 특가 이메일 오픈 후 상품 링크 3개 클릭",
+        chips:["📩 오픈","🔗 클릭 3회"] },
+      { date:"2024-03-20", time:"18:05", source:"app", system:"Mobile App SDK",
+        title:"푸시 알림 수신 후 앱 진입",
+        desc:"'찜한 상품 재입고 알림' 푸시 알림 클릭하여 앱 진입, 5분 탐색",
+        chips:["🔔 푸시 클릭","⏱ 5분"] },
+      { date:"2024-02-14", time:"15:30", source:"offline", system:"POS System",
+        title:"강남 플래그십 스토어 발렌타인 방문 구매",
+        desc:"미우미우 미니백 (₩1,850,000) 오프라인 구매 완료",
+        chips:["🏪 강남점","💳 ₩1,850,000"] },
+      { date:"2024-02-10", time:"10:00", source:"crm", system:"Salesforce CRM",
+        title:"VIP 등급 Gold → Platinum 업그레이드",
+        desc:"누적 구매액 기준 Platinum 자동 업그레이드. 전담 CS 배정 완료",
+        chips:["⬆ 등급 변경","👑 Platinum"] },
+      { date:"2024-01-25", time:"20:14", source:"web", system:"Web SDK",
+        title:"겨울 아우터 구매 완료",
+        desc:"막스마라 카멜 코트 (₩289,000) 구매 완료. 결제수단: 신용카드",
+        chips:["✅ 구매","💰 ₩289,000"] },
+      { date:"2024-01-03", time:"08:45", source:"email", system:"Salesforce Marketing Cloud",
+        title:"신년 세일 캠페인 오픈",
+        desc:"'2024 새해 첫 쇼핑' 이메일 오픈. 캠페인 오픈율 32.4% 대비 우수",
+        chips:["📩 오픈"] },
+      { date:"2023-12-24", time:"22:10", source:"app", system:"Mobile App SDK",
+        title:"크리스마스 기획전 위시리스트 추가",
+        desc:"연말 기획전 상품 7개 위시리스트 추가. 앱 체류 21분",
+        chips:["⭐ 위시리스트 +7","⏱ 21분"] },
+      { date:"2023-11-20", time:"14:05", source:"crm", system:"Service Cloud",
+        title:"배송 지연 문의 접수 및 해결",
+        desc:"배송 지연 관련 인바운드 문의. 24시간 내 해결, 만족도 5/5 점",
+        chips:["🎧 해결됨","⭐ 5/5"] },
+      { date:"2023-10-08", time:"11:30", source:"offline", system:"POS System",
+        title:"여의도 팝업 이벤트 참여 및 구매",
+        desc:"가을 신상 팝업스토어 참여. 스카프 (₩95,000) 구매",
+        chips:["🏪 여의도 팝업","💰 ₩95,000"] }
+    ]
+  },
+  {
+    id: 2, name: "이민준", initials: "이",
+    email: "minjun.lee@sports.kr", phone: "010-5541-2233",
+    color: "#2196f3", segment: "at-risk", segmentLabel: "이탈 위험",
+    joinDate: "2023-03-10", ltv: 430000,
+    preferredChannel: "web", nba: "60일 비활성 Win-Back 캠페인 즉시 발송",
+    interests: ["스포츠", "아웃도어"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-15", time:"10:22", source:"crm", system:"Service Cloud",
+        title:"환불 요청 접수 (운동화 사이즈 불만족)",
+        desc:"아디다스 울트라부스트 사이즈 불만족으로 환불 요청. 현재 처리 중",
+        chips:["🔄 환불 요청","⚠ 처리 중"] },
+      { date:"2024-02-28", time:"19:50", source:"web", system:"Adobe Analytics",
+        title:"상품 페이지 조회 후 이탈",
+        desc:"나이키 페가수스 40 조회 후 30초 내 이탈. 가격 비교 의심",
+        chips:["👁 조회","🚪 이탈"] },
+      { date:"2024-01-20", time:"08:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"재구매 유도 캠페인 — 미오픈",
+        desc:"'다시 돌아오세요 ❤' 이메일 발송. 오픈 이력 없음 (30일째)",
+        chips:["📵 미오픈"] },
+      { date:"2023-12-05", time:"20:14", source:"app", system:"Mobile App SDK",
+        title:"마지막 앱 실행 (이후 비활성)",
+        desc:"앱 실행 후 스포츠 카테고리 3분 탐색. 이후 60일+ 비활성 상태",
+        chips:["⚠ 비활성 60일+"] },
+      { date:"2023-12-02", time:"15:10", source:"web", system:"Web SDK",
+        title:"아디다스 트랙수트 구매 완료",
+        desc:"아디다스 트랙수트 (₩145,000) 구매. 첫 구매 후 두 번째 구매",
+        chips:["✅ 구매","💰 ₩145,000"] },
+      { date:"2023-11-24", time:"11:30", source:"email", system:"Salesforce Marketing Cloud",
+        title:"블랙프라이데이 스포츠 특가 링크 클릭",
+        desc:"블랙프라이데이 캠페인 오픈 후 러닝화 카테고리 링크 클릭",
+        chips:["📩 오픈","🔗 클릭"] },
+      { date:"2023-11-10", time:"16:45", source:"app", system:"Mobile App SDK",
+        title:"나이키 런닝화 장바구니 이탈",
+        desc:"나이키 줌 페가수스 38 (₩189,000) 장바구니 후 결제 미완료",
+        chips:["🛒 이탈","💰 ₩189,000"] },
+      { date:"2023-10-15", time:"14:00", source:"offline", system:"POS System",
+        title:"롯데몰 팝업스토어 방문",
+        desc:"스포츠 브랜드 팝업 방문. 구매 없이 체험 행사 참여",
+        chips:["🏪 롯데몰 팝업"] }
+    ]
+  },
+  {
+    id: 3, name: "박서연", initials: "박",
+    email: "seoyeon.park@naver.com", phone: "010-7723-4456",
+    color: "#9c27b0", segment: "new", segmentLabel: "신규 고객",
+    joinDate: "2024-03-10", ltv: 620000,
+    preferredChannel: "web", nba: "첫 구매 30일 후 뷰티 카테고리 쿠폰 발송",
+    interests: ["가전", "뷰티"],
+    sources: ["web","app","crm","email"],
+    events: [
+      { date:"2024-03-22", time:"11:55", source:"web", system:"Web SDK",
+        title:"구매 후 리뷰 작성 (5점)",
+        desc:"다이슨 에어랩 구매 후 상세 리뷰 작성. '완전 만족' 후기 등록",
+        chips:["⭐ 리뷰 5점"] },
+      { date:"2024-03-20", time:"14:30", source:"email", system:"Salesforce Marketing Cloud",
+        title:"고객 만족도 조사 이메일 클릭",
+        desc:"구매 완료 후 만족도 조사 링크 클릭. NPS 점수 9점 응답",
+        chips:["📩 클릭","🌟 NPS 9점"] },
+      { date:"2024-03-17", time:"09:30", source:"crm", system:"Service Cloud",
+        title:"배송 현황 채팅 상담",
+        desc:"'배송이 언제 오나요?' 채팅 문의. 3분 내 답변. 만족도 5/5",
+        chips:["💬 채팅 상담","✅ 해결"] },
+      { date:"2024-03-15", time:"20:44", source:"web", system:"Web SDK",
+        title:"다이슨 에어랩 구매 완료",
+        desc:"다이슨 에어랩 컴플리트 (₩620,000) 첫 구매. 쿠폰 15% 적용",
+        chips:["✅ 첫 구매","💰 ₩527,000 (할인 적용)"] },
+      { date:"2024-03-14", time:"16:20", source:"email", system:"Salesforce Marketing Cloud",
+        title:"신규 가입 15% 할인 쿠폰 이메일 클릭",
+        desc:"웰컴 시리즈 2번째 이메일. 할인 쿠폰 링크 클릭하여 사이트 진입",
+        chips:["🔗 쿠폰 클릭"] },
+      { date:"2024-03-13", time:"22:10", source:"app", system:"Mobile App SDK",
+        title:"앱 다운로드 및 첫 실행",
+        desc:"iOS 앱스토어를 통해 앱 설치. 가전 카테고리 탐색 (8분)",
+        chips:["📱 첫 실행","⏱ 8분"] },
+      { date:"2024-03-12", time:"19:35", source:"web", system:"Adobe Analytics",
+        title:"다이슨 에어랩 상품 페이지 집중 조회",
+        desc:"에어랩 상세 페이지 체류 5분 12초. 리뷰 37개 모두 열람",
+        chips:["👁 조회","⏱ 5분 12초"] },
+      { date:"2024-03-10", time:"10:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"웰컴 이메일 오픈",
+        desc:"가입 즉시 발송된 웰컴 이메일 오픈. 브랜드 소개 및 첫 구매 혜택 안내",
+        chips:["📩 웰컴 오픈"] },
+      { date:"2024-03-10", time:"09:48", source:"web", system:"Web SDK",
+        title:"신규 회원 가입",
+        desc:"카카오 소셜 로그인으로 회원 가입 완료. 유입 경로: 네이버 검색",
+        chips:["👤 신규 가입","🔗 네이버 검색 유입"] }
+    ]
+  },
+  {
+    id: 4, name: "최준혁", initials: "최",
+    email: "junhyuk.choi@techie.kr", phone: "010-9912-3377",
+    color: "#00897b", segment: "loyal", segmentLabel: "충성 고객",
+    joinDate: "2021-07-22", ltv: 6340000,
+    preferredChannel: "web", nba: "갤럭시 S24 출시 사전 예약 알림 발송",
+    interests: ["IT기기", "전자기기"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-18", time:"23:01", source:"app", system:"Mobile App SDK",
+        title:"갤럭시 S24 Ultra 위시리스트 추가",
+        desc:"갤럭시 S24 Ultra 256GB 티타늄 블랙 위시리스트 추가 및 출시 알림 설정",
+        chips:["⭐ 위시리스트","🔔 알림 설정"] },
+      { date:"2024-03-17", time:"08:55", source:"email", system:"Salesforce Marketing Cloud",
+        title:"갤럭시 S24 출시 이메일 오픈",
+        desc:"신제품 출시 이메일 발송 1시간 후 오픈. 스펙 비교 링크 클릭 2회",
+        chips:["📩 즉시 오픈","🔗 클릭 2회"] },
+      { date:"2024-02-20", time:"19:40", source:"web", system:"Web SDK",
+        title:"갤럭시 탭 S9 FE 구매",
+        desc:"삼성 갤럭시 탭 S9 FE 256GB (₩620,000) 구매. 삼성카드 24개월 할부",
+        chips:["✅ 구매","💰 ₩620,000"] },
+      { date:"2024-02-10", time:"15:00", source:"offline", system:"POS System",
+        title:"강남 Apple 프리미엄 리셀러 방문",
+        desc:"Apple 매장 방문. 구매 없이 M3 MacBook Pro 체험",
+        chips:["🏪 강남 Apple"] },
+      { date:"2024-01-15", time:"10:30", source:"crm", system:"Salesforce CRM",
+        title:"삼성케어+ 보증 연장 신청 처리 완료",
+        desc:"작년 구매 제품 삼성케어+ 1년 연장 신청. 자동 처리 완료",
+        chips:["✅ 보증 연장"] },
+      { date:"2024-01-10", time:"21:20", source:"app", system:"Mobile App SDK",
+        title:"AirPods Pro vs Galaxy Buds2 Pro 기기 비교",
+        desc:"앱 내 기기 비교 기능 사용. 10분간 스펙 비교 및 커뮤니티 리뷰 탐색",
+        chips:["🔍 비교 탐색","⏱ 10분"] },
+      { date:"2023-12-24", time:"14:15", source:"web", system:"Web SDK",
+        title:"아이폰 15 Pro 구매",
+        desc:"iPhone 15 Pro 256GB 내추럴 티타늄 (₩1,550,000) 구매",
+        chips:["✅ 구매","💰 ₩1,550,000"] },
+      { date:"2023-10-01", time:"13:00", source:"app", system:"Mobile App SDK",
+        title:"상품 리뷰 8개 연속 작성",
+        desc:"구매 제품 리뷰 8개 작성. 커뮤니티 기여자 배지 획득",
+        chips:["✍ 리뷰 8개","🏅 배지 획득"] }
+    ]
+  },
+  {
+    id: 5, name: "정수아", initials: "정",
+    email: "sua.jung@homestyle.com", phone: "010-3356-8890",
+    color: "#ff7043", segment: "regular", segmentLabel: "일반 고객",
+    joinDate: "2022-11-05", ltv: 876000,
+    preferredChannel: "web", nba: "홈리빙 시즌 신상 뉴스레터 발송",
+    interests: ["홈리빙", "인테리어"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-20", time:"21:10", source:"web", system:"Adobe Analytics",
+        title:"무인양품 스타일 수납함 검색 및 탐색",
+        desc:"'MUJI 스타일 수납' 키워드 검색 후 12개 상품 탐색. 체류 8분",
+        chips:["🔍 검색","⏱ 8분"] },
+      { date:"2024-03-18", time:"09:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"주간 홈리빙 추천 뉴스레터 오픈",
+        desc:"'이번 주 베스트 홈리빙' 뉴스레터 오픈. 수납 관련 상품 링크 클릭",
+        chips:["📩 오픈","🔗 클릭"] },
+      { date:"2024-02-22", time:"14:00", source:"offline", system:"POS System",
+        title:"이케아 팝업 이벤트 참여",
+        desc:"이케아 콜라보 팝업 이벤트 참여. 구매 없이 체험 및 소품 증정 수령",
+        chips:["🏪 이케아 팝업"] },
+      { date:"2024-02-14", time:"20:44", source:"web", system:"Web SDK",
+        title:"프리미엄 침구 세트 구매",
+        desc:"이집트 면 400수 침구 세트 킹 사이즈 (₩189,000) 구매 완료",
+        chips:["✅ 구매","💰 ₩189,000"] },
+      { date:"2024-01-20", time:"16:30", source:"crm", system:"Service Cloud",
+        title:"세탁 방법 상품 문의",
+        desc:"침구 세탁 방법 관련 채팅 상담. 케어 라벨 안내 후 해결",
+        chips:["💬 문의","✅ 해결"] },
+      { date:"2023-12-20", time:"19:55", source:"web", system:"Web SDK",
+        title:"크리스마스 홈데코 구매",
+        desc:"크리스마스 트리 & 홈데코 세트 (₩87,000) 구매. 기간 한정 10% 할인 적용",
+        chips:["✅ 구매","💰 ₩87,000"] },
+      { date:"2023-11-05", time:"22:30", source:"app", system:"Mobile App SDK",
+        title:"찜한 상품 12개 추가",
+        desc:"홈리빙 섹션 탐색 중 소파 커버, 쿠션 등 12개 상품 위시리스트 추가",
+        chips:["⭐ 위시리스트 +12"] }
+    ]
+  },
+  {
+    id: 6, name: "한동욱", initials: "한",
+    email: "dongwook.han@vip.com", phone: "010-1122-9900",
+    color: "#37474f", segment: "high-value", segmentLabel: "고가치 고객",
+    joinDate: "2020-06-01", ltv: 18600000,
+    preferredChannel: "offline", nba: "구찌 신컬렉션 프라이빗 프리뷰 초청",
+    interests: ["명품", "패션"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-25", time:"16:40", source:"web", system:"Adobe Analytics",
+        title:"구찌 마몽 미니 숄더백 상품 상세 조회",
+        desc:"구찌 마몽 미니백 상세 페이지 조회 7분. 3가지 컬러 비교",
+        chips:["👁 상품 조회","⏱ 7분"] },
+      { date:"2024-03-22", time:"19:00", source:"offline", system:"POS System",
+        title:"VIP 봄 컬렉션 프리뷰 이벤트 참석",
+        desc:"청담 VIP 라운지 프리뷰 이벤트 참석. 샴페인 리셉션 및 신상 프레젠테이션",
+        chips:["🎪 VIP 이벤트"] },
+      { date:"2024-02-28", time:"14:20", source:"crm", system:"Salesforce CRM",
+        title:"전담 스타일리스트 상담 예약",
+        desc:"봄 시즌 퍼스널 스타일링 1:1 예약 확정. 오는 3월 청담 쇼룸 예정",
+        chips:["📅 예약 완료"] },
+      { date:"2024-02-20", time:"17:30", source:"web", system:"Web SDK",
+        title:"몽클레어 마야 패딩 구매",
+        desc:"몽클레어 마야 다운 재킷 블랙 (₩2,890,000) 구매. 당일 배송 신청",
+        chips:["✅ 구매","💰 ₩2,890,000"] },
+      { date:"2024-02-19", time:"10:05", source:"email", system:"Salesforce Marketing Cloud",
+        title:"VIP 신상품 우선 공개 이메일 오픈",
+        desc:"몽클레어 신상 우선 공개 이메일. 발송 2시간 내 오픈 및 구매 전환",
+        chips:["📩 즉시 오픈","⚡ 2시간 내 전환"] },
+      { date:"2024-01-15", time:"13:00", source:"offline", system:"POS System",
+        title:"현대 갤러리아 명품관 오프라인 구매",
+        desc:"셀린느 트리오 백 미니 (₩1,250,000) 갤러리아 명품관 구매",
+        chips:["🏪 갤러리아 명품관","💰 ₩1,250,000"] },
+      { date:"2023-12-30", time:"09:00", source:"crm", system:"Salesforce CRM",
+        title:"Platinum 등급 연간 유지 확인",
+        desc:"2023년 연간 구매 총액 기반 Platinum 등급 유지 확정. 2024년 혜택 안내",
+        chips:["👑 Platinum 유지"] }
+    ]
+  },
+  {
+    id: 7, name: "임지원", initials: "임",
+    email: "jiwon.lim@skincare.me", phone: "010-6688-2214",
+    color: "#ad1457", segment: "at-risk", segmentLabel: "이탈 위험",
+    joinDate: "2023-09-01", ltv: 285000,
+    preferredChannel: "web", nba: "개인화 스킨케어 퀴즈 + 무료 샘플 오퍼",
+    interests: ["스킨케어", "뷰티"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-10", time:"08:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"재방문 유도 쿠폰 이메일 — 미오픈 (3연속)",
+        desc:"이탈 방지 Win-Back 캠페인 3번째 발송. 오픈 이력 없음",
+        chips:["📵 미오픈 3연속","⚠ 이탈 위험"] },
+      { date:"2024-02-15", time:"11:20", source:"crm", system:"Service Cloud",
+        title:"SNS 불만 게시글 접수 및 처리",
+        desc:"인스타그램에 제품 불만 게시. 소셜 리스닝 감지 후 CS 담당자 연락",
+        chips:["📢 SNS 불만","⚠ 모니터링"] },
+      { date:"2024-02-01", time:"09:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"피부 타입별 추천 캠페인 오픈 (링크 미클릭)",
+        desc:"맞춤 스킨케어 추천 이메일 오픈 확인. 그러나 링크 클릭 없이 이탈",
+        chips:["📩 오픈만","🚪 클릭 없음"] },
+      { date:"2024-01-10", time:"20:30", source:"web", system:"Adobe Analytics",
+        title:"경쟁사 가격 비교 후 사이트 이탈",
+        desc:"동일 세럼 상품 검색 중 경쟁사 팝업 광고 클릭하여 이탈 추정",
+        chips:["🚪 경쟁사 이탈 추정"] },
+      { date:"2023-12-10", time:"21:05", source:"app", system:"Mobile App SDK",
+        title:"마지막 앱 실행 (이후 90일 비활성)",
+        desc:"앱 실행 후 세럼 카테고리 2분 탐색. 이후 90일+ 비활성 상태",
+        chips:["⚠ 비활성 90일+"] },
+      { date:"2023-12-05", time:"16:40", source:"web", system:"Web SDK",
+        title:"설화수 자음 세럼 구매",
+        desc:"설화수 자음 2호 세럼 50ml (₩185,000) 구매. 첫 구매 쿠폰 적용",
+        chips:["✅ 구매","💰 ₩185,000"] },
+      { date:"2023-11-22", time:"10:30", source:"email", system:"Salesforce Marketing Cloud",
+        title:"뷰티 어워드 상품 캠페인 링크 클릭",
+        desc:"'올해의 뷰티 어워드' 이메일 오픈 후 세럼 카테고리 링크 클릭",
+        chips:["📩 오픈","🔗 클릭"] },
+      { date:"2023-09-05", time:"13:30", source:"offline", system:"POS System",
+        title:"신세계 뷰티 팝업 방문",
+        desc:"신세계 뷰티 페스티벌 팝업 참여. 샘플 수령 및 체험",
+        chips:["🏪 신세계 팝업"] }
+    ]
+  },
+  {
+    id: 8, name: "오세훈", initials: "오",
+    email: "sehoon.oh@runner.com", phone: "010-4455-6677",
+    color: "#1565c0", segment: "new", segmentLabel: "신규 고객",
+    joinDate: "2024-03-01", ltv: 189000,
+    preferredChannel: "web", nba: "구매 2주 후 러닝 소품 크로스셀 추천",
+    interests: ["러닝", "스포츠"],
+    sources: ["web","app","crm","email"],
+    events: [
+      { date:"2024-03-20", time:"18:10", source:"crm", system:"Service Cloud",
+        title:"사이즈 교환 요청 처리 완료 (270 → 275)",
+        desc:"호카 카하 2 270mm → 275mm 교환 요청. 익일 배송으로 처리 완료",
+        chips:["🔄 교환 완료","✅ 신속 처리"] },
+      { date:"2024-03-15", time:"12:05", source:"app", system:"Mobile App SDK",
+        title:"배송 현황 앱에서 조회",
+        desc:"앱에서 주문 배송 현황 2회 조회. 'HK카하2' 키워드 커뮤니티 검색",
+        chips:["📦 배송 조회"] },
+      { date:"2024-03-13", time:"21:55", source:"web", system:"Web SDK",
+        title:"호카 카하 2 구매 완료",
+        desc:"HOKA Kahah 2 275mm 블랙 (₩189,000) 첫 구매. 무료 배송 적용",
+        chips:["✅ 첫 구매","💰 ₩189,000"] },
+      { date:"2024-03-12", time:"19:20", source:"email", system:"Salesforce Marketing Cloud",
+        title:"런닝 시즌 특가 캠페인 링크 클릭",
+        desc:"'봄 러닝 시즌 시작' 이메일 클릭. 호카, 아식스, 뉴발란스 비교",
+        chips:["📩 클릭","🔗 상품 비교"] },
+      { date:"2024-03-10", time:"11:00", source:"app", system:"Mobile App SDK",
+        title:"앱 설치 및 첫 실행",
+        desc:"안드로이드 앱 설치. 러닝화 카테고리 탐색 (6분)",
+        chips:["📱 첫 실행","⏱ 6분"] },
+      { date:"2024-03-01", time:"09:30", source:"email", system:"Salesforce Marketing Cloud",
+        title:"웰컴 이메일 오픈",
+        desc:"신규 가입 환영 이메일 오픈. 브랜드 소개 및 첫 구매 할인 안내 확인",
+        chips:["📩 웰컴 오픈"] },
+      { date:"2024-03-01", time:"09:15", source:"web", system:"Web SDK",
+        title:"네이버 소셜 로그인으로 신규 가입",
+        desc:"네이버 검색 '호카 카하 2 최저가' 클릭 후 소셜 로그인 가입",
+        chips:["👤 신규 가입","🔗 네이버 유입"] }
+    ]
+  },
+  {
+    id: 9, name: "강민서", initials: "강",
+    email: "minseo.kang@beauty.kr", phone: "010-8821-5544",
+    color: "#6a1b9a", segment: "loyal", segmentLabel: "충성 고객",
+    joinDate: "2021-04-10", ltv: 5430000,
+    preferredChannel: "app", nba: "뷰티 VIP 클럽 연간 멤버십 갱신 오퍼",
+    interests: ["뷰티", "스킨케어", "향수"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-25", time:"10:00", source:"app", system:"Mobile App SDK",
+        title:"뷰티 박스 정기 구독 6개월 갱신",
+        desc:"프리미엄 뷰티 박스 정기 구독 6개월 갱신 (₩198,000). 사은품 선택 완료",
+        chips:["🔄 구독 갱신","💰 ₩198,000"] },
+      { date:"2024-03-22", time:"08:30", source:"email", system:"Salesforce Marketing Cloud",
+        title:"주간 뷰티 뉴스레터 오픈 + 링크 3개 클릭",
+        desc:"뷰티 위클리 뉴스레터 오픈. 신상 파운데이션, 세럼, 립 링크 모두 클릭",
+        chips:["📩 오픈","🔗 클릭 3개"] },
+      { date:"2024-02-25", time:"19:45", source:"web", system:"Web SDK",
+        title:"끌레드뽀보떼 파운데이션 구매",
+        desc:"끌레드뽀보떼 라 포드르 오쇼 파운데이션 (₩130,000) 구매",
+        chips:["✅ 구매","💰 ₩130,000"] },
+      { date:"2024-02-10", time:"14:00", source:"app", system:"Mobile App SDK",
+        title:"뷰티 커뮤니티 게시글 10개 작성",
+        desc:"2월 사용 후기 및 뷰티 팁 게시글 10개 업로드. 팔로워 1,240명 달성",
+        chips:["✍ 게시글 10개","👥 팔로워 1,240"] },
+      { date:"2024-01-20", time:"11:00", source:"offline", system:"POS System",
+        title:"프리미엄 뷰티 클래스 이벤트 참여",
+        desc:"한국 메이크업 아티스트 초청 클래스 참여. 체험 상품 3개 구매 (₩89,000)",
+        chips:["🎨 뷰티 클래스","💰 ₩89,000"] },
+      { date:"2024-01-05", time:"09:30", source:"crm", system:"Salesforce CRM",
+        title:"VIP 뷰티 멤버십 1년 연장",
+        desc:"뷰티 VIP 클럽 연간 멤버십 1년 재가입. 골드 → 플래티넘 자동 승급",
+        chips:["👑 Platinum 승급","🔄 1년 연장"] },
+      { date:"2023-12-20", time:"20:15", source:"web", system:"Web SDK",
+        title:"연말 럭셔리 뷰티 기프트 세트 구매",
+        desc:"조말론 런던 홀리데이 기프트 컬렉션 (₩350,000) 구매. 크리스마스 선물용",
+        chips:["✅ 구매","💰 ₩350,000","🎁 선물 포장"] }
+    ]
+  },
+  {
+    id: 10, name: "윤재혁", initials: "윤",
+    email: "jaehyuk.yoon@techguy.com", phone: "010-2200-4488",
+    color: "#0277bd", segment: "regular", segmentLabel: "일반 고객",
+    joinDate: "2022-05-18", ltv: 1430000,
+    preferredChannel: "web", nba: "LG OLED TV 재방문 유도 + 할부 혜택 안내",
+    interests: ["가전", "TV", "IT기기"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-22", time:"22:30", source:"web", system:"Adobe Analytics",
+        title:"LG OLED TV 55인치 vs 65인치 비교 탐색",
+        desc:"LG C3 OLED 55형, 65형 상품 페이지 15분 비교 탐색. 스펙시트 다운로드",
+        chips:["🔍 비교 탐색","⏱ 15분"] },
+      { date:"2024-03-20", time:"09:10", source:"email", system:"Salesforce Marketing Cloud",
+        title:"봄 가전 특가 뉴스레터 오픈",
+        desc:"'봄맞이 가전 교체 특가' 이메일 오픈. TV 섹션 링크 클릭",
+        chips:["📩 오픈","🔗 TV 클릭"] },
+      { date:"2024-02-15", time:"20:45", source:"app", system:"Mobile App SDK",
+        title:"삼성 청소기 구매 리뷰 작성 (4점)",
+        desc:"비스포크 제트 청소기 사용 2주 후 앱에서 리뷰 작성. '흡입력은 좋으나 무게가 아쉬움'",
+        chips:["✍ 리뷰 4점"] },
+      { date:"2024-02-01", time:"19:05", source:"web", system:"Web SDK",
+        title:"삼성 비스포크 제트 청소기 구매",
+        desc:"삼성 비스포크 제트 (₩450,000) 구매. 쿠폰 5만 원 적용",
+        chips:["✅ 구매","💰 ₩400,000 (할인 적용)"] },
+      { date:"2024-01-25", time:"14:30", source:"crm", system:"Service Cloud",
+        title:"노트북 충전기 불량 AS 접수 처리 완료",
+        desc:"LG 그램 충전기 단선 AS 접수. 무상 교체 처리 완료 (3일 소요)",
+        chips:["🔧 AS 완료","✅ 무상 교체"] },
+      { date:"2023-12-10", time:"16:00", source:"offline", system:"POS System",
+        title:"전자랜드 오프라인 모니터 구매",
+        desc:"LG UltraWide 34인치 모니터 (₩380,000) 전자랜드 현장 구매",
+        chips:["🏪 전자랜드","💰 ₩380,000"] },
+      { date:"2023-11-01", time:"21:00", source:"app", system:"Mobile App SDK",
+        title:"삼성 65인치 TV 장바구니 저장 (미결제)",
+        desc:"삼성 QN65QN85C QLED TV (₩1,290,000) 장바구니 저장. 결제 미완료",
+        chips:["🛒 장바구니","⚠ 미결제"] }
+    ]
+  },
+  {
+    id: 11, name: "신예은", initials: "신",
+    email: "yeeun.shin@fashion.vip", phone: "010-3300-5511",
+    color: "#880e4f", segment: "high-value", segmentLabel: "고가치 고객",
+    joinDate: "2020-01-08", ltv: 22400000,
+    preferredChannel: "offline", nba: "2024 SS 컬렉션 단독 선구매 초청장 발송",
+    interests: ["프리미엄 패션", "하이엔드 브랜드"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-28", time:"15:00", source:"offline", system:"POS System",
+        title:"청담 VIP 쇼룸 봄 시즌 방문",
+        desc:"청담 VIP 라운지 방문. 발렌시아가·셀린느 2024 SS 신상 핏팅 및 예약 주문",
+        chips:["🏪 청담 VIP 쇼룸"] },
+      { date:"2024-03-20", time:"11:00", source:"app", system:"Mobile App SDK",
+        title:"신상 발렌시아가 트리플 S 사전 예약",
+        desc:"발렌시아가 트리플 S 2024 신색상 앱에서 사전 예약. 입금 대기",
+        chips:["📋 사전 예약","⏳ 입금 대기"] },
+      { date:"2024-02-25", time:"16:30", source:"web", system:"Web SDK",
+        title:"발렌시아가 트리플 S 스니커즈 구매",
+        desc:"발렌시아가 트리플 S 37 사이즈 블랙 (₩1,050,000) 구매 완료",
+        chips:["✅ 구매","💰 ₩1,050,000"] },
+      { date:"2024-02-20", time:"10:00", source:"crm", system:"Salesforce CRM",
+        title:"퍼스널 스타일링 서비스 예약",
+        desc:"전담 스타일리스트 1:1 스프링 시즌 스타일링 상담 예약 확정",
+        chips:["📅 스타일링 예약"] },
+      { date:"2024-02-15", time:"08:45", source:"email", system:"Salesforce Marketing Cloud",
+        title:"신예은 전용 큐레이션 이메일 오픈",
+        desc:"AI 기반 개인 맞춤 큐레이션 이메일 오픈. 모든 링크 클릭 후 쇼룸 예약",
+        chips:["📩 즉시 오픈","🔗 전체 클릭"] },
+      { date:"2024-01-15", time:"11:00", source:"offline", system:"POS System",
+        title:"2024 SS 패션위크 프리뷰 이벤트 참석",
+        desc:"국내 패션위크 VIP 시즌 프리뷰 행사 참석. 3개 브랜드 프레젠테이션 관람",
+        chips:["🎪 패션위크 VIP"] },
+      { date:"2023-12-22", time:"14:20", source:"crm", system:"Salesforce CRM",
+        title:"연간 구매 총액 기반 Platinum++ 등급 부여",
+        desc:"2023년 연간 구매 총액 1,800만 원 이상. Platinum++ 최상위 등급 부여",
+        chips:["👑 Platinum++","💎 최상위 등급"] },
+      { date:"2023-11-10", time:"20:10", source:"web", system:"Web SDK",
+        title:"프리미엄 울 코트 구매",
+        desc:"막스마라 101801 아이코닉 코트 아이보리 (₩3,200,000) 구매",
+        chips:["✅ 구매","💰 ₩3,200,000"] }
+    ]
+  },
+  {
+    id: 12, name: "백승우", initials: "백",
+    email: "seungwoo.baek@outdoor.kr", phone: "010-6612-3344",
+    color: "#558b2f", segment: "at-risk", segmentLabel: "이탈 위험",
+    joinDate: "2023-08-20", ltv: 285000,
+    preferredChannel: "app", nba: "아크테릭스 장바구니 이탈 한정 10% 쿠폰 발송",
+    interests: ["아웃도어", "등산", "캠핑"],
+    sources: ["web","app","crm","email","offline"],
+    events: [
+      { date:"2024-03-18", time:"08:00", source:"email", system:"Salesforce Marketing Cloud",
+        title:"봄 아웃도어 특가 이메일 — 미오픈 (3연속)",
+        desc:"Win-Back 캠페인 3번째 이메일 발송. 90일째 오픈 이력 없음",
+        chips:["📵 미오픈 3연속","⚠ 90일 비반응"] },
+      { date:"2024-02-10", time:"10:00", source:"crm", system:"Salesforce CRM",
+        title:"이탈 징후 감지 → Win-Back 캠페인 자동 발동",
+        desc:"Data Cloud 이탈 예측 모델 점수 87% 도달. 자동 Win-Back 워크플로우 시작",
+        chips:["🤖 Einstein 감지","⚡ 자동 캠페인 발동"] },
+      { date:"2024-01-20", time:"14:25", source:"web", system:"Adobe Analytics",
+        title:"사이트 방문 후 30초 내 이탈",
+        desc:"홈 화면 진입 후 30초 이내 이탈. 직접 URL 입력 유입 (브랜드 리콜 있음)",
+        chips:["🚪 즉시 이탈","⏱ 30초 미만"] },
+      { date:"2023-12-08", time:"21:30", source:"app", system:"Mobile App SDK",
+        title:"마지막 앱 실행 (이후 120일+ 비활성)",
+        desc:"아웃도어 카테고리 2분 탐색 후 앱 종료. 이후 120일 이상 비활성",
+        chips:["⚠ 비활성 120일+"] },
+      { date:"2023-11-15", time:"22:10", source:"web", system:"Web SDK",
+        title:"아크테릭스 베타 SL 재킷 장바구니 담기 (미결제)",
+        desc:"아크테릭스 베타 SL 재킷 검정 M 사이즈 (₩890,000) 장바구니 후 이탈",
+        chips:["🛒 장바구니 이탈","💰 ₩890,000"] },
+      { date:"2023-10-22", time:"11:00", source:"offline", system:"POS System",
+        title:"인수봉 아웃도어 페스티벌 이벤트 참여",
+        desc:"북한산 아웃도어 페스티벌 참여. 스탬프 이벤트 참여, 할인 쿠폰 수령",
+        chips:["🏔 페스티벌 참여"] },
+      { date:"2023-09-05", time:"19:30", source:"web", system:"Web SDK",
+        title:"살로몬 XA Pro 3D 등산화 구매",
+        desc:"살로몬 XA Pro 3D GTX 275mm (₩285,000) 구매. 가을 등산 시즌 준비",
+        chips:["✅ 구매","💰 ₩285,000"] },
+      { date:"2023-08-25", time:"14:00", source:"crm", system:"Service Cloud",
+        title:"신규 가입 시 선호 브랜드 상담",
+        desc:"웰컴 콜 진행. 아크테릭스, 살로몬, 노스페이스 선호 확인. CRM 프로필 업데이트",
+        chips:["📞 웰컴 콜","📋 선호 브랜드 등록"] }
+    ]
+  }
+];
+
+/* ════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+let selectedId  = null;
+let activeSeg   = 'all';
+let activeSrc   = 'all';
+
+/* ════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════ */
+function fmtMoney(n) {
+  return '₩' + n.toLocaleString('ko-KR');
+}
+function segColor(seg) {
+  return { 'high-value':'#c23934','loyal':'#04844b','at-risk':'#8a5200','new':'#0070d2','regular':'#706e6b' }[seg] || '#706e6b';
+}
+function srcIcon(src) {
+  return { web:'🌐', app:'📱', crm:'💼', email:'📧', offline:'🏪' }[src] || '●';
+}
+function srcLabel(src) {
+  return { web:'Web', app:'앱', crm:'CRM', email:'이메일', offline:'오프라인' }[src] || src;
+}
+
+/* group events by YYYY-MM */
+function groupByMonth(events) {
+  const map = {};
+  events.forEach(e => {
+    const key = e.date.slice(0, 7);
+    if (!map[key]) map[key] = [];
+    map[key].push(e);
+  });
+  return map;
+}
+function monthLabel(ym) {
+  const [y, m] = ym.split('-');
+  const months = ['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  return `${y}년 ${months[parseInt(m)]}`;
+}
+
+/* ════════════════════════════════════════════════
+   RENDER LIST
+════════════════════════════════════════════════ */
+function renderList() {
+  const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+  const ul  = document.getElementById('custList');
+  ul.innerHTML = '';
+
+  const filtered = CUSTOMERS.filter(c => {
+    const matchSeg = activeSeg === 'all' || c.segment === activeSeg;
+    const matchQ   = !q || c.name.includes(q) || c.email.includes(q);
+    return matchSeg && matchQ;
+  });
+
+  if (filtered.length === 0) {
+    ul.innerHTML = `<div style="padding:24px 16px;text-align:center;color:var(--text-2);font-size:13px;">검색 결과 없음</div>`;
+    return;
+  }
+
+  filtered.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'cust-item' + (c.id === selectedId ? ' active' : '');
+    div.onclick = () => selectCustomer(c.id);
+    div.innerHTML = `
+      <div class="cust-avatar" style="background:${c.color}">${c.initials}</div>
+      <div class="cust-details">
+        <div class="cust-name">${c.name}</div>
+        <div class="cust-meta">
+          <span class="seg-dot" style="background:${segColor(c.segment)}"></span>
+          ${c.segmentLabel}
+        </div>
+      </div>
+      <div class="cust-ltv">${fmtMoney(c.ltv)}</div>`;
+    ul.appendChild(div);
+  });
+}
+
+/* ════════════════════════════════════════════════
+   SEG PILLS
+════════════════════════════════════════════════ */
+function renderSegPills() {
+  const segs = [
+    { key:'all',        label:'전체' },
+    { key:'high-value', label:'고가치' },
+    { key:'loyal',      label:'충성' },
+    { key:'at-risk',    label:'이탈위험' },
+    { key:'new',        label:'신규' },
+    { key:'regular',    label:'일반' }
+  ];
+  const wrap = document.getElementById('segPills');
+  wrap.innerHTML = segs.map(s => `
+    <span class="seg-pill ${s.key}${activeSeg===s.key?' active':''}"
+          onclick="setSegFilter('${s.key}')">${s.label}</span>`).join('');
+}
+function setSegFilter(seg) {
+  activeSeg = seg;
+  renderSegPills();
+  renderList();
+}
+
+/* ════════════════════════════════════════════════
+   SELECT CUSTOMER
+════════════════════════════════════════════════ */
+function selectCustomer(id) {
+  selectedId = id;
+  activeSrc  = 'all';
+  renderList();
+  renderMain();
+}
+
+/* ════════════════════════════════════════════════
+   RENDER MAIN
+════════════════════════════════════════════════ */
+function renderMain() {
+  const c = CUSTOMERS.find(x => x.id === selectedId);
+  if (!c) return;
+
+  const main = document.getElementById('mainPane');
+  const events = activeSrc === 'all' ? c.events : c.events.filter(e => e.source === activeSrc);
+
+  // source counts
+  const srcCounts = {};
+  c.events.forEach(e => { srcCounts[e.source] = (srcCounts[e.source]||0) + 1; });
+
+  // profile stats
+  const daysSince = Math.floor((Date.now() - new Date(c.joinDate)) / 86400000);
+  const months    = Math.max(1, Math.round(daysSince / 30));
+  const avgMonthly = Math.round(c.ltv / months / 10000) * 10000;
+
+  main.innerHTML = `
+    <!-- Profile -->
+    <div class="profile-card">
+      <div class="profile-ava" style="background:${c.color}">${c.initials}</div>
+      <div class="profile-info">
+        <div class="profile-name">
+          ${c.name}
+          <span class="seg-badge" style="background:${segColor(c.segment)}22;color:${segColor(c.segment)}">${c.segmentLabel}</span>
+        </div>
+        <div class="profile-contacts">
+          <span class="contact-item">📧 ${c.email}</span>
+          <span class="contact-item">📱 ${c.phone}</span>
+          <span class="contact-item">📅 가입 ${c.joinDate}</span>
+        </div>
+        <div class="profile-nba">
+          <span>⚡</span>
+          <span><strong>추천 액션 (Einstein NBA):</strong> ${c.nba}</span>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-box">
+          <div class="stat-val">${c.events.length}</div>
+          <div class="stat-lbl">총 이벤트</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${c.sources.length}</div>
+          <div class="stat-lbl">연결 소스</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${fmtMoney(c.ltv)}</div>
+          <div class="stat-lbl">누적 구매액</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${srcLabel(c.preferredChannel)}</div>
+          <div class="stat-lbl">선호 채널</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="sources-bar">
+      <div class="sources-bar-label">📡 Data Cloud 통합 소스 — 클릭하여 필터</div>
+      <div class="src-tags" id="srcTags"></div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-card">
+      <div class="tl-head">
+        <span class="tl-title">고객 여정 타임라인</span>
+        <span class="tl-cnt">${events.length}개 이벤트 표시 중</span>
+      </div>
+      <div class="timeline" id="timelineEl"></div>
+    </div>
+  `;
+
+  renderSrcTags(c, srcCounts);
+  renderTimeline(events);
+}
+
+/* ════════════════════════════════════════════════
+   SOURCE TAGS
+════════════════════════════════════════════════ */
+function renderSrcTags(c, srcCounts) {
+  const allSrcs = ['web','app','crm','email','offline'];
+  const wrap = document.getElementById('srcTags');
+
+  const totalEvents = c.events.length;
+  let html = `<span class="src-tag all${activeSrc==='all'?' active':''}" onclick="setSrcFilter('all')">
+    🔀 전체 <span class="src-cnt">${totalEvents}</span></span>`;
+
+  allSrcs.forEach(s => {
+    if (!c.sources.includes(s)) return;
+    const cnt = srcCounts[s] || 0;
+    const sysNames = { web:'Adobe Analytics', app:'Mobile SDK', crm:'Salesforce CRM', email:'Marketing Cloud', offline:'POS System' };
+    html += `<span class="src-tag ${s}${activeSrc===s?' active':''}" onclick="setSrcFilter('${s}')">
+      ${srcIcon(s)} ${srcLabel(s)}
+      <span class="src-cnt">${cnt}</span>
+    </span>`;
+  });
+
+  wrap.innerHTML = html;
+}
+function setSrcFilter(src) {
+  activeSrc = src;
+  const c = CUSTOMERS.find(x => x.id === selectedId);
+  if (!c) return;
+  const srcCounts = {};
+  c.events.forEach(e => { srcCounts[e.source] = (srcCounts[e.source]||0) + 1; });
+  renderSrcTags(c, srcCounts);
+  const events = src === 'all' ? c.events : c.events.filter(e => e.source === src);
+  document.querySelector('.tl-cnt').textContent = `${events.length}개 이벤트 표시 중`;
+  renderTimeline(events);
+}
+
+/* ════════════════════════════════════════════════
+   TIMELINE
+════════════════════════════════════════════════ */
+function renderTimeline(events) {
+  const el = document.getElementById('timelineEl');
+  if (!events.length) {
+    el.innerHTML = `<div class="empty-wrap">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">해당 소스에서 이벤트 없음</div>
+      <div class="empty-desc">다른 소스 필터를 선택해 보세요</div>
+    </div>`;
+    return;
+  }
+
+  const grouped = groupByMonth(events);
+  const sortedMonths = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+
+  el.innerHTML = sortedMonths.map(ym => {
+    const monthEvts = grouped[ym].slice().sort((a,b) => {
+      const da = a.date+'T'+a.time, db = b.date+'T'+b.time;
+      return db.localeCompare(da);
+    });
+    const evtHtml = monthEvts.map(e => `
+      <div class="tl-event">
+        <div class="evt-dot ${e.source}"></div>
+        <div class="evt-card">
+          <div class="evt-top">
+            <span class="evt-badge badge-${e.source}">${srcIcon(e.source)} ${srcLabel(e.source)}</span>
+            <span class="evt-time">${e.date} ${e.time}</span>
+          </div>
+          <div class="evt-title">${e.title}</div>
+          <div class="evt-desc">${e.desc}</div>
+          ${e.chips?.length ? `<div class="evt-chips">${e.chips.map(ch=>`<span class="evt-chip">${ch}</span>`).join('')}</div>` : ''}
+          <div class="sys-tag">🔌 ${e.system}</div>
+        </div>
+      </div>`).join('');
+
+    return `<div class="date-group">
+      <div class="date-heading">${monthLabel(ym)}</div>
+      ${evtHtml}
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+renderSegPills();
+renderList();
+// 첫 번째 고객 자동 선택
+selectCustomer(1);
+</script>
+</body>
+</html>

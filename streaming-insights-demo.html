@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Cloud — Streaming Insights Demo</title>
+<style>
+:root {
+  color-scheme: light;
+  --brand:#0070d2; --brand-deep:#014486; --brand-light:#eaf5fe;
+  --success:#04844b; --success-bg:#ecfdf5;
+  --warn:#e07b00; --warn-bg:#fff8f0;
+  --error:#c23934; --error-bg:#fef1f1;
+  --purple:#7b39d4; --purple-bg:#f5eeff;
+  --teal:#0d8080; --teal-bg:#e8f7f7;
+  --text-1:#3e3e3c; --text-2:#706e6b; --text-3:#aeaeac;
+  --border:#dddbda; --bg:#f3f2f2; --white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Salesforce Sans',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+     background:var(--bg);color:var(--text-1);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── Header ── */
+.hdr{background:var(--brand-deep);color:#fff;height:50px;padding:0 20px;flex-shrink:0;
+     display:flex;align-items:center;justify-content:space-between;}
+.hdr-l{display:flex;align-items:center;gap:12px;}
+.sf-logo{width:28px;height:28px;background:#fff;border-radius:6px;
+         display:flex;align-items:center;justify-content:center;
+         font-size:13px;font-weight:900;color:var(--brand-deep);}
+.hdr-title{font-size:15px;font-weight:600;}
+.hdr-sub{font-size:11px;opacity:.65;}
+.hdr-r{display:flex;align-items:center;gap:10px;font-size:12px;}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);
+            padding:4px 11px;border-radius:12px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4fd07c;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,208,124,.5);}50%{box-shadow:0 0 0 5px rgba(79,208,124,0);}}
+.event-counter{background:rgba(255,255,255,.15);padding:4px 11px;border-radius:12px;font-weight:600;}
+
+/* ── Toolbar ── */
+.toolbar{background:#fff;border-bottom:1px solid var(--border);padding:8px 16px;
+         display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.tb-btn{padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:#fff;
+        font-size:12px;cursor:pointer;color:var(--text-1);transition:all .15s;}
+.tb-btn:hover{background:var(--bg);}
+.tb-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.tb-btn.primary:hover{background:var(--brand-deep);}
+.tb-btn.stop{background:var(--error-bg);color:var(--error);border-color:#f8c6c4;}
+.speed-label{font-size:12px;color:var(--text-2);font-weight:600;}
+.speed-sel{padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:#fff;}
+.spacer{flex:1;}
+.total-badge{background:var(--brand-light);color:var(--brand);padding:4px 12px;border-radius:12px;
+             font-size:12px;font-weight:700;}
+
+/* ── 3-column grid ── */
+.main{display:grid;grid-template-columns:290px 1fr 310px;flex:1;overflow:hidden;}
+.panel{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);}
+.panel:last-child{border-right:none;}
+.panel-hdr{padding:10px 14px;border-bottom:1px solid var(--border);background:#fff;flex-shrink:0;}
+.panel-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+             color:var(--text-2);display:flex;align-items:center;gap:7px;}
+.p-count{background:var(--brand);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.panel-body{flex:1;overflow-y:auto;}
+
+/* ── Event Stream ── */
+.evt-list{padding:6px 8px;}
+.evt-item{padding:8px 10px;border-radius:6px;margin-bottom:5px;border:1.5px solid transparent;
+          font-size:12px;animation:slideIn .3s ease-out;position:relative;cursor:default;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);}}
+.evt-item.matched{border-color:var(--brand);box-shadow:0 0 0 2px rgba(0,112,210,.12);}
+.evt-top{display:flex;align-items:center;gap:6px;justify-content:space-between;}
+.evt-badge{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.evt-ts{font-size:10px;color:var(--text-3);}
+.evt-who{font-size:11px;font-weight:600;margin-top:3px;}
+.evt-desc{font-size:11px;color:var(--text-2);margin-top:2px;}
+.evt-src{font-size:10px;color:var(--text-3);margin-top:3px;display:flex;align-items:center;gap:3px;}
+.match-tag{position:absolute;bottom:6px;right:8px;font-size:10px;color:var(--brand);font-weight:700;}
+/* event type colors */
+.t-page_view{background:#eaf5fe;} .t-page_view .evt-badge{background:#b3d9f5;color:#014486;}
+.t-add_to_cart{background:#ecfdf5;} .t-add_to_cart .evt-badge{background:#a3e6c3;color:#025c3b;}
+.t-purchase{background:#fff8f0;} .t-purchase .evt-badge{background:#fcc2a0;color:#7d2a00;}
+.t-checkout_abandon{background:#fef1f1;} .t-checkout_abandon .evt-badge{background:#f8c6c4;color:#8b0000;}
+.t-remove_from_cart{background:#fff5f5;} .t-remove_from_cart .evt-badge{background:#fdd;color:#c23934;}
+.t-app_open{background:#f5eeff;} .t-app_open .evt-badge{background:#d0aaff;color:#4a0080;}
+.t-store_visit{background:#fffbee;} .t-store_visit .evt-badge{background:#f5d87a;color:#5a3e00;}
+.t-search{background:#f5f5f5;} .t-search .evt-badge{background:#ddd;color:#444;}
+.t-email_open{background:#eef5ff;} .t-email_open .evt-badge{background:#c0d8ff;color:#003087;}
+.t-push_click{background:#e8f7f7;} .t-push_click .evt-badge{background:#99e0e0;color:#0d5050;}
+
+/* ── Insight Cards ── */
+.insights-body{background:var(--bg);padding:6px 8px;display:flex;flex-direction:column;gap:8px;}
+.ic{background:#fff;border-radius:8px;border:1.5px solid var(--border);overflow:hidden;transition:box-shadow .2s;}
+.ic.firing{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,112,210,.18),0 4px 14px rgba(0,112,210,.15);animation:cardFire .5s;}
+@keyframes cardFire{0%{transform:scale(1);}30%{transform:scale(1.015);}100%{transform:scale(1);}}
+.ic-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ic-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.ic-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-2);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--success);}
+.sdot.firing{background:var(--brand);animation:blink .4s 4;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+.ic-sql{padding:9px 13px;background:#1e1e2e;font-family:'SF Mono','Fira Code','Courier New',monospace;
+        font-size:10.5px;line-height:1.7;color:#cdd6f4;}
+.kw{color:#cba6f7;} .fn{color:#89b4fa;} .str{color:#a6e3a1;} .num{color:#fab387;} .cmt{color:#6c7086;}
+
+.ic-conds{padding:9px 14px;border-top:1px solid var(--border);}
+.conds-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-2);margin-bottom:7px;}
+.cond-row{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:5px;}
+.pbar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.pfill{height:100%;background:var(--brand);border-radius:2px;transition:width .4s ease;}
+.pfill.done{background:var(--success);}
+.pval{font-size:11px;font-weight:600;min-width:40px;text-align:right;color:var(--text-1);}
+
+.ic-action{padding:8px 14px;border-top:1px solid var(--border);background:#fafaf9;
+           display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.act-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-2);}
+.act-badge{display:flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:500;}
+.act-flow{background:var(--brand-light);color:var(--brand);}
+.act-email{background:var(--purple-bg);color:var(--purple);}
+.act-sms{background:var(--success-bg);color:var(--success);}
+.act-update{background:var(--warn-bg);color:var(--warn);}
+.act-alert{background:var(--error-bg);color:var(--error);}
+.fire-cnt{margin-left:auto;background:var(--brand-light);color:var(--brand);
+          padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700;}
+
+/* ── Action Log ── */
+.log-list{padding:6px 8px;}
+.log-item{background:#fff;border-radius:7px;border:1.5px solid var(--border);
+          padding:10px 12px;margin-bottom:6px;animation:slideRight .35s ease-out;}
+@keyframes slideRight{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:translateX(0);}}
+.log-item.fresh{border-color:var(--brand);box-shadow:0 0 0 2px rgba(0,112,210,.18);}
+.log-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.log-insight{font-size:12px;font-weight:600;flex:1;}
+.log-ts{font-size:10px;color:var(--text-3);}
+.log-who{font-size:11px;color:var(--text-2);margin-bottom:5px;}
+.log-detail{font-size:11px;color:var(--text-2);margin-top:4px;line-height:1.5;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="sf-logo">SF</div>
+    <div>
+      <div class="hdr-title">Data Cloud — Streaming Insights</div>
+      <div class="hdr-sub">실시간 이벤트 스트림 평가 및 액션 트리거 데모</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div class="event-counter">이벤트 <span id="totalEvents">0</span>건 처리됨</div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="tb-btn primary" id="startBtn" onclick="startStream()">▶ 스트리밍 시작</button>
+  <button class="tb-btn stop" id="stopBtn" onclick="stopStream()" disabled>■ 중지</button>
+  <button class="tb-btn" onclick="resetAll()">↺ 초기화</button>
+  <div class="speed-label">속도:</div>
+  <select class="speed-sel" id="speedSel">
+    <option value="2000">느리게 (2초)</option>
+    <option value="1200" selected>보통 (1.2초)</option>
+    <option value="600">빠르게 (0.6초)</option>
+  </select>
+  <div class="spacer"></div>
+  <div class="total-badge">Insight 발동: <span id="totalFires">0</span>회</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ── 1. 이벤트 스트림 ── -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">
+        📡 실시간 이벤트 스트림
+        <span class="p-count" id="evtCount">0</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:4px;">Data Stream → Unified Profile</div>
+    </div>
+    <div class="panel-body"><div class="evt-list" id="evtList"></div></div>
+  </div>
+
+  <!-- ── 2. Streaming Insights ── -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">⚡ Streaming Insights (활성 5개)</div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:4px;">시간 창 기반 집계 쿼리 · 조건 충족 시 즉시 실행</div>
+    </div>
+    <div class="panel-body">
+      <div class="insights-body" id="insightCards"></div>
+    </div>
+  </div>
+
+  <!-- ── 3. 트리거된 액션 ── -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">
+        🎯 트리거된 액션
+        <span class="p-count" id="logCount">0</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:4px;">Flow · 이메일 · SMS · Profile 업데이트</div>
+    </div>
+    <div class="panel-body"><div class="log-list" id="logList"></div></div>
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────────────────────
+//  DATA
+// ────────────────────────────────────────────────────────────────
+const CUSTOMERS = [
+  {id:'C001', name:'김지수', seg:'high-value', ltv:4820000},
+  {id:'C002', name:'이민준', seg:'at-risk',    ltv:430000},
+  {id:'C003', name:'박서연', seg:'new',         ltv:620000},
+  {id:'C004', name:'최준혁', seg:'loyal',       ltv:6340000},
+  {id:'C005', name:'정수아', seg:'regular',     ltv:876000},
+  {id:'C006', name:'한동욱', seg:'high-value',  ltv:18600000},
+  {id:'C007', name:'강민서', seg:'loyal',       ltv:5430000},
+  {id:'C008', name:'신예은', seg:'high-value',  ltv:22400000},
+];
+
+const PRODUCTS = ['갤럭시 S24 Ultra','아이폰 16 Pro','다이슨 에어랩','구찌 GG 백','아크테릭스 재킷','삼성 OLED TV','에스티로더 세트','나이키 에어맥스'];
+const SOURCES  = ['Web','앱','CRM','오프라인','이메일'];
+const SRC_ICONS = {Web:'🌐', '앱':'📱', CRM:'💼', '오프라인':'🏪', '이메일':'📧'};
+
+const EVENT_TYPES = [
+  {type:'page_view',       label:'페이지 조회',   w:30},
+  {type:'add_to_cart',     label:'장바구니 담기', w:15},
+  {type:'purchase',        label:'구매 완료',     w:8},
+  {type:'checkout_abandon',label:'결제 포기',     w:10},
+  {type:'remove_from_cart',label:'장바구니 제거', w:8},
+  {type:'app_open',        label:'앱 실행',       w:12},
+  {type:'store_visit',     label:'매장 방문',     w:5},
+  {type:'search',          label:'검색',          w:15},
+  {type:'email_open',      label:'이메일 열람',   w:7},
+  {type:'push_click',      label:'푸시 클릭',     w:6},
+];
+const TOTAL_W = EVENT_TYPES.reduce((s,e)=>s+e.w, 0);
+
+// ────────────────────────────────────────────────────────────────
+//  STREAMING INSIGHTS DEFINITIONS
+// ────────────────────────────────────────────────────────────────
+const INSIGHTS = [
+  {
+    id:'si_browse',
+    icon:'🔍',
+    name:'고관심 구매의도 감지',
+    desc:'5분 내 page_view 3회 이상',
+    sql:`<span class="kw">SELECT</span>  IndividualId, <span class="fn">COUNT</span>(EventType) <span class="kw">AS</span> browse_cnt
+<span class="kw">FROM</span>    WebEngagement__dlm
+<span class="kw">WHERE</span>   EventType = <span class="str">'page_view'</span>
+<span class="kw">WITHIN</span>  <span class="num">5</span> <span class="kw">MINUTES</span>
+<span class="kw">HAVING</span>  <span class="fn">COUNT</span>(EventType) &gt;= <span class="num">3</span>`,
+    conditions:[{label:'page_view', threshold:3, unit:'회/5분', current:0, max:4}],
+    actionType:'act-flow',
+    actionIcon:'⚡',
+    actionLabel:'Flow 실행',
+    actionDesc:'실시간 개인화 오퍼 팝업 트리거',
+    trackMap:{},   // {customerId: count}
+    timeWindow:5*60*1000,
+    eventBuf:{},   // {customerId: [{ts, type}]}
+    fireCnt:0,
+  },
+  {
+    id:'si_cart',
+    icon:'🛒',
+    name:'장바구니 포기 위험',
+    desc:'add_to_cart 후 구매 없이 포기 이벤트',
+    sql:`<span class="kw">SELECT</span>  IndividualId, Product__c
+<span class="kw">FROM</span>    CartEvent__dlm
+<span class="kw">WHERE</span>   EventType = <span class="str">'checkout_abandon'</span>
+  <span class="kw">AND</span>   PreviousCartValue &gt; <span class="num">0</span>
+<span class="kw">WITHIN</span>  <span class="num">30</span> <span class="kw">MINUTES</span>`,
+    conditions:[{label:'장바구니 담기', threshold:1, unit:'회', current:0, max:1},
+                {label:'결제 포기',     threshold:1, unit:'회', current:0, max:1}],
+    actionType:'act-email',
+    actionIcon:'📧',
+    actionLabel:'이메일 캠페인',
+    actionDesc:'Win-back 이메일 + 10% 쿠폰 발송',
+    trackMap:{},
+    timeWindow:30*60*1000,
+    eventBuf:{},
+    fireCnt:0,
+  },
+  {
+    id:'si_purchase',
+    icon:'🎉',
+    name:'구매 완료 전환',
+    desc:'구매 이벤트 즉시 감지',
+    sql:`<span class="kw">SELECT</span>  IndividualId, OrderAmount__c,
+        ProductCategory__c
+<span class="kw">FROM</span>    PurchaseEvent__dlm
+<span class="kw">WHERE</span>   EventType = <span class="str">'purchase'</span>
+  <span class="kw">AND</span>   OrderAmount__c &gt; <span class="num">0</span>`,
+    conditions:[{label:'purchase 이벤트', threshold:1, unit:'건', current:0, max:1}],
+    actionType:'act-sms',
+    actionIcon:'💬',
+    actionLabel:'SMS + 포인트',
+    actionDesc:'감사 SMS + 리워드 포인트 적립',
+    trackMap:{},
+    timeWindow:0,
+    eventBuf:{},
+    fireCnt:0,
+  },
+  {
+    id:'si_crosschannel',
+    icon:'🔀',
+    name:'크로스채널 행동 감지',
+    desc:'앱 조회 → 오프라인 매장 방문',
+    sql:`<span class="kw">SELECT</span>  a.IndividualId, a.Product__c
+<span class="kw">FROM</span>    AppEngagement__dlm a
+<span class="kw">JOIN</span>    OfflineVisit__dlm  o
+  <span class="kw">ON</span>    a.IndividualId = o.IndividualId
+<span class="kw">WHERE</span>   a.EventType = <span class="str">'app_open'</span>
+  <span class="kw">AND</span>   o.EventType = <span class="str">'store_visit'</span>
+<span class="kw">WITHIN</span>  <span class="num">60</span> <span class="kw">MINUTES</span>`,
+    conditions:[{label:'앱 실행',    threshold:1, unit:'회', current:0, max:1},
+                {label:'매장 방문',  threshold:1, unit:'회', current:0, max:1}],
+    actionType:'act-update',
+    actionIcon:'👤',
+    actionLabel:'Profile 업데이트',
+    actionDesc:'Unified Individual 크로스채널 속성 갱신',
+    trackMap:{},
+    timeWindow:60*60*1000,
+    eventBuf:{},
+    fireCnt:0,
+  },
+  {
+    id:'si_churn',
+    icon:'⚠️',
+    name:'이탈 신호 감지',
+    desc:'remove_from_cart 2회 이상 / 2분',
+    sql:`<span class="kw">SELECT</span>  IndividualId, <span class="fn">COUNT</span>(EventType) <span class="kw">AS</span> remove_cnt
+<span class="kw">FROM</span>    CartEvent__dlm
+<span class="kw">WHERE</span>   EventType = <span class="str">'remove_from_cart'</span>
+<span class="kw">WITHIN</span>  <span class="num">2</span> <span class="kw">MINUTES</span>
+<span class="kw">HAVING</span>  <span class="fn">COUNT</span>(EventType) &gt;= <span class="num">2</span>`,
+    conditions:[{label:'remove_from_cart', threshold:2, unit:'회/2분', current:0, max:3}],
+    actionType:'act-alert',
+    actionIcon:'🚨',
+    actionLabel:'CS 알림 + 쿠폰',
+    actionDesc:'CS 팀 알림 + 개인화 15% 할인 트리거',
+    trackMap:{},
+    timeWindow:2*60*1000,
+    eventBuf:{},
+    fireCnt:0,
+  },
+];
+
+// ────────────────────────────────────────────────────────────────
+//  STATE
+// ────────────────────────────────────────────────────────────────
+let timer = null;
+let totalEvt = 0;
+let totalFires = 0;
+let evtListLen = 0;
+let logListLen = 0;
+const MAX_EVT = 30;
+const MAX_LOG = 40;
+
+// Per-customer buffers (for insight evaluation)
+// Separate from UI; keyed by insightId → customerId → [{ts, type}]
+function now(){ return Date.now(); }
+
+// ────────────────────────────────────────────────────────────────
+//  BUILD INSIGHT CARDS
+// ────────────────────────────────────────────────────────────────
+function buildInsightCards(){
+  const el = document.getElementById('insightCards');
+  el.innerHTML = '';
+  INSIGHTS.forEach(ins => {
+    const card = document.createElement('div');
+    card.className = 'ic';
+    card.id = 'ic_' + ins.id;
+    card.innerHTML = `
+      <div class="ic-hdr">
+        <div class="ic-name">${ins.icon} ${ins.name}</div>
+        <div class="ic-status"><div class="sdot" id="sdot_${ins.id}"></div> 활성</div>
+      </div>
+      <div class="ic-sql">${ins.sql}</div>
+      <div class="ic-conds">
+        <div class="conds-lbl">실시간 조건 평가</div>
+        ${ins.conditions.map((c,i)=>`
+          <div class="cond-row">
+            <span style="font-size:11px;color:var(--text-2);min-width:110px;">${c.label}</span>
+            <div class="pbar"><div class="pfill" id="pf_${ins.id}_${i}" style="width:0%"></div></div>
+            <div class="pval" id="pv_${ins.id}_${i}">0 / ${c.threshold}${c.unit}</div>
+          </div>`).join('')}
+      </div>
+      <div class="ic-action">
+        <span class="act-lbl">액션</span>
+        <span class="act-badge ${ins.actionType}">${ins.actionIcon} ${ins.actionLabel}</span>
+        <span style="font-size:11px;color:var(--text-2);">${ins.actionDesc}</span>
+        <span class="fire-cnt" id="fc_${ins.id}">0회 발동</span>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+// ────────────────────────────────────────────────────────────────
+//  GENERATE EVENT
+// ────────────────────────────────────────────────────────────────
+function pickWeighted(){
+  let r = Math.random() * TOTAL_W;
+  for(const e of EVENT_TYPES){ r -= e.w; if(r <= 0) return e; }
+  return EVENT_TYPES[0];
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function fmt(ts){
+  const d = new Date(ts);
+  return d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function generateEvent(){
+  const cust    = pick(CUSTOMERS);
+  const evtType = pickWeighted();
+  const src     = pick(SOURCES);
+  const prod    = pick(PRODUCTS);
+  const ts      = now();
+  return { cust, evtType, src, prod, ts };
+}
+
+// ────────────────────────────────────────────────────────────────
+//  EVALUATE INSIGHTS
+// ────────────────────────────────────────────────────────────────
+function evaluateInsights(evt){
+  const matchedInsights = [];
+  const cid = evt.cust.id;
+  const etype = evt.evtType.type;
+  const ts = evt.ts;
+
+  INSIGHTS.forEach(ins => {
+    if(!ins.eventBuf[cid]) ins.eventBuf[cid] = [];
+    // Add event
+    ins.eventBuf[cid].push({ts, type:etype});
+    // Prune old events outside time window
+    if(ins.timeWindow > 0){
+      ins.eventBuf[cid] = ins.eventBuf[cid].filter(e => ts - e.ts <= ins.timeWindow);
+    }
+
+    let fired = false;
+    let condVals = [];
+
+    // ── insight-specific logic ──
+    if(ins.id === 'si_browse'){
+      const cnt = ins.eventBuf[cid].filter(e=>e.type==='page_view').length;
+      condVals = [cnt];
+      if(etype === 'page_view' && cnt >= 3) fired = true;
+    }
+    else if(ins.id === 'si_cart'){
+      const hasCt  = ins.eventBuf[cid].some(e=>e.type==='add_to_cart');
+      const hasAbn = ins.eventBuf[cid].some(e=>e.type==='checkout_abandon');
+      condVals = [hasCt?1:0, hasAbn?1:0];
+      if(hasCt && hasAbn && etype==='checkout_abandon') fired = true;
+    }
+    else if(ins.id === 'si_purchase'){
+      condVals = [etype==='purchase'?1:0];
+      if(etype === 'purchase') fired = true;
+    }
+    else if(ins.id === 'si_crosschannel'){
+      const hasApp   = ins.eventBuf[cid].some(e=>e.type==='app_open');
+      const hasStore = ins.eventBuf[cid].some(e=>e.type==='store_visit');
+      condVals = [hasApp?1:0, hasStore?1:0];
+      if(hasApp && hasStore && (etype==='app_open'||etype==='store_visit')) fired = true;
+    }
+    else if(ins.id === 'si_churn'){
+      const cnt = ins.eventBuf[cid].filter(e=>e.type==='remove_from_cart').length;
+      condVals = [cnt];
+      if(etype==='remove_from_cart' && cnt >= 2) fired = true;
+    }
+
+    // Update progress bars
+    ins.conditions.forEach((c,i) => {
+      const val = condVals[i] ?? 0;
+      const pct = Math.min(100, (val / c.threshold) * 100);
+      const pfEl = document.getElementById(`pf_${ins.id}_${i}`);
+      const pvEl = document.getElementById(`pv_${ins.id}_${i}`);
+      if(pfEl){ pfEl.style.width = pct + '%'; pfEl.className = 'pfill' + (val>=c.threshold?' done':''); }
+      if(pvEl){ pvEl.textContent = `${val} / ${c.threshold}${c.unit}`; }
+    });
+
+    if(fired){
+      // Prevent re-fire too fast (cooldown 8s per customer per insight)
+      const key = ins.id + cid;
+      const last = ins.trackMap[key] || 0;
+      if(ts - last > 8000){
+        ins.trackMap[key] = ts;
+        ins.fireCnt++;
+        totalFires++;
+        matchedInsights.push({ins, evt});
+        fireInsight(ins, evt);
+      }
+    }
+  });
+  return matchedInsights;
+}
+
+function fireInsight(ins, evt){
+  // Animate card
+  const card = document.getElementById('ic_' + ins.id);
+  const sdot = document.getElementById('sdot_' + ins.id);
+  const fcEl = document.getElementById('fc_' + ins.id);
+  if(card){ card.classList.add('firing'); setTimeout(()=>card.classList.remove('firing'), 800); }
+  if(sdot){ sdot.classList.add('firing'); setTimeout(()=>sdot.classList.remove('firing'), 1600); }
+  if(fcEl){ fcEl.textContent = ins.fireCnt + '회 발동'; }
+  document.getElementById('totalFires').textContent = totalFires;
+
+  // Add to action log
+  addActionLog(ins, evt);
+}
+
+// ────────────────────────────────────────────────────────────────
+//  ADD EVENT TO STREAM
+// ────────────────────────────────────────────────────────────────
+function addEventToStream(evt, matchedInsights){
+  const list = document.getElementById('evtList');
+  const matched = matchedInsights.some(m => m.evt === evt);
+
+  // Type display
+  const typeLabel = evt.evtType.label;
+  const div = document.createElement('div');
+  div.className = `evt-item t-${evt.evtType.type}` + (matched ? ' matched' : '');
+  div.innerHTML = `
+    <div class="evt-top">
+      <span class="evt-badge">${typeLabel}</span>
+      <span class="evt-ts">${fmt(evt.ts)}</span>
+    </div>
+    <div class="evt-who">👤 ${evt.cust.name} <span style="font-size:10px;color:var(--text-3);">(${evt.cust.id})</span></div>
+    <div class="evt-desc">📦 ${evt.prod}</div>
+    <div class="evt-src">${SRC_ICONS[evt.src]||'·'} ${evt.src}</div>
+    ${matched ? `<div class="match-tag">⚡ Insight 매칭</div>` : ''}`;
+
+  list.insertBefore(div, list.firstChild);
+  evtListLen++;
+  if(evtListLen > MAX_EVT){
+    list.removeChild(list.lastChild);
+    evtListLen--;
+  }
+
+  totalEvt++;
+  document.getElementById('totalEvents').textContent = totalEvt;
+  document.getElementById('evtCount').textContent = Math.min(evtListLen, MAX_EVT);
+}
+
+// ────────────────────────────────────────────────────────────────
+//  ADD ACTION LOG
+// ────────────────────────────────────────────────────────────────
+const ACTION_DETAILS = {
+  si_browse:      (cust,prod) => `${cust.name}님에게 "${prod}" 관련 실시간 개인화 팝업 표시 → 전환율 +23% 예상`,
+  si_cart:        (cust,prod) => `${cust.name}님께 장바구니 포기 Win-back 이메일 발송 + 10% 쿠폰 코드 포함`,
+  si_purchase:    (cust,prod) => `${cust.name}님 구매 완료 → 감사 SMS 발송 + ${Math.floor(cust.ltv/100/10)*10}P 리워드 적립`,
+  si_crosschannel:(cust,prod) => `${cust.name}님 Unified Profile 크로스채널 속성 갱신 (앱→오프라인 여정 확인됨)`,
+  si_churn:       (cust,prod) => `${cust.name}님 이탈 신호 감지 → CS 알림 + 15% 할인 쿠폰 자동 발송`,
+};
+
+function addActionLog(ins, evt){
+  const list = document.getElementById('logList');
+  const div = document.createElement('div');
+  div.className = 'log-item fresh';
+  setTimeout(()=>div.classList.remove('fresh'), 2000);
+
+  const detail = ACTION_DETAILS[ins.id]
+    ? ACTION_DETAILS[ins.id](evt.cust, evt.prod)
+    : ins.actionDesc;
+
+  div.innerHTML = `
+    <div class="log-top">
+      <span class="log-insight">${ins.icon} ${ins.name}</span>
+      <span class="log-ts">${fmt(evt.ts)}</span>
+    </div>
+    <div class="log-who">👤 ${evt.cust.name} · ${evt.src}</div>
+    <span class="act-badge ${ins.actionType}" style="display:inline-flex;">${ins.actionIcon} ${ins.actionLabel}</span>
+    <div class="log-detail">${detail}</div>`;
+
+  list.insertBefore(div, list.firstChild);
+  logListLen++;
+  if(logListLen > MAX_LOG){
+    list.removeChild(list.lastChild);
+    logListLen--;
+  }
+  document.getElementById('logCount').textContent = logListLen;
+}
+
+// ────────────────────────────────────────────────────────────────
+//  STREAM CONTROL
+// ────────────────────────────────────────────────────────────────
+function tick(){
+  const evt = generateEvent();
+  const matched = evaluateInsights(evt);
+  addEventToStream(evt, matched);
+}
+
+function startStream(){
+  if(timer) return;
+  const speed = parseInt(document.getElementById('speedSel').value);
+  timer = setInterval(tick, speed);
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = false;
+  document.getElementById('speedSel').onchange = ()=>{
+    if(timer){ clearInterval(timer); timer = setInterval(tick, parseInt(document.getElementById('speedSel').value)); }
+  };
+}
+
+function stopStream(){
+  clearInterval(timer); timer = null;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+}
+
+function resetAll(){
+  stopStream();
+  totalEvt = 0; totalFires = 0; evtListLen = 0; logListLen = 0;
+  document.getElementById('evtList').innerHTML = '';
+  document.getElementById('logList').innerHTML = '';
+  document.getElementById('totalEvents').textContent = '0';
+  document.getElementById('totalFires').textContent = '0';
+  document.getElementById('evtCount').textContent = '0';
+  document.getElementById('logCount').textContent = '0';
+  INSIGHTS.forEach(ins=>{
+    ins.eventBuf = {}; ins.trackMap = {}; ins.fireCnt = 0;
+    const fc = document.getElementById('fc_'+ins.id);
+    if(fc) fc.textContent = '0회 발동';
+    ins.conditions.forEach((_,i)=>{
+      const pf = document.getElementById(`pf_${ins.id}_${i}`);
+      const pv = document.getElementById(`pv_${ins.id}_${i}`);
+      if(pf){ pf.style.width='0%'; pf.className='pfill'; }
+      if(pv) pv.textContent = `0 / ${ins.conditions[i].threshold}${ins.conditions[i].unit}`;
+    });
+  });
+}
+
+// ── Init ──
+buildInsightCards();
+</script>
+</body>
+</html>
