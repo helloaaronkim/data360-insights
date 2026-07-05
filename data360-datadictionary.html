@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Data Catalog — MUSE Apparel · Data 360</title>
+<title>Data Catalog — RAV Group · Data 360</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -304,7 +304,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
     <span class="amd-chip"><span class="amd-dot"></span>Amundsen</span>
   </a>
   <span class="nav-sep" style="color:var(--text-3)">/</span>
-  <span class="nav-title">MUSE Apparel · Data Catalog</span>
+  <span class="nav-title">RAV Group · Data Catalog</span>
   <span class="nav-spacer"></span>
   <div class="lang-group">
     <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')">🇯🇵 JA</button>
@@ -324,8 +324,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
       <span>Powered by Amundsen OSS · Data 360 Integration</span>
     </div>
     <div class="home-title">
-      <span data-ja>MUSE Apparel データカタログ</span>
-      <span data-ko style="display:none">MUSE Apparel 데이터 카탈로그</span>
+      <span data-ja>RAV Group データカタログ</span>
+      <span data-ko style="display:none">RAV Group 데이터 카탈로그</span>
     </div>
     <p class="home-sub">
       <span data-ja>Data 360 のすべての DLO・DMO・データストリームを検索・探索できます</span>
@@ -356,10 +356,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
         <!-- Node 1: Data Sources -->
         <div class="pipe-node">
           <div class="pipe-icon" style="background:#EEF4FF">📥</div>
-          <div class="pipe-num" style="color:#0070D2">3</div>
+          <div class="pipe-num" style="color:#0070D2">2</div>
           <div class="pipe-label" data-ja>データソース</div>
           <div class="pipe-label" data-ko style="display:none">데이터 소스</div>
-          <div class="pipe-sublabel">CRM · S3 · MC</div>
+          <div class="pipe-sublabel">CRM · S3</div>
           <span class="pipe-badge" style="background:#EEF4FF;color:#0070D2">Source</span>
         </div>
 
@@ -381,11 +381,11 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
         <!-- Node 2: Data Streams -->
         <div class="pipe-node">
           <div class="pipe-icon" style="background:#E0F3FF">⚡</div>
-          <div class="pipe-num" style="color:#00A1E0">11</div>
+          <div class="pipe-num" style="color:#00A1E0">10</div>
           <div class="pipe-label" data-ja>データストリーム</div>
           <div class="pipe-label" data-ko style="display:none">데이터 스트림</div>
-          <div class="pipe-sublabel" data-ja>4 CRM · 5 S3 · 2 MC</div>
-          <div class="pipe-sublabel" data-ko style="display:none">4 CRM · 5 S3 · 2 MC</div>
+          <div class="pipe-sublabel" data-ja>4 CRM · 6 S3</div>
+          <div class="pipe-sublabel" data-ko style="display:none">4 CRM · 6 S3</div>
           <span class="pipe-badge" style="background:#E0F3FF;color:#0B6DB3">Data Stream</span>
         </div>
 
@@ -407,7 +407,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
         <!-- Node 3: DLO -->
         <div class="pipe-node">
           <div class="pipe-icon" style="background:#F0EDFB">🗄️</div>
-          <div class="pipe-num" style="color:#7C5CFC">7</div>
+          <div class="pipe-num" style="color:#7C5CFC">10</div>
           <div class="pipe-label">DLO</div>
           <div class="pipe-sublabel" data-ja>Data Lake Object</div>
           <div class="pipe-sublabel" data-ko style="display:none">데이터 레이크 오브젝트</div>
@@ -432,7 +432,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
         <!-- Node 4: DMO -->
         <div class="pipe-node">
           <div class="pipe-icon" style="background:#D9F2E5">✨</div>
-          <div class="pipe-num" style="color:#1B7A45">9</div>
+          <div class="pipe-num" style="color:#1B7A45">11</div>
           <div class="pipe-label">DMO</div>
           <div class="pipe-sublabel" data-ja>Data Model Object</div>
           <div class="pipe-sublabel" data-ko style="display:none">데이터 모델 오브젝트</div>
@@ -458,7 +458,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
         <!-- Node 5: Fields -->
         <div class="pipe-node">
           <div class="pipe-icon" style="background:#FFF9DB">📋</div>
-          <div class="pipe-num" style="color:#B45309">124</div>
+          <div class="pipe-num" style="color:#B45309">133</div>
           <div class="pipe-label" data-ja>総フィールド数</div>
           <div class="pipe-label" data-ko style="display:none">총 필드 수</div>
           <div class="pipe-sublabel" data-ja>カタログ済</div>
@@ -706,33 +706,37 @@ nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-
 const TABLES = [
   /* ── DLOs ── */
   {
-    id:'contact_ds', name:'Contact_DS', type:'dlo', source:'crm', category:'Profile',
+    id:'contact_home_ds', name:'Contact_Home', type:'dlo', source:'crm', category:'Profile',
     icon:'👤', iconBg:'#E0F3FF', iconColor:'#0B6DB3',
-    path:'muse-apparel.crm.contact_ds',
-    jaDesc:'CRM の Contact オブジェクトから取り込まれた顧客プロファイル DLO。氏名・メール・住所・ロイヤルティ情報を含む。',
-    koDesc:'CRM Contact 오브젝트에서 수집된 고객 프로필 DLO. 이름·이메일·주소·로열티 정보 포함.',
+    path:'rav-group.crm.contact_home',
+    jaDesc:'Salesforce CRM の Contact オブジェクトから取り込まれた顧客プロファイル DLO。氏名・メール・住所・RAVG ロイヤルティ情報を含む。全ユースケースの基盤データ。',
+    koDesc:'Salesforce CRM Contact 오브젝트에서 수집된 고객 프로필 DLO. 이름·이메일·주소·RAVG 로열티 정보 포함. 모든 유스케이스의 기반 데이터.',
     tags:['Customer Profile','Identity Resolution','Loyalty'],
-    owners:[{name:'田中 健司',color:'#0070D2'},{name:'鈴木 彩香',color:'#3CB879'}],
+    owners:[{name:'Joe Johnson',color:'#0070D2'},{name:'田中 健司',color:'#3CB879'}],
     lastUpdated:'2025-06-01', rowCount:'1,240,500', schedule:'10-min Incremental',
     cols:[
-      {name:'Id',               type:'Text',     pk:true,  fk:false, nullable:false, sample:'003XX0000012abc', jaDesc:'Salesforce Contact ID (PK)',          koDesc:'Salesforce Contact ID (PK)'},
-      {name:'Email',            type:'Text',     pk:false, fk:false, nullable:true,  sample:'tanaka@muse.co.jp', jaDesc:'メールアドレス',                   koDesc:'이메일 주소'},
-      {name:'FirstName',        type:'Text',     pk:false, fk:false, nullable:true,  sample:'花子',            jaDesc:'名（ファーストネーム）',                  koDesc:'이름'},
-      {name:'LastName',         type:'Text',     pk:false, fk:false, nullable:false, sample:'田中',            jaDesc:'姓（ラストネーム）',                      koDesc:'성'},
-      {name:'Salutation',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Ms.',             jaDesc:'敬称',                                koDesc:'경칭'},
-      {name:'Birthdate',        type:'DateTime', pk:false, fk:false, nullable:true,  sample:'1990-04-15',      jaDesc:'生年月日（DateTime）',                 koDesc:'생년월일(DateTime)'},
-      {name:'Date_of_Birth',    type:'Date',     pk:false, fk:false, nullable:true,  sample:'1990-04-15',      jaDesc:'数式項目: Birthdate から Date 変換',    koDesc:'수식 필드: Birthdate에서 Date 변환'},
-      {name:'MobilePhone',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'+81-90-0000-0000',jaDesc:'携帯電話番号',                         koDesc:'휴대폰 번호'},
-      {name:'MailingStreet',    type:'Text',     pk:false, fk:false, nullable:true,  sample:'1-2-3 Jingumae', jaDesc:'郵送先住所 番地',                       koDesc:'우편 주소 번지'},
-      {name:'MailingCity',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'Shibuya-ku',     jaDesc:'郵送先 市区町村',                       koDesc:'우편 시/구/군'},
-      {name:'MailingPostalCode',type:'Text',     pk:false, fk:false, nullable:true,  sample:'150-0001',       jaDesc:'郵便番号',                             koDesc:'우편번호'},
-      {name:'MailingCountry',   type:'Text',     pk:false, fk:false, nullable:true,  sample:'Japan',          jaDesc:'国',                                  koDesc:'국가'},
-      {name:'MUSE_Member_ID__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'MM-2024-00456', jaDesc:'MUSE 会員番号（ロイヤルティ）',           koDesc:'MUSE 회원번호(로열티)'},
-      {name:'MUSE_Loyalty_Points__c',type:'Number',pk:false,fk:false,nullable:true,  sample:'12500',          jaDesc:'ロイヤルティポイント残高',               koDesc:'로열티 포인트 잔액'},
-      {name:'MUSE_Tier__c',     type:'Text',     pk:false, fk:false, nullable:true,  sample:'Gold',           jaDesc:'会員ランク: Bronze/Silver/Gold/Platinum', koDesc:'회원 등급'},
-      {name:'SystemModstamp',   type:'DateTime', pk:false, fk:false, nullable:false, sample:'2025-06-01 09:00',jaDesc:'システム更新タイムスタンプ',             koDesc:'시스템 수정 타임스탬프'},
+      {name:'Id',                              type:'Text',     pk:true,  fk:false, nullable:false, sample:'003XX0000012abc',  jaDesc:'Salesforce Contact ID (PK)',                         koDesc:'Salesforce Contact ID (PK)'},
+      {name:'Email',                           type:'Text',     pk:false, fk:false, nullable:true,  sample:'test@testing.com', jaDesc:'メールアドレス',                                    koDesc:'이메일 주소'},
+      {name:'FirstName',                       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Testing',          jaDesc:'名（ファーストネーム）',                            koDesc:'이름'},
+      {name:'LastName',                        type:'Text',     pk:false, fk:false, nullable:false, sample:'User',             jaDesc:'姓（ラストネーム）',                                koDesc:'성'},
+      {name:'Salutation',                      type:'Text',     pk:false, fk:false, nullable:true,  sample:'Ms.',              jaDesc:'敬称',                                              koDesc:'경칭'},
+      {name:'Birthdate',                       type:'DateTime', pk:false, fk:false, nullable:true,  sample:'1978-05-04',       jaDesc:'生年月日（DateTime）',                              koDesc:'생년월일(DateTime)'},
+      {name:'Date_of_Birth',                   type:'Date',     pk:false, fk:false, nullable:true,  sample:'1978-05-04',       jaDesc:'数式項目: Birthdate から Date 型に変換',             koDesc:'수식 필드: Birthdate를 Date 타입으로 변환'},
+      {name:'MobilePhone',                     type:'Text',     pk:false, fk:false, nullable:true,  sample:'+1-800-555-0100',  jaDesc:'携帯電話番号',                                      koDesc:'휴대폰 번호'},
+      {name:'MailingStreet',                   type:'Text',     pk:false, fk:false, nullable:true,  sample:'123 Main St',      jaDesc:'郵送先住所 番地',                                   koDesc:'우편 주소 번지'},
+      {name:'MailingCity',                     type:'Text',     pk:false, fk:false, nullable:true,  sample:'Sydney',           jaDesc:'郵送先 市区町村',                                   koDesc:'우편 시/구/군'},
+      {name:'MailingPostalCode',               type:'Text',     pk:false, fk:false, nullable:true,  sample:'2000',             jaDesc:'郵便番号',                                          koDesc:'우편번호'},
+      {name:'MailingCountry',                  type:'Text',     pk:false, fk:false, nullable:true,  sample:'Australia',        jaDesc:'国',                                                koDesc:'국가'},
+      {name:'MailingState',                    type:'Text',     pk:false, fk:false, nullable:true,  sample:'NSW',              jaDesc:'都道府県/州',                                       koDesc:'주/도'},
+      {name:'External_ID',                     type:'Text',     pk:false, fk:false, nullable:true,  sample:'EXT-00123',        jaDesc:'外部システム ID',                                   koDesc:'외부 시스템 ID'},
+      {name:'Name',                            type:'Text',     pk:false, fk:false, nullable:true,  sample:'Testing User',     jaDesc:'氏名（フルネーム）',                                koDesc:'성명(풀네임)'},
+      {name:'RAVG_Retail_Membership_Number__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'RAVG-M-00456',     jaDesc:'RAVG リテール会員番号（ロイヤルティ ID）',           koDesc:'RAVG 리테일 회원번호(로열티 ID)'},
+      {name:'RAVG_Retail_Points_Balance__c',   type:'Number',   pk:false, fk:false, nullable:true,  sample:'8750',             jaDesc:'ロイヤルティポイント残高',                          koDesc:'로열티 포인트 잔액'},
+      {name:'RAVG_Loyalty_Points_Bucket__c',   type:'Text',     pk:false, fk:false, nullable:true,  sample:'Extreme',          jaDesc:'ポイントバケット（カスタム: Low/Mid/High/Extreme）', koDesc:'포인트 버킷(커스텀: Low/Mid/High/Extreme)'},
+      {name:'SfdcOrganizationId',              type:'Text',     pk:false, fk:false, nullable:true,  sample:'00DHn000001Qw7H',  jaDesc:'Salesforce 組織 ID',                               koDesc:'Salesforce 조직 ID'},
+      {name:'SystemModstamp',                  type:'DateTime', pk:false, fk:false, nullable:false, sample:'2025-06-01 09:00', jaDesc:'システム更新タイムスタンプ',                        koDesc:'시스템 수정 타임스탬프'},
     ],
-    lineage:{sources:['Salesforce CRM\n(Contact)'],dlo:'Contact_DS',dmos:['Individual','Contact Point Email','Contact Point Phone','Contact Point Address','Loyalty Program Member']},
+    lineage:{sources:['Salesforce CRM\n(Contact)'],dlo:'Contact_Home',dmos:['Individual','Contact Point Email','Contact Point Phone','Contact Point Address','Loyalty Program Member','Loyalty Member Currency','Party Identification']},
     quality:[
       {label:'完全性 (Completeness)',koLabel:'완전성',score:94,color:'green'},
       {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:99,color:'green'},
@@ -741,179 +745,347 @@ const TABLES = [
     ]
   },
   {
-    id:'muse_order_ds', name:'MUSE_Order__c DS', type:'dlo', source:'crm', category:'Engagement',
-    icon:'🛍️', iconBg:'#FFF0DB', iconColor:'#9A5400',
-    path:'muse-apparel.crm.muse_order__c_ds',
-    jaDesc:'受注データ DLO。EC・店舗・アプリ経由の全購買トランザクションを含む。Identity Resolution でプロファイルと紐付ける。',
-    koDesc:'주문 데이터 DLO. EC·매장·앱 경유 모든 구매 트랜잭션 포함. Identity Resolution으로 프로필과 연결.',
-    tags:['Purchase','Transactional','LTV','RFM'],
-    owners:[{name:'田中 健司',color:'#0070D2'}],
-    lastUpdated:'2025-06-01', rowCount:'8,341,200', schedule:'10-min Incremental',
+    id:'booking_ds', name:'Booking', type:'dlo', source:'crm', category:'Engagement',
+    icon:'🚗', iconBg:'#FFF0DB', iconColor:'#9A5400',
+    path:'rav-group.crm.booking',
+    jaDesc:'レンタカー予約データ DLO。予約日・送迎ロケーション・顧客参照などの予約トランザクションを含む。UC2/UC4（失効予約・再エンゲージ）の基盤データ。',
+    koDesc:'렌터카 예약 데이터 DLO. 예약일·픽업/드롭오프 위치·고객 참조 등 예약 트랜잭션 포함. UC2/UC4(예약 취소·재인게이지먼트) 기반 데이터.',
+    tags:['Booking','Rental Car','Engagement','UC4'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'}],
+    lastUpdated:'2025-06-01', rowCount:'3,420,000', schedule:'10-min Incremental',
     cols:[
-      {name:'Id',               type:'Text',     pk:true,  fk:false, nullable:false, sample:'a0AXX0000001abc', jaDesc:'Order レコード ID (PK)',             koDesc:'Order 레코드 ID (PK)'},
-      {name:'Order_Number__c',  type:'Text',     pk:false, fk:false, nullable:false, sample:'ORD-2024-00789',  jaDesc:'注文番号',                           koDesc:'주문번호'},
-      {name:'Contact__c',       type:'Text',     pk:false, fk:true,  nullable:true,  sample:'003XX0000012abc', jaDesc:'顧客 Contact ID (FK → Individual)', koDesc:'고객 Contact ID (FK → Individual)'},
-      {name:'Order_Date__c',    type:'Date',     pk:false, fk:false, nullable:false, sample:'2024-09-21',      jaDesc:'注文日（イベント時刻項目）',            koDesc:'주문일(이벤트 시간 필드)'},
-      {name:'Status__c',        type:'Text',     pk:false, fk:false, nullable:false, sample:'Delivered',       jaDesc:'注文ステータス (Pending/Confirmed/Shipped/Delivered/Cancelled)', koDesc:'주문 상태'},
-      {name:'Total_Amount__c',  type:'Number',   pk:false, fk:false, nullable:false, sample:'12800',           jaDesc:'合計金額（JPY）',                     koDesc:'합계 금액(JPY)'},
-      {name:'Channel__c',       type:'Text',     pk:false, fk:false, nullable:false, sample:'Online',          jaDesc:'購買チャネル (Online/In-Store/App)',  koDesc:'구매 채널'},
-      {name:'Store_Id__c',      type:'Text',     pk:false, fk:true,  nullable:true,  sample:'ST-003',          jaDesc:'店舗 ID (FK → Store)',               koDesc:'매장 ID (FK → Store)'},
-      {name:'Discount_Applied__c',type:'Number', pk:false, fk:false, nullable:true,  sample:'1000',            jaDesc:'割引適用額（JPY）',                   koDesc:'할인 적용 금액(JPY)'},
-      {name:'Points_Earned__c', type:'Number',   pk:false, fk:false, nullable:true,  sample:'128',             jaDesc:'獲得ポイント',                        koDesc:'획득 포인트'},
-      {name:'Currency__c',      type:'Text',     pk:false, fk:false, nullable:false, sample:'JPY',             jaDesc:'通貨コード',                          koDesc:'통화 코드'},
+      {name:'Id',                       type:'Text',     pk:true,  fk:false, nullable:false, sample:'a0BXX0000001abc',  jaDesc:'予約レコード ID (PK)',                       koDesc:'예약 레코드 ID (PK)'},
+      {name:'Booking_Date__c',          type:'Date',     pk:false, fk:false, nullable:false, sample:'2024-10-01',       jaDesc:'予約日（イベント時刻項目）',                 koDesc:'예약일(이벤트 시간 필드)'},
+      {name:'Customer__c',              type:'Text',     pk:false, fk:true,  nullable:true,  sample:'003XX0000012abc',  jaDesc:'顧客 Contact ID (FK → Individual)',         koDesc:'고객 Contact ID (FK → Individual)'},
+      {name:'Start_Date__c',            type:'Date',     pk:false, fk:false, nullable:true,  sample:'2024-10-05',       jaDesc:'レンタル開始日',                            koDesc:'렌탈 시작일'},
+      {name:'End_Date__c',              type:'Date',     pk:false, fk:false, nullable:true,  sample:'2024-10-08',       jaDesc:'レンタル終了日',                            koDesc:'렌탈 종료일'},
+      {name:'Pick_Up_Location_Code__c', type:'Text',     pk:false, fk:false, nullable:true,  sample:'SYD-AIRPORT',      jaDesc:'ピックアップロケーションコード',             koDesc:'픽업 위치 코드'},
+      {name:'Pick_Up_Location_Name__c', type:'Text',     pk:false, fk:false, nullable:true,  sample:'Sydney Airport',   jaDesc:'ピックアップ拠点名',                        koDesc:'픽업 거점명'},
+      {name:'Drop_Off_Location_Code__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'MEL-CITY',         jaDesc:'ドロップオフロケーションコード',             koDesc:'드롭오프 위치 코드'},
+      {name:'Drop_Off_Location_Name__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'Melbourne CBD',    jaDesc:'ドロップオフ拠点名',                        koDesc:'드롭오프 거점명'},
+      {name:'Total_Amount_Charged__c',  type:'Number',   pk:false, fk:false, nullable:true,  sample:'320.50',           jaDesc:'請求合計金額',                              koDesc:'청구 합계 금액'},
+      {name:'Protection_Coverage__c',   type:'Text',     pk:false, fk:false, nullable:true,  sample:'Full Cover',       jaDesc:'保護カバレッジプラン',                      koDesc:'보호 커버리지 플랜'},
+      {name:'Motor_Club_Number__c',     type:'Text',     pk:false, fk:false, nullable:true,  sample:'MC-00789',         jaDesc:'モータークラブ番号',                        koDesc:'모터클럽 번호'},
+      {name:'Airline_Membership_Number__c',type:'Text',  pk:false, fk:false, nullable:true,  sample:'QF-123456',        jaDesc:'航空会社会員番号',                          koDesc:'항공사 회원번호'},
+      {name:'Marketing_Optin__c',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'true',             jaDesc:'マーケティング opt-in フラグ',              koDesc:'마케팅 opt-in 여부'},
+      {name:'Purpose__c',               type:'Text',     pk:false, fk:false, nullable:true,  sample:'Business',         jaDesc:'利用目的（Business/Leisure）',              koDesc:'이용 목적(Business/Leisure)'},
     ],
-    lineage:{sources:['Salesforce CRM\n(MUSE_Order__c)'],dlo:'MUSE_Order__c DS',dmos:['Order','Individual (via Contact__c)']},
+    lineage:{sources:['Salesforce CRM\n(Booking__c)'],dlo:'Booking',dmos:['Booking (Custom DMO)','Individual (via Customer__c)']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:96,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:90,color:'green'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:94,color:'green'},
+    ]
+  },
+  {
+    id:'rental_ds', name:'Rental', type:'dlo', source:'crm', category:'Engagement',
+    icon:'🔑', iconBg:'#E8F5FF', iconColor:'#0070D2',
+    path:'rav-group.crm.rental',
+    jaDesc:'レンタル実績データ DLO。貸し出し完了した全レンタルトランザクション。Created Date がイベント時刻項目。UC2/UC3/UC4 の RFM・LTV スコア算出の基盤。',
+    koDesc:'렌탈 실적 데이터 DLO. 완료된 모든 렌탈 트랜잭션. Created Date가 이벤트 시간 필드. UC2/UC3/UC4의 RFM·LTV 스코어 산출 기반.',
+    tags:['Rental','Transactional','RFM','LTV'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'},{name:'田中 健司',color:'#3CB879'}],
+    lastUpdated:'2025-06-02', rowCount:'6,870,000', schedule:'10-min Incremental',
+    cols:[
+      {name:'Id',                       type:'Text',     pk:true,  fk:false, nullable:false, sample:'a0CXX0000001abc',  jaDesc:'レンタルレコード ID (PK)',                     koDesc:'렌탈 레코드 ID (PK)'},
+      {name:'Name',                     type:'Text',     pk:false, fk:false, nullable:false, sample:'RNT-2024-00001',   jaDesc:'レンタル参照番号',                            koDesc:'렌탈 참조번호'},
+      {name:'Created_Date__c',          type:'DateTime', pk:false, fk:false, nullable:false, sample:'2023-11-02 08:03', jaDesc:'作成日時（イベント時刻項目・変更不可）',       koDesc:'생성 일시(이벤트 시간 필드·불변)'},
+      {name:'Customer__c',              type:'Text',     pk:false, fk:true,  nullable:true,  sample:'003XX0000012abc',  jaDesc:'顧客 Contact ID (FK → Individual)',           koDesc:'고객 Contact ID (FK → Individual)'},
+      {name:'Booking__c',               type:'Text',     pk:false, fk:true,  nullable:true,  sample:'a0BXX0000001abc',  jaDesc:'関連予約 ID (FK → Booking)',                  koDesc:'관련 예약 ID (FK → Booking)'},
+      {name:'Start_Date__c',            type:'Date',     pk:false, fk:false, nullable:true,  sample:'2023-11-02',       jaDesc:'レンタル開始日',                              koDesc:'렌탈 시작일'},
+      {name:'End_Date__c',              type:'Date',     pk:false, fk:false, nullable:true,  sample:'2023-11-04',       jaDesc:'レンタル終了日',                              koDesc:'렌탈 종료일'},
+      {name:'Pick_Up_Location_Code__c', type:'Text',     pk:false, fk:false, nullable:true,  sample:'SYD-AIRPORT',      jaDesc:'ピックアップロケーションコード',               koDesc:'픽업 위치 코드'},
+      {name:'Drop_Off_Location_Code__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'MEL-CITY',         jaDesc:'ドロップオフロケーションコード',               koDesc:'드롭오프 위치 코드'},
+      {name:'Total_Amount_Charged__c',  type:'Number',   pk:false, fk:false, nullable:true,  sample:'109.32',           jaDesc:'請求合計金額',                                koDesc:'청구 합계 금액'},
+      {name:'Currency_ISO_Code__c',     type:'Text',     pk:false, fk:false, nullable:true,  sample:'AUD',              jaDesc:'通貨 ISO コード',                             koDesc:'통화 ISO 코드'},
+      {name:'Protection_Coverage__c',   type:'Text',     pk:false, fk:false, nullable:true,  sample:'Basic',            jaDesc:'保護カバレッジプラン',                        koDesc:'보호 커버리지 플랜'},
+      {name:'Baby_Seat_Count__c',       type:'Number',   pk:false, fk:false, nullable:true,  sample:'1',                jaDesc:'ベビーシート数',                              koDesc:'유아 시트 수'},
+      {name:'Booster_Seat_Count__c',    type:'Number',   pk:false, fk:false, nullable:true,  sample:'2',                jaDesc:'ブースターシート数',                          koDesc:'부스터 시트 수'},
+      {name:'RAVG_Retail_Membership_Number__c',type:'Text',pk:false,fk:false,nullable:true,  sample:'RAVG-M-00456',     jaDesc:'RAVG リテール会員番号',                       koDesc:'RAVG 리테일 회원번호'},
+      {name:'Marketing_Optin__c',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'true',             jaDesc:'マーケティング opt-in',                       koDesc:'마케팅 opt-in'},
+      {name:'Is_Deleted__c',            type:'Text',     pk:false, fk:false, nullable:true,  sample:'false',            jaDesc:'削除フラグ',                                  koDesc:'삭제 여부'},
+    ],
+    lineage:{sources:['Salesforce CRM\n(Rental__c)'],dlo:'Rental',dmos:['Rental (Custom DMO)','Individual (via Customer__c)']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:95,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:91,color:'green'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:93,color:'green'},
+    ]
+  },
+  {
+    id:'rental_pref_ds', name:'Rental Preference', type:'dlo', source:'crm', category:'Other',
+    icon:'⚙️', iconBg:'#F3EFFE', iconColor:'#7C5CFC',
+    path:'rav-group.crm.rental_preference',
+    jaDesc:'顧客のレンタルプリファレンス（車種・シート・オプション等）を管理する DLO。UC2/UC3 のパーソナライゼーションで参照。',
+    koDesc:'고객의 렌탈 선호(차종·시트·옵션 등)를 관리하는 DLO. UC2/UC3 개인화에서 참조.',
+    tags:['Preferences','Reference','Personalization'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'}],
+    lastUpdated:'2025-05-28', rowCount:'620,000', schedule:'10-min Incremental',
+    cols:[
+      {name:'Id',              type:'Text', pk:true,  fk:false, nullable:false, sample:'a0DXX0000001abc', jaDesc:'プリファレンスレコード ID (PK)', koDesc:'선호 레코드 ID (PK)'},
+      {name:'Individual_Id__c',type:'Text', pk:false, fk:true,  nullable:false, sample:'IND-00000001',    jaDesc:'Individual ID (FK → Individual)', koDesc:'Individual ID (FK → Individual)'},
+      {name:'Vehicle_Type__c', type:'Text', pk:false, fk:false, nullable:true,  sample:'SUV',             jaDesc:'好みの車種',                      koDesc:'선호 차종'},
+      {name:'Seat_Count__c',   type:'Number',pk:false,fk:false, nullable:true,  sample:'5',               jaDesc:'必要シート数',                    koDesc:'필요 시트 수'},
+      {name:'Child_Seat__c',   type:'Boolean',pk:false,fk:false,nullable:true,  sample:'true',            jaDesc:'チャイルドシート希望',             koDesc:'유아 시트 희망'},
+      {name:'GPS_Required__c', type:'Boolean',pk:false,fk:false,nullable:true,  sample:'false',           jaDesc:'GPS 希望',                        koDesc:'GPS 희망'},
+    ],
+    lineage:{sources:['Salesforce CRM\n(Rental_Preference__c)'],dlo:'Rental Preference',dmos:['Individual (preference link)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:88,color:'blue'},{label:'一意性',koLabel:'고유성',score:99,color:'green'},{label:'適時性',koLabel:'적시성',score:85,color:'blue'},{label:'正確性',koLabel:'정확성',score:91,color:'green'}]
+  },
+  {
+    id:'ecomm_customer_profile_ds', name:'ecomm Customer Profile', type:'dlo', source:'s3', category:'Profile',
+    icon:'🛒', iconBg:'#FFF0DB', iconColor:'#9A5400',
+    path:'rav-group.s3.ecomm_customer_profile',
+    jaDesc:'S3 経由の EC 顧客プロファイル DLO。Customer Ref Number を PK として Individual・Contact Point Email・Party Identification へマッピング。毎日 01:00 GMT 更新。',
+    koDesc:'S3 경유 EC 고객 프로필 DLO. Customer Ref Number를 PK로 Individual·Contact Point Email·Party Identification에 매핑. 매일 01:00 GMT 업데이트.',
+    tags:['eCommerce','Customer Profile','Identity Resolution','S3'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-06-02', rowCount:'840,000', schedule:'Daily 01:00 GMT',
+    cols:[
+      {name:'Customer_Ref_Number',type:'Text', pk:true,  fk:false, nullable:false, sample:'CR-00123',        jaDesc:'EC 顧客参照番号 (PK)',                              koDesc:'EC 고객 참조번호 (PK)'},
+      {name:'First_Name',         type:'Text', pk:false, fk:false, nullable:true,  sample:'Testing',          jaDesc:'名',                                               koDesc:'이름'},
+      {name:'Surname',            type:'Text', pk:false, fk:false, nullable:true,  sample:'User',             jaDesc:'姓',                                               koDesc:'성'},
+      {name:'Email',              type:'Text', pk:false, fk:false, nullable:true,  sample:'test@test.com',    jaDesc:'メールアドレス',                                    koDesc:'이메일 주소'},
+      {name:'Birth_Date',         type:'Date', pk:false, fk:false, nullable:true,  sample:'1978-05-04',       jaDesc:'生年月日',                                         koDesc:'생년월일'},
+      {name:'Rewards_Program_ID', type:'Text', pk:false, fk:false, nullable:true,  sample:'RAVG-M-00456',     jaDesc:'リワードプログラム ID（ロイヤルティ番号）',         koDesc:'리워드 프로그램 ID(로열티번호)'},
+    ],
+    lineage:{sources:['AWS S3\n(S3 Customer Profile.csv)'],dlo:'ecomm Customer Profile',dmos:['Individual','Contact Point Email','Party Identification']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:91,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:85,color:'blue'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:89,color:'blue'},
+    ]
+  },
+  {
+    id:'ecomm_order_ds', name:'ecomm Order', type:'dlo', source:'s3', category:'Engagement',
+    icon:'📦', iconBg:'#D9F2E5', iconColor:'#1B7A45',
+    path:'rav-group.s3.ecomm_order',
+    jaDesc:'EC 注文ヘッダーデータ DLO。Order Number を PK・Order Date をイベント時刻とする。OrgUnit="eComm_RAVG_Retail"。UC1/UC2/UC3 の購買行動分析の中核。',
+    koDesc:'EC 주문 헤더 데이터 DLO. Order Number를 PK·Order Date를 이벤트 시간으로. OrgUnit="eComm_RAVG_Retail". UC1/UC2/UC3 구매 행동 분석의 핵심.',
+    tags:['eCommerce','Order','Transactional','Sales Order'],
+    owners:[{name:'田中 健司',color:'#0070D2'},{name:'Joe Johnson',color:'#3CB879'}],
+    lastUpdated:'2025-06-02', rowCount:'4,120,000', schedule:'Daily 01:00 GMT',
+    cols:[
+      {name:'Order_Number',       type:'Text',     pk:true,  fk:false, nullable:false, sample:'43243',          jaDesc:'注文番号 (PK)',                   koDesc:'주문번호 (PK)'},
+      {name:'Order_Date',         type:'DateTime', pk:false, fk:false, nullable:false, sample:'2024-09-21',      jaDesc:'注文日（イベント時刻項目）',      koDesc:'주문일(이벤트 시간 필드)'},
+      {name:'Customer_Ref_Number',type:'Text',     pk:false, fk:true,  nullable:true,  sample:'CR-00123',        jaDesc:'顧客参照番号 (FK → Individual)',  koDesc:'고객 참조번호 (FK → Individual)'},
+      {name:'Store_Number',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'1234',            jaDesc:'店舗番号',                        koDesc:'매장 번호'},
+      {name:'Status',             type:'Text',     pk:false, fk:false, nullable:false, sample:'Delivered',       jaDesc:'注文ステータス',                  koDesc:'주문 상태'},
+      {name:'Total_Amount',       type:'Number',   pk:false, fk:false, nullable:false, sample:'23.45',           jaDesc:'合計金額',                        koDesc:'합계 금액'},
+      {name:'Delivery_Method',    type:'Text',     pk:false, fk:false, nullable:true,  sample:'Pickup',          jaDesc:'配送方法',                        koDesc:'배송 방법'},
+      {name:'Loyalty_Points_Accrued',type:'Number',pk:false, fk:false, nullable:true,  sample:'12',              jaDesc:'獲得ロイヤルティポイント',        koDesc:'획득 로열티 포인트'},
+      {name:'Currency',           type:'Text',     pk:false, fk:false, nullable:true,  sample:'AUD',             jaDesc:'通貨コード',                      koDesc:'통화 코드'},
+    ],
+    lineage:{sources:['AWS S3\n(S3 Order Headers.csv)'],dlo:'ecomm Order',dmos:['Sales Order','Individual (via Customer_Ref_Number)']},
     quality:[
       {label:'完全性 (Completeness)',koLabel:'완전성',score:97,color:'green'},
       {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
-      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:91,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:88,color:'blue'},
       {label:'正確性 (Accuracy)',    koLabel:'정확성',score:95,color:'green'},
     ]
   },
   {
-    id:'web_browse_event_ds', name:'web_browse_event DS', type:'dlo', source:'s3', category:'Engagement',
-    icon:'🌐', iconBg:'#E8F5FF', iconColor:'#0070D2',
-    path:'muse-apparel.s3.web_browse_event',
-    jaDesc:'EC サイトの閲覧イベントログ DLO（S3 経由、毎時取込）。商品閲覧・カート追加・検索などのイベントを含む。Browse Abandonment ユースケースの基盤データ。',
-    koDesc:'EC 사이트 브라우징 이벤트 로그 DLO(S3 경유, 시간별 수집). 상품 조회·장바구니 추가·검색 등 이벤트 포함. Browse Abandonment 유스케이스의 기반 데이터.',
-    tags:['Web Event','Browse Abandonment','Anonymous','Engagement'],
-    owners:[{name:'鈴木 彩香',color:'#3CB879'},{name:'Lee Jinhee',color:'#FF8B00'}],
-    lastUpdated:'2025-06-02', rowCount:'142,800,000', schedule:'Hourly',
+    id:'ecomm_line_item_ds', name:'ecomm Line Item', type:'dlo', source:'s3', category:'Other',
+    icon:'🏷️', iconBg:'#F3EFFE', iconColor:'#7C5CFC',
+    path:'rav-group.s3.ecomm_line_item',
+    jaDesc:'EC 注文明細データ DLO。PK は数式項目 CONCAT(Order Number+\'_\'+Order Line Number)。商品 SKU・数量・単価を含む。UC2/UC3 の商品嗜好分析に使用。',
+    koDesc:'EC 주문 라인아이템 DLO. PK는 수식 필드 CONCAT(Order Number+\'_\'+Order Line Number). 상품 SKU·수량·단가 포함. UC2/UC3 상품 선호 분석에 사용.',
+    tags:['eCommerce','Line Item','SKU','Product'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-06-02', rowCount:'12,400,000', schedule:'Daily 01:00 GMT',
     cols:[
-      {name:'event_id',          type:'Text',     pk:true,  fk:false, nullable:false, sample:'EVT-20240921-00001', jaDesc:'イベント一意 ID (PK)',                koDesc:'이벤트 고유 ID (PK)'},
-      {name:'customer_id',       type:'Text',     pk:false, fk:true,  nullable:true,  sample:'MUSE-C-00123',       jaDesc:'ログイン済顧客 ID (FK → Individual)', koDesc:'로그인 고객 ID (FK → Individual)'},
-      {name:'session_id',        type:'Text',     pk:false, fk:false, nullable:false, sample:'SES-abc123def456',   jaDesc:'セッション ID',                       koDesc:'세션 ID'},
-      {name:'event_type',        type:'Text',     pk:false, fk:false, nullable:false, sample:'product_view',       jaDesc:'イベント種別 (page_view/product_view/add_to_cart/search)', koDesc:'이벤트 종류'},
-      {name:'event_timestamp',   type:'DateTime', pk:false, fk:false, nullable:false, sample:'2024-09-21 14:32:00',jaDesc:'イベント発生時刻（イベント時刻項目）',  koDesc:'이벤트 발생 시각(이벤트 시간 필드)'},
-      {name:'product_id',        type:'Text',     pk:false, fk:true,  nullable:true,  sample:'PRD-WOM-COAT-001',   jaDesc:'閲覧商品 ID (FK → product_catalog)', koDesc:'조회 상품 ID (FK → product_catalog)'},
-      {name:'product_category',  type:'Text',     pk:false, fk:false, nullable:true,  sample:"Women's Outerwear",  jaDesc:'商品カテゴリ',                         koDesc:'상품 카테고리'},
-      {name:'product_name',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'Cashmere Blend Coat',jaDesc:'商品名',                               koDesc:'상품명'},
-      {name:'device_type',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Mobile',             jaDesc:'デバイス種別 (Mobile/Desktop/Tablet)', koDesc:'디바이스 종류'},
-      {name:'duration_seconds',  type:'Number',   pk:false, fk:false, nullable:true,  sample:'47',                 jaDesc:'ページ滞在時間（秒）',                 koDesc:'페이지 체류 시간(초)'},
-      {name:'is_authenticated',  type:'Boolean',  pk:false, fk:false, nullable:false, sample:'true',               jaDesc:'ログイン済フラグ',                     koDesc:'로그인 여부'},
-      {name:'cookie_id',         type:'Text',     pk:false, fk:false, nullable:true,  sample:'ck_xyzabc123',       jaDesc:'匿名ユーザー識別 Cookie ID',           koDesc:'익명 사용자 식별 Cookie ID'},
+      {name:'Order_Line_Key',  type:'Text',  pk:true,  fk:false, nullable:false, sample:'43243_1',  jaDesc:'注文明細キー PK = CONCAT(Order Number+\'_\'+Order Line Number)',koDesc:'주문 라인 키 PK = CONCAT(Order Number+\'_\'+Order Line Number)'},
+      {name:'Order_Number',    type:'Text',  pk:false, fk:true,  nullable:false, sample:'43243',    jaDesc:'注文番号 (FK → ecomm Order)',                                 koDesc:'주문번호 (FK → ecomm Order)'},
+      {name:'Order_Line_Number',type:'Number',pk:false,fk:false, nullable:false, sample:'1',        jaDesc:'明細行番号',                                                  koDesc:'라인 번호'},
+      {name:'SKU',             type:'Text',  pk:false, fk:false, nullable:true,  sample:'23432',    jaDesc:'商品 SKU コード',                                             koDesc:'상품 SKU 코드'},
+      {name:'Quantity',        type:'Text',  pk:false, fk:false, nullable:true,  sample:'1',        jaDesc:'数量',                                                        koDesc:'수량'},
+      {name:'Unit_Price',      type:'Text',  pk:false, fk:false, nullable:true,  sample:'12.32',    jaDesc:'単価',                                                        koDesc:'단가'},
+      {name:'Subtotal',        type:'Text',  pk:false, fk:false, nullable:true,  sample:'12.32',    jaDesc:'小計',                                                        koDesc:'소계'},
+      {name:'Related_Activity',type:'Text',  pk:false, fk:false, nullable:true,  sample:'Hiking',   jaDesc:'関連アクティビティ',                                          koDesc:'관련 액티비티'},
+      {name:'Loyalty_Points',  type:'Number',pk:false, fk:false, nullable:true,  sample:'12',       jaDesc:'獲得ポイント',                                                koDesc:'획득 포인트'},
     ],
-    lineage:{sources:['AWS S3\n(web_browse_event.csv)'],dlo:'web_browse_event DS',dmos:['Web Engagement','Individual (authenticated)']},
-    quality:[
-      {label:'完全性 (Completeness)',koLabel:'완전성',score:88,color:'green'},
-      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
-      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:96,color:'green'},
-      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:82,color:'orange'},
-    ]
+    lineage:{sources:['AWS S3\n(S3 Line Items.csv)'],dlo:'ecomm Line Item',dmos:['Sales Order Product (via Order Number)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:94,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:88,color:'blue'},{label:'正確性',koLabel:'정확성',score:92,color:'green'}]
   },
   {
-    id:'product_catalog_ds', name:'product_catalog DS', type:'dlo', source:'s3', category:'Other',
-    icon:'👗', iconBg:'#F3EFFE', iconColor:'#7C5CFC',
-    path:'muse-apparel.s3.product_catalog',
-    jaDesc:'商品マスターデータ DLO。カテゴリ・価格・SKU・シーズンなど商品属性を含む。セグメントのレコメンデーションロジックで参照。',
-    koDesc:'상품 마스터 데이터 DLO. 카테고리·가격·SKU·시즌 등 상품 속성 포함. 세그먼트 추천 로직에서 참조.',
-    tags:['Product Catalog','Reference','Lookup'],
-    owners:[{name:'Lee Jinhee',color:'#FF8B00'}],
-    lastUpdated:'2025-05-30', rowCount:'48,200', schedule:'Daily 02:00 JST',
+    id:'ecomm_store_lookup_ds', name:'ecomm Store Number Lookup', type:'dlo', source:'s3', category:'Other',
+    icon:'🏪', iconBg:'#FFF9DB', iconColor:'#B45309',
+    path:'rav-group.s3.ecomm_store_lookup',
+    jaDesc:'EC 店舗マスターデータ DLO。Store Number を PK とするルックアップテーブル。UC1 のターゲット店舗（1475・5545）フィルタリングに使用。',
+    koDesc:'EC 매장 마스터 데이터 DLO. Store Number를 PK로 하는 룩업 테이블. UC1 대상 매장(1475·5545) 필터링에 사용.',
+    tags:['Store Lookup','Reference','UC1'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'}],
+    lastUpdated:'2025-05-28', rowCount:'85', schedule:'Daily 01:00 GMT',
     cols:[
-      {name:'product_id',    type:'Text',   pk:true,  fk:false, nullable:false, sample:'PRD-WOM-COAT-001', jaDesc:'商品 ID (PK)', koDesc:'상품 ID (PK)'},
-      {name:'product_name',  type:'Text',   pk:false, fk:false, nullable:false, sample:'Cashmere Blend Coat', jaDesc:'商品名', koDesc:'상품명'},
-      {name:'category',      type:'Text',   pk:false, fk:false, nullable:false, sample:"Women's Outerwear", jaDesc:'カテゴリ', koDesc:'카테고리'},
-      {name:'brand',         type:'Text',   pk:false, fk:false, nullable:false, sample:'MUSE Premium',     jaDesc:'ブランドライン', koDesc:'브랜드 라인'},
-      {name:'price_jpy',     type:'Number', pk:false, fk:false, nullable:false, sample:'68000',            jaDesc:'販売価格（JPY）', koDesc:'판매가(JPY)'},
-      {name:'sku',           type:'Text',   pk:false, fk:false, nullable:false, sample:'MU-WOM-COAT-BLK-M',jaDesc:'SKU コード', koDesc:'SKU 코드'},
-      {name:'season',        type:'Text',   pk:false, fk:false, nullable:true,  sample:'2025AW',           jaDesc:'シーズンコード', koDesc:'시즌 코드'},
-      {name:'is_active',     type:'Boolean',pk:false, fk:false, nullable:false, sample:'true',             jaDesc:'販売中フラグ', koDesc:'판매중 여부'},
+      {name:'Store_Number',          type:'Text',     pk:true,  fk:false, nullable:false, sample:'1234',  jaDesc:'店舗番号 (PK)',          koDesc:'매장 번호 (PK)'},
+      {name:'Order_Number',          type:'Text',     pk:false, fk:false, nullable:true,  sample:'43243', jaDesc:'関連注文番号',            koDesc:'관련 주문번호'},
+      {name:'Order_Date',            type:'DateTime', pk:false, fk:false, nullable:true,  sample:'2024-09-21', jaDesc:'注文日',           koDesc:'주문일'},
+      {name:'Customer_Number',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'CR-00123',  jaDesc:'顧客番号',          koDesc:'고객번호'},
+      {name:'Status',                type:'Text',     pk:false, fk:false, nullable:true,  sample:'Active',    jaDesc:'ステータス',        koDesc:'상태'},
+      {name:'Total_Amount',          type:'Number',   pk:false, fk:false, nullable:true,  sample:'230.50',    jaDesc:'合計金額',          koDesc:'합계 금액'},
+      {name:'Delivery_Method',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Pickup',    jaDesc:'配送方法',          koDesc:'배송 방법'},
+      {name:'Loyalty_Points_Accrued',type:'Number',   pk:false, fk:false, nullable:true,  sample:'8',         jaDesc:'獲得ポイント',      koDesc:'획득 포인트'},
     ],
-    lineage:{sources:['AWS S3\n(product_catalog.csv)'],dlo:'product_catalog DS',dmos:['Product Catalog (Custom DMO)']},
-    quality:[{label:'完全性',koLabel:'완전성',score:99,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:85,color:'blue'},{label:'正確性',koLabel:'정확성',score:97,color:'green'}]
+    lineage:{sources:['AWS S3\n(ecommerce-data/)'],dlo:'ecomm Store Number Lookup',dmos:['Sales Store (Standard DMO)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:99,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:90,color:'green'},{label:'正確性',koLabel:'정확성',score:98,color:'green'}]
   },
   {
-    id:'email_send_log_ds', name:'EmailSendLog DS', type:'dlo', source:'mc', category:'Engagement',
-    icon:'📧', iconBg:'#FFF4E5', iconColor:'#A05A00',
-    path:'muse-apparel.mc.email_send_log',
-    jaDesc:'Marketing Cloud の Email 送信ログ DLO。開封・クリック・バウンスなどのエンゲージメントデータを含む。',
-    koDesc:'Marketing Cloud Email 발송 로그 DLO. 오픈·클릭·바운스 등 인게이지먼트 데이터 포함.',
-    tags:['Email','Marketing Cloud','Engagement','Open Rate'],
-    owners:[{name:'山本 拓也',color:'#EA001E'}],
-    lastUpdated:'2025-06-02', rowCount:'34,600,000', schedule:'Daily',
+    id:'ecomm_product_lookup_ds', name:'ecomm Product Lookup', type:'dlo', source:'s3', category:'Other',
+    icon:'📋', iconBg:'#F3EFFE', iconColor:'#7C5CFC',
+    path:'rav-group.s3.ecomm_product_lookup',
+    jaDesc:'EC 商品マスターデータ DLO。SKU を PK とするルックアップ。商品ごとの注文明細・獲得ポイントを管理。UC2/UC3 の商品レコメンデーションで参照。',
+    koDesc:'EC 상품 마스터 데이터 DLO. SKU를 PK로 하는 룩업. 상품별 주문 라인아이템·획득 포인트 관리. UC2/UC3 상품 추천에서 참조.',
+    tags:['Product Lookup','Reference','SKU'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-05-30', rowCount:'3,200', schedule:'Daily 01:00 GMT',
     cols:[
-      {name:'EventId',       type:'Text',     pk:true,  fk:false, nullable:false, sample:'EVT-MC-00001',    jaDesc:'MC イベント ID (PK)', koDesc:'MC 이벤트 ID (PK)'},
-      {name:'EmailAddress',  type:'Text',     pk:false, fk:true,  nullable:false, sample:'tanaka@muse.co.jp',jaDesc:'送信先メールアドレス (FK → Individual)', koDesc:'발송 이메일 주소 (FK → Individual)'},
-      {name:'JobId',         type:'Text',     pk:false, fk:false, nullable:false, sample:'JOB-20240901-001',jaDesc:'メール送信 Job ID', koDesc:'이메일 발송 Job ID'},
-      {name:'EventDate',     type:'DateTime', pk:false, fk:false, nullable:false, sample:'2024-09-01 10:00',jaDesc:'イベント発生日時（イベント時刻項目）', koDesc:'이벤트 발생 일시'},
-      {name:'EventType',     type:'Text',     pk:false, fk:false, nullable:false, sample:'Open',            jaDesc:'イベント種別 (Open/Click/Bounce/Unsub)', koDesc:'이벤트 종류'},
-      {name:'CampaignName',  type:'Text',     pk:false, fk:false, nullable:true,  sample:'FW2024_VIP_Reengagement', jaDesc:'キャンペーン名', koDesc:'캠페인명'},
+      {name:'SKU',              type:'Text',   pk:true,  fk:false, nullable:false, sample:'23432', jaDesc:'商品 SKU コード (PK)',  koDesc:'상품 SKU 코드 (PK)'},
+      {name:'Order_Number',     type:'Text',   pk:false, fk:false, nullable:true,  sample:'43243', jaDesc:'関連注文番号',          koDesc:'관련 주문번호'},
+      {name:'Order_Line_Number',type:'Number', pk:false, fk:false, nullable:true,  sample:'1',     jaDesc:'関連明細行番号',        koDesc:'관련 라인 번호'},
+      {name:'Quantity',         type:'Text',   pk:false, fk:false, nullable:true,  sample:'1',     jaDesc:'数量',                 koDesc:'수량'},
+      {name:'Unit_Price',       type:'Text',   pk:false, fk:false, nullable:true,  sample:'12.32', jaDesc:'単価',                 koDesc:'단가'},
+      {name:'Subtotal',         type:'Text',   pk:false, fk:false, nullable:true,  sample:'12.32', jaDesc:'小計',                 koDesc:'소계'},
+      {name:'Related_Activity', type:'Text',   pk:false, fk:false, nullable:true,  sample:'Hiking',jaDesc:'関連アクティビティ',   koDesc:'관련 액티비티'},
+      {name:'Loyalty_Points',   type:'Number', pk:false, fk:false, nullable:true,  sample:'12',    jaDesc:'付与ポイント',         koDesc:'부여 포인트'},
     ],
-    lineage:{sources:['Marketing Cloud\n(EmailSendLog)'],dlo:'EmailSendLog DS',dmos:['Web Engagement (Email)','Individual (via EmailAddress)']},
-    quality:[{label:'完全性',koLabel:'완전성',score:96,color:'green'},{label:'一意性',koLabel:'고유성',score:99,color:'green'},{label:'適時性',koLabel:'적시성',score:94,color:'green'},{label:'正確性',koLabel:'정확성',score:98,color:'green'}]
+    lineage:{sources:['AWS S3\n(ecommerce-data/)'],dlo:'ecomm Product Lookup',dmos:['Goods Product (Standard DMO)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:97,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:86,color:'blue'},{label:'正確性',koLabel:'정확성',score:95,color:'green'}]
+  },
+  {
+    id:'ecomm_related_activity_ds', name:'ecomm Related Activity Lookup', type:'dlo', source:'s3', category:'Other',
+    icon:'🏄', iconBg:'#D9F2E5', iconColor:'#1B7A45',
+    path:'rav-group.s3.ecomm_related_activity',
+    jaDesc:'EC 関連アクティビティルックアップ DLO。Related Activity を PK とし、購入商品とアウトドア・レジャーアクティビティの対応関係を管理。',
+    koDesc:'EC 관련 액티비티 룩업 DLO. Related Activity를 PK로, 구매 상품과 아웃도어·레저 액티비티 대응 관계 관리.',
+    tags:['Activity Lookup','Reference','Personalization'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-05-28', rowCount:'420', schedule:'Daily 01:00 GMT',
+    cols:[
+      {name:'Related_Activity',type:'Text', pk:true,  fk:false, nullable:false, sample:'Hiking',  jaDesc:'アクティビティ名 (PK)',  koDesc:'액티비티명 (PK)'},
+      {name:'SKU',             type:'Text', pk:false, fk:false, nullable:true,  sample:'23432',   jaDesc:'関連商品 SKU',           koDesc:'관련 상품 SKU'},
+      {name:'Category',        type:'Text', pk:false, fk:false, nullable:true,  sample:'Outdoor', jaDesc:'アクティビティカテゴリ',  koDesc:'액티비티 카테고리'},
+      {name:'Description',     type:'Text', pk:false, fk:false, nullable:true,  sample:'Hiking boots and gear for mountain trails', jaDesc:'説明', koDesc:'설명'},
+    ],
+    lineage:{sources:['AWS S3\n(ecommerce-data/)'],dlo:'ecomm Related Activity Lookup',dmos:['Product Related Activity (Custom DMO)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:98,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:90,color:'green'},{label:'正確性',koLabel:'정확성',score:97,color:'green'}]
   },
   /* ── DMOs ── */
   {
     id:'dmo_individual', name:'Individual', type:'dmo', source:'std', category:'Profile',
     icon:'🧑', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
     path:'data360.standard.Individual',
-    jaDesc:'Data 360 標準 DMO。すべての顧客プロファイルの統合ハブ。CRM Contact・S3 顧客プロファイル・会員データから Identity Resolution を経て生成される Unified Individual。',
-    koDesc:'Data 360 표준 DMO. 모든 고객 프로필의 통합 허브. CRM Contact·S3 고객 프로필·회원 데이터로부터 Identity Resolution을 거쳐 생성되는 Unified Individual.',
+    jaDesc:'Data 360 標準 DMO。CRM Contact (Contact_Home) と S3 EC 顧客プロファイルから Identity Resolution を経て生成される統合顧客プロファイル。全ユースケースの中核。',
+    koDesc:'Data 360 표준 DMO. CRM Contact (Contact_Home)와 S3 EC 고객 프로필로부터 Identity Resolution을 거쳐 생성되는 통합 고객 프로필. 모든 유스케이스의 핵심.',
     tags:['Standard DMO','Unified Profile','Identity Resolution','Hub'],
-    owners:[{name:'田中 健司',color:'#0070D2'},{name:'鈴木 彩香',color:'#3CB879'}],
+    owners:[{name:'Joe Johnson',color:'#0070D2'},{name:'田中 健司',color:'#3CB879'}],
     lastUpdated:'2025-06-02', rowCount:'980,400', schedule:'Real-time',
     cols:[
-      {name:'Individual__Id',      type:'Text', pk:true,  fk:false, nullable:false, sample:'IND-00000001',  jaDesc:'統合プロファイル ID (PK)', koDesc:'통합 프로필 ID (PK)'},
-      {name:'First_Name',          type:'Text', pk:false, fk:false, nullable:true,  sample:'花子',          jaDesc:'名', koDesc:'이름'},
-      {name:'Last_Name',           type:'Text', pk:false, fk:false, nullable:false, sample:'田中',          jaDesc:'姓', koDesc:'성'},
-      {name:'Person_Name',         type:'Text', pk:false, fk:false, nullable:true,  sample:'田中 花子',     jaDesc:'氏名（フルネーム）', koDesc:'성명(풀네임)'},
-      {name:'Birth_Date',          type:'Date', pk:false, fk:false, nullable:true,  sample:'1990-04-15',   jaDesc:'生年月日', koDesc:'생년월일'},
-      {name:'Salutation',          type:'Text', pk:false, fk:false, nullable:true,  sample:'Ms.',          jaDesc:'敬称', koDesc:'경칭'},
-      {name:'External_Record_Id',  type:'Text', pk:false, fk:false, nullable:true,  sample:'MUSE-C-00123', jaDesc:'外部システム ID', koDesc:'외부 시스템 ID'},
+      {name:'Individual__Id',    type:'Text', pk:true,  fk:false, nullable:false, sample:'IND-00000001',   jaDesc:'統合プロファイル ID (PK)',    koDesc:'통합 프로필 ID (PK)'},
+      {name:'First_Name',        type:'Text', pk:false, fk:false, nullable:true,  sample:'Testing',        jaDesc:'名',                         koDesc:'이름'},
+      {name:'Last_Name',         type:'Text', pk:false, fk:false, nullable:false, sample:'User',           jaDesc:'姓',                         koDesc:'성'},
+      {name:'Person_Name',       type:'Text', pk:false, fk:false, nullable:true,  sample:'Testing User',   jaDesc:'氏名（フルネーム）',          koDesc:'성명(풀네임)'},
+      {name:'Birth_Date',        type:'Date', pk:false, fk:false, nullable:true,  sample:'1978-05-04',     jaDesc:'生年月日',                   koDesc:'생년월일'},
+      {name:'Salutation',        type:'Text', pk:false, fk:false, nullable:true,  sample:'Ms.',            jaDesc:'敬称',                       koDesc:'경칭'},
+      {name:'External_Record_Id',type:'Text', pk:false, fk:false, nullable:true,  sample:'003XX0000012abc',jaDesc:'外部システム ID（CRM Contact ID）', koDesc:'외부 시스템 ID(CRM Contact ID)'},
+      {name:'External_Source_Id',type:'Text', pk:false, fk:false, nullable:true,  sample:'00DHn000001Qw7H',jaDesc:'Salesforce 組織 ID',          koDesc:'Salesforce 조직 ID'},
     ],
-    lineage:{sources:['Contact_DS','MUSE_Member__c DS','segment_score DS'],dlo:'Identity Resolution',dmos:['Unified Individual']},
+    lineage:{sources:['Contact_Home','ecomm Customer Profile'],dlo:'Identity Resolution',dmos:['Unified Individual']},
     quality:[{label:'完全性',koLabel:'완전성',score:91,color:'green'},{label:'一意性',koLabel:'고유성',score:99,color:'green'},{label:'適時性',koLabel:'적시성',score:95,color:'green'},{label:'正確性',koLabel:'정확성',score:93,color:'green'}]
   },
   {
     id:'dmo_cpe', name:'Contact Point Email', type:'dmo', source:'std', category:'Profile',
     icon:'📨', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
     path:'data360.standard.ContactPointEmail',
-    jaDesc:'個人に紐付くメールアドレスを管理する標準 DMO。Identity Resolution の主要 ID として使用。',
-    koDesc:'개인과 연결된 이메일 주소를 관리하는 표준 DMO. Identity Resolution의 주요 ID로 사용.',
-    tags:['Standard DMO','Email','Identity Key'],
-    owners:[{name:'田中 健司',color:'#0070D2'}],
+    jaDesc:'Individual に紐付くメールアドレスを管理する標準 DMO。Contact_Home (Email) と ecomm Customer Profile (Email) の両ソースからマッピング。',
+    koDesc:'Individual과 연결된 이메일 주소를 관리하는 표준 DMO. Contact_Home (Email)과 ecomm Customer Profile (Email) 양 소스에서 매핑.',
+    tags:['Standard DMO','Email','Identity Key','Activation'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'}],
     lastUpdated:'2025-06-01', rowCount:'1,120,000', schedule:'10-min Incremental',
     cols:[
-      {name:'Contact_Point_Email__Id',type:'Text',pk:true,  fk:false,nullable:false,sample:'CPE-00000001',   jaDesc:'Email DMO PK', koDesc:'Email DMO PK'},
-      {name:'Party',                  type:'Text',pk:false, fk:true, nullable:false,sample:'IND-00000001',   jaDesc:'Individual ID (FK)', koDesc:'Individual ID (FK)'},
-      {name:'Email_Address',          type:'Text',pk:false, fk:false,nullable:false,sample:'tanaka@muse.co.jp',jaDesc:'メールアドレス', koDesc:'이메일 주소'},
+      {name:'Contact_Point_Email__Id',type:'Text',pk:true,  fk:false,nullable:false,sample:'CPE-00000001',  jaDesc:'Email DMO PK', koDesc:'Email DMO PK'},
+      {name:'Party',                  type:'Text',pk:false, fk:true, nullable:false,sample:'IND-00000001',  jaDesc:'Individual ID (FK → Individual)', koDesc:'Individual ID (FK → Individual)'},
+      {name:'Email_Address',          type:'Text',pk:false, fk:false,nullable:false,sample:'test@test.com', jaDesc:'メールアドレス', koDesc:'이메일 주소'},
     ],
-    lineage:{sources:['Contact_DS (Email field)','EmailSendLog DS'],dlo:'Contact_DS',dmos:['Contact Point Email → Individual']},
+    lineage:{sources:['Contact_Home (Email)','ecomm Customer Profile (Email)'],dlo:'Contact_Home / ecomm Customer Profile',dmos:['Contact Point Email → Individual']},
     quality:[{label:'完全性',koLabel:'완전성',score:97,color:'green'},{label:'一意性',koLabel:'고유성',score:98,color:'green'},{label:'適時性',koLabel:'적시성',score:95,color:'green'},{label:'正確性',koLabel:'정확성',score:96,color:'green'}]
   },
   {
-    id:'dmo_loyalty', name:'Loyalty Program Member', type:'dmo', source:'std', category:'Profile',
+    id:'dmo_loyalty_member', name:'Loyalty Program Member', type:'dmo', source:'std', category:'Profile',
     icon:'🏅', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
     path:'data360.standard.LoyaltyProgramMember',
-    jaDesc:'ロイヤルティプログラム会員 DMO。tier・ポイント残高・有効期限を管理。セグメント「Dormant VIP Members」「Tier Upgrade Nudge」で主要属性として利用。',
-    koDesc:'로열티 프로그램 회원 DMO. 등급·포인트 잔액·만료일 관리. 세그먼트 "Dormant VIP Members"·"Tier Upgrade Nudge"의 주요 속성으로 활용.',
-    tags:['Standard DMO','Loyalty','VIP','Segmentation'],
-    owners:[{name:'山本 拓也',color:'#EA001E'},{name:'田中 健司',color:'#0070D2'}],
+    jaDesc:'RAVG リテール会員 DMO。RAVG_Retail_Membership_Number__c をキーに Contact_Home からマッピング。UC2 (ポイント高残高 休眠) の主要セグメント属性。',
+    koDesc:'RAVG 리테일 회원 DMO. RAVG_Retail_Membership_Number__c를 키로 Contact_Home에서 매핑. UC2(포인트 고잔액 휴면)의 주요 세그먼트 속성.',
+    tags:['Standard DMO','Loyalty','Segmentation','UC2'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'},{name:'田中 健司',color:'#3CB879'}],
     lastUpdated:'2025-06-01', rowCount:'560,200', schedule:'10-min Incremental',
     cols:[
       {name:'Loyalty_Program_Member__Id',type:'Text',  pk:true, fk:false,nullable:false,sample:'LPM-00000001', jaDesc:'Loyalty Member PK', koDesc:'Loyalty Member PK'},
       {name:'Individual_Id',             type:'Text',  pk:false,fk:true, nullable:false,sample:'IND-00000001', jaDesc:'Individual ID (FK)', koDesc:'Individual ID (FK)'},
-      {name:'Membership_Number',         type:'Text',  pk:false,fk:false,nullable:false,sample:'MM-2024-00456',jaDesc:'会員番号', koDesc:'회원번호'},
-      {name:'Tier_Level',                type:'Text',  pk:false,fk:false,nullable:false,sample:'Gold',         jaDesc:'会員ランク (Bronze/Silver/Gold/Platinum)', koDesc:'회원 등급'},
-      {name:'Points_Balance',            type:'Number',pk:false,fk:false,nullable:true, sample:'12500',        jaDesc:'ポイント残高', koDesc:'포인트 잔액'},
-      {name:'Points_Expiry_Date',        type:'Date',  pk:false,fk:false,nullable:true, sample:'2025-12-31',   jaDesc:'ポイント有効期限', koDesc:'포인트 만료일'},
+      {name:'Membership_Number',         type:'Text',  pk:false,fk:false,nullable:false,sample:'RAVG-M-00456',jaDesc:'RAVG 会員番号',      koDesc:'RAVG 회원번호'},
+      {name:'Party',                     type:'Text',  pk:false,fk:true, nullable:false,sample:'IND-00000001', jaDesc:'Individual ID (FK)', koDesc:'Individual ID (FK)'},
     ],
-    lineage:{sources:['Contact_DS (MUSE_Member_ID__c)','MUSE_Member__c DS'],dlo:'Contact_DS / MUSE_Member__c DS',dmos:['Loyalty Program Member → Individual']},
+    lineage:{sources:['Contact_Home (RAVG_Retail_Membership_Number__c)','ecomm Customer Profile (Rewards_Program_ID)'],dlo:'Contact_Home',dmos:['Loyalty Program Member → Individual']},
     quality:[{label:'完全性',koLabel:'완전성',score:93,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:89,color:'blue'},{label:'正確性',koLabel:'정확성',score:94,color:'green'}]
+  },
+  {
+    id:'dmo_loyalty_currency', name:'Loyalty Member Currency', type:'dmo', source:'std', category:'Profile',
+    icon:'💰', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
+    path:'data360.standard.LoyaltyMemberCurrency',
+    jaDesc:'ロイヤルティポイント残高・バケットを管理する標準 DMO。Points Bucket（カスタム: Low/Mid/High/Extreme）は UC2 の「Extreme バケット＋購買なし3ヶ月」セグメントで活用。',
+    koDesc:'로열티 포인트 잔액·버킷을 관리하는 표준 DMO. Points Bucket(커스텀: Low/Mid/High/Extreme)은 UC2의 "Extreme 버킷+3개월 미구매" 세그먼트에서 활용.',
+    tags:['Standard DMO','Loyalty Points','Segmentation','UC2'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'}],
+    lastUpdated:'2025-06-01', rowCount:'560,200', schedule:'10-min Incremental',
+    cols:[
+      {name:'Loyalty_Member_Currency__Id',type:'Text',  pk:true, fk:false,nullable:false,sample:'LMC-00000001', jaDesc:'Loyalty Member Currency PK',          koDesc:'Loyalty Member Currency PK'},
+      {name:'Loyalty_Program_Member',     type:'Text',  pk:false,fk:true, nullable:false,sample:'LPM-00000001', jaDesc:'Loyalty Program Member ID (FK)',       koDesc:'Loyalty Program Member ID (FK)'},
+      {name:'Points_Balance',             type:'Number',pk:false,fk:false,nullable:true, sample:'8750',         jaDesc:'ポイント残高',                         koDesc:'포인트 잔액'},
+      {name:'Points_Bucket',              type:'Text',  pk:false,fk:false,nullable:true, sample:'Extreme',      jaDesc:'ポイントバケット（カスタム）: Low/Mid/High/Extreme', koDesc:'포인트 버킷(커스텀): Low/Mid/High/Extreme'},
+    ],
+    lineage:{sources:['Contact_Home (RAVG_Retail_Points_Balance__c, RAVG_Loyalty_Points_Bucket__c)'],dlo:'Contact_Home',dmos:['Loyalty Member Currency → Loyalty Program Member']},
+    quality:[{label:'完全性',koLabel:'완전성',score:90,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:87,color:'blue'},{label:'正確性',koLabel:'정확성',score:92,color:'green'}]
+  },
+  {
+    id:'dmo_rental_custom', name:'Rental (Custom)', type:'dmo', source:'custom', category:'Engagement',
+    icon:'🔑', iconBg:'#D9F2E5', iconColor:'#1B7A45',
+    path:'data360.custom.Rental',
+    jaDesc:'RAV Group 独自のカスタム DMO。Rental DLO からマッピング。Customer (FK → Individual)・Booking (FK → Booking) のリレーションを持つ。UC2/UC3/UC4 の実績分析基盤。',
+    koDesc:'RAV Group 고유 커스텀 DMO. Rental DLO에서 매핑. Customer (FK → Individual)·Booking (FK → Booking) 관계 보유. UC2/UC3/UC4 실적 분석 기반.',
+    tags:['Custom DMO','Rental Car','Transactional'],
+    owners:[{name:'Joe Johnson',color:'#0070D2'},{name:'田中 健司',color:'#3CB879'}],
+    lastUpdated:'2025-06-02', rowCount:'6,870,000', schedule:'10-min Incremental',
+    cols:[
+      {name:'Rental_Id',                  type:'Text',     pk:true, fk:false,nullable:false,sample:'a0CXX0000001abc', jaDesc:'レンタル ID (PK)',              koDesc:'렌탈 ID (PK)'},
+      {name:'Customer',                   type:'Text',     pk:false,fk:true, nullable:true, sample:'IND-00000001',    jaDesc:'顧客 Individual ID (FK)',       koDesc:'고객 Individual ID (FK)'},
+      {name:'Booking_Id',                 type:'Text',     pk:false,fk:true, nullable:true, sample:'a0BXX0000001abc', jaDesc:'予約 ID (FK → Booking)',        koDesc:'예약 ID (FK → Booking)'},
+      {name:'Created_Date',               type:'DateTime', pk:false,fk:false,nullable:false,sample:'2023-11-02 08:03',jaDesc:'作成日時（イベント時刻）',       koDesc:'생성 일시(이벤트 시간)'},
+      {name:'Start_Date',                 type:'Date',     pk:false,fk:false,nullable:true, sample:'2023-11-02',      jaDesc:'レンタル開始日',               koDesc:'렌탈 시작일'},
+      {name:'End_Date',                   type:'Date',     pk:false,fk:false,nullable:true, sample:'2023-11-04',      jaDesc:'レンタル終了日',               koDesc:'렌탈 종료일'},
+      {name:'Total_Amount_Charged',       type:'Number',   pk:false,fk:false,nullable:true, sample:'109.32',          jaDesc:'請求合計金額',                 koDesc:'청구 합계 금액'},
+      {name:'Rental_Reference_Number',    type:'Text',     pk:false,fk:false,nullable:true, sample:'RNT-2024-00001',  jaDesc:'レンタル参照番号',             koDesc:'렌탈 참조번호'},
+      {name:'Drop_Off_Location_Code',     type:'Text',     pk:false,fk:false,nullable:true, sample:'MEL-CITY',        jaDesc:'ドロップオフロケーション',     koDesc:'드롭오프 위치'},
+      {name:'Pick_Up_Location_Code',      type:'Text',     pk:false,fk:false,nullable:true, sample:'SYD-AIRPORT',     jaDesc:'ピックアップロケーション',     koDesc:'픽업 위치'},
+      {name:'Internal_Organization',      type:'Text',     pk:false,fk:false,nullable:true, sample:'00DHn000001Qw7H', jaDesc:'組織 ID',                      koDesc:'조직 ID'},
+      {name:'Purpose',                    type:'Text',     pk:false,fk:false,nullable:true, sample:'Business',        jaDesc:'利用目的',                     koDesc:'이용 목적'},
+    ],
+    lineage:{sources:['Rental DLO'],dlo:'Rental',dmos:['Rental (Custom DMO)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:95,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:91,color:'green'},{label:'正確性',koLabel:'정확성',score:93,color:'green'}]
   },
 ];
 
 
 /* Popular tables for home view */
-const POPULAR_IDS = ['contact_ds','muse_order_ds','web_browse_event_ds','dmo_individual','dmo_loyalty','email_send_log_ds'];
+const POPULAR_IDS = ['contact_home_ds','booking_ds','rental_ds','ecomm_order_ds','dmo_individual','dmo_loyalty_member'];
 
 const RECENT = [
-  {tableId:'web_browse_event_ds', action:'jaDesc:スキーマ更新 — cookie_id フィールド追加', koAction:'스키마 업데이트 — cookie_id 필드 추가', time:'2h ago',     color:'#0070D2', icon:'📝'},
-  {tableId:'dmo_individual',      action:'jaDesc:ID 解決ルール 7件に更新',                 koAction:'ID 해결 규칙 7건으로 업데이트',          time:'5h ago',     color:'#7C5CFC', icon:'🔗'},
-  {tableId:'muse_order_ds',       action:'jaDesc:品質スコア確認 — 完全性 97% 達成',        koAction:'품질 점수 확인 — 완전성 97% 달성',       time:'1 day ago',  color:'#3CB879', icon:'✅'},
-  {tableId:'product_catalog_ds',  action:'jaDesc:2025AW コレクション 商品 312点 追加',     koAction:'2025AW 컬렉션 상품 312건 추가',          time:'2 days ago', color:'#7C5CFC', icon:'🆕'},
-  {tableId:'dmo_loyalty',         action:'jaDesc:Platinum tier 判定ロジック変更',          koAction:'Platinum 등급 판정 로직 변경',           time:'3 days ago', color:'#FF8B00', icon:'⚙️'},
+  {tableId:'contact_home_ds',       action:'jaDesc:数式項目 Date_of_Birth を追加 — Birthdate から Date 型へ変換', koAction:'수식 필드 Date_of_Birth 추가 — Birthdate에서 Date 타입 변환', time:'2h ago',     color:'#0070D2', icon:'📝'},
+  {tableId:'dmo_individual',        action:'jaDesc:ID 解決ルール更新 — Email + Loyalty ID によるマッチング',       koAction:'ID 해결 규칙 업데이트 — 이메일 + Loyalty ID 매칭',           time:'5h ago',     color:'#7C5CFC', icon:'🔗'},
+  {tableId:'ecomm_order_ds',        action:'jaDesc:品質スコア確認 — 完全性 97% 達成',                            koAction:'품질 점수 확인 — 완전성 97% 달성',                          time:'1 day ago',  color:'#3CB879', icon:'✅'},
+  {tableId:'dmo_loyalty_currency',  action:'jaDesc:Points Bucket カスタム項目 — Value Suggestion を有効化',      koAction:'Points Bucket 커스텀 필드 — Value Suggestion 활성화',       time:'2 days ago', color:'#7C5CFC', icon:'🆕'},
+  {tableId:'rental_ds',             action:'jaDesc:Created_Date をイベント時刻項目として設定（変更不可）',        koAction:'Created_Date를 이벤트 시간 필드로 설정(변경 불가)',           time:'3 days ago', color:'#FF8B00', icon:'⚙️'},
 ];
 
 /* ─── Language ─── */
@@ -1269,49 +1441,48 @@ function switchTab(tab){
 const MAPPING_ROWS = [
   // { src_type, src_obj, connector, dlo, dmo, dmo_type:'standard'|'custom', ucs:[] }
   // ── CRM ──
-  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Individual',             dmo_type:'standard', ucs:[1,2,3,4]},
-  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Contact Point Email',    dmo_type:'standard', ucs:[1,2,4]},
-  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Contact Point Phone',    dmo_type:'standard', ucs:[4]},
-  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Loyalty Program Member', dmo_type:'standard', ucs:[1,4]},
-  {src_type:'CRM', src_obj:'MUSE_Order__c',       connector:'Salesforce CRM', dlo:'MUSE_Order__c DS',        dmo:'Order',                  dmo_type:'custom',   ucs:[1,2,3,4]},
-  {src_type:'CRM', src_obj:'MUSE_Order_Item__c',  connector:'Salesforce CRM', dlo:'MUSE_Order_Item__c DS',   dmo:'Order Item',             dmo_type:'custom',   ucs:[3]},
-  {src_type:'CRM', src_obj:'MUSE_Member__c',      connector:'Salesforce CRM', dlo:'MUSE_Member__c DS',       dmo:'Loyalty Program Member', dmo_type:'standard', ucs:[1,4]},
+  {src_type:'CRM', src_obj:'Contact',                       connector:'Salesforce CRM (RAV Group)', dlo:'Contact_Home',              dmo:'Individual',              dmo_type:'standard', ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'Contact',                       connector:'Salesforce CRM (RAV Group)', dlo:'Contact_Home',              dmo:'Contact Point Email',     dmo_type:'standard', ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'Contact',                       connector:'Salesforce CRM (RAV Group)', dlo:'Contact_Home',              dmo:'Contact Point Phone',     dmo_type:'standard', ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'Contact',                       connector:'Salesforce CRM (RAV Group)', dlo:'Contact_Home',              dmo:'Loyalty Program Member',  dmo_type:'standard', ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'Contact',                       connector:'Salesforce CRM (RAV Group)', dlo:'Contact_Home',              dmo:'Loyalty Member Currency', dmo_type:'standard', ucs:[2,3]},
+  {src_type:'CRM', src_obj:'Booking__c',                    connector:'Salesforce CRM (RAV Group)', dlo:'Booking',                   dmo:'Booking (Custom)',        dmo_type:'custom',   ucs:[2,4]},
+  {src_type:'CRM', src_obj:'Rental__c',                     connector:'Salesforce CRM (RAV Group)', dlo:'Rental',                    dmo:'Rental (Custom)',         dmo_type:'custom',   ucs:[2,3,4]},
+  {src_type:'CRM', src_obj:'Rental_Preference__c',          connector:'Salesforce CRM (RAV Group)', dlo:'Rental Preference',         dmo:'Individual',              dmo_type:'standard', ucs:[2,3]},
   // ── S3 ──
-  {src_type:'S3',  src_obj:'web_browse_event.csv',connector:'AWS S3',         dlo:'web_browse_event DS',     dmo:'Web Engagement',         dmo_type:'custom',   ucs:[2]},
-  {src_type:'S3',  src_obj:'app_event.csv',       connector:'AWS S3',         dlo:'app_event DS',            dmo:'Web Engagement',         dmo_type:'custom',   ucs:[2,3]},
-  {src_type:'S3',  src_obj:'product_catalog.csv', connector:'AWS S3',         dlo:'product_catalog DS',      dmo:'Product Catalog',        dmo_type:'custom',   ucs:[3]},
-  {src_type:'S3',  src_obj:'store_lookup.csv',    connector:'AWS S3',         dlo:'store_lookup DS',         dmo:'Store',                  dmo_type:'custom',   ucs:[1]},
-  {src_type:'S3',  src_obj:'segment_score.csv',   connector:'AWS S3',         dlo:'segment_score DS',        dmo:'Individual',             dmo_type:'standard', ucs:[1,2,3,4]},
-  // ── MC ──
-  {src_type:'MC',  src_obj:'EmailSendLog',        connector:'Marketing Cloud',dlo:'EmailSendLog DS',         dmo:'Email Engagement',       dmo_type:'custom',   ucs:[1,2]},
-  {src_type:'MC',  src_obj:'SMSSendLog',          connector:'Marketing Cloud',dlo:'SMSSendLog DS',           dmo:'SMS Engagement',         dmo_type:'custom',   ucs:[4]},
+  {src_type:'S3',  src_obj:'S3 Customer Profile.csv',       connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Customer Profile',    dmo:'Individual',              dmo_type:'standard', ucs:[1,2,3]},
+  {src_type:'S3',  src_obj:'S3 Order Headers.csv',          connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Order',               dmo:'Sales Order',             dmo_type:'standard', ucs:[1,2,3]},
+  {src_type:'S3',  src_obj:'S3 Line Items.csv',             connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Line Item',           dmo:'Sales Order Product',     dmo_type:'standard', ucs:[2,3]},
+  {src_type:'S3',  src_obj:'ecomm Store Number Lookup',     connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Store Lookup',        dmo:'Sales Store',             dmo_type:'standard', ucs:[1,2,3]},
+  {src_type:'S3',  src_obj:'ecomm Product Lookup',          connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Product Lookup',      dmo:'Goods Product',           dmo_type:'standard', ucs:[2,3]},
+  {src_type:'S3',  src_obj:'ecomm Related Activity Lookup', connector:'AWS S3 (tha-dc-ilt)',        dlo:'ecomm Related Activity',    dmo:'Product Related Activity',dmo_type:'custom',   ucs:[2,3]},
 ];
 
 const USE_CASES = [
   {id:1, color:'#EA001E', bg:'#FEF0F0', borderColor:'#EA001E',
-   jaTitle:'UC1: ドーマント VIP 会員 再エンゲージメント',
-   koTitle:'UC1: 도먼트 VIP 회원 재인게이지먼트',
-   jaDef:'過去12ヶ月購入なし・累計購入金額上位20%のシルバー・ゴールド・プラチナ会員を特定し、ロイヤルティポイント有効期限前に限定オファーを配信。',
-   koDef:'최근 12개월 구매 없는 누적 구매액 상위 20% 실버·골드·플래티넘 회원을 특정, 로열티 포인트 만료 전 한정 오퍼 발송.',
-   key_dmos:['Individual','Contact Point Email','Loyalty Program Member','Order','Store','Email Engagement']},
+   jaTitle:'UC1: 特定店舗顧客のオンライン移行促進（Reduce Cost）',
+   koTitle:'UC1: 특정 매장 고객 온라인 전환 촉진 (Reduce Cost)',
+   jaDef:'店舗 1475・5545（高犯罪率地区）の閉店に伴い、該当店舗で2回以上購入した顧客をターゲットに、オンラインショッピングへ移行促進するプロモーションを Email で配信。Data Cloud + Marketing Cloud を活用。',
+   koDef:'매장 1475·5545(높은 범죄율 지역) 폐점으로 인해, 해당 매장에서 2회 이상 구매한 고객을 대상으로 온라인 쇼핑 전환 촉진 프로모션을 이메일로 발송. Data Cloud + Marketing Cloud 활용.',
+   key_dmos:['Individual','Contact Point Email','Sales Order','Sales Store','ecomm Order']},
   {id:2, color:'#0070D2', bg:'#EEF6FF', borderColor:'#0070D2',
-   jaTitle:'UC2: Browse Abandonment 転換',
-   koTitle:'UC2: Browse Abandonment 전환',
-   jaDef:'EC サイトで商品詳細ページを3回以上閲覧したが購入に至っていない顧客を特定し、閲覧商品のパーソナライズ提案メールを24時間以内に配信。',
-   koDef:'EC 사이트에서 상품 상세 페이지를 3회 이상 조회했으나 미구매 고객을 특정, 조회 상품 개인화 추천 메일을 24시간 내 발송.',
-   key_dmos:['Individual','Contact Point Email','Web Engagement','Order','Email Engagement']},
+   jaTitle:'UC2: 高ポイント残高・休眠顧客への再エンゲージ',
+   koTitle:'UC2: 고포인트 잔액 휴면 고객 재인게이지먼트',
+   jaDef:'ロイヤルティポイント残高が多い（Points Bucket = Extreme）にもかかわらず、直近3ヶ月購入実績がない顧客を特定。ポイント消費を促すプロモーションを S3 + Marketing Cloud で配信。',
+   koDef:'로열티 포인트 잔액이 많으나(Points Bucket = Extreme) 최근 3개월 구매 실적이 없는 고객을 특정. 포인트 소비를 유도하는 프로모션을 S3 + Marketing Cloud로 발송.',
+   key_dmos:['Individual','Loyalty Program Member','Loyalty Member Currency','Sales Order','Contact Point Email']},
   {id:3, color:'#3CB879', bg:'#EDFAF3', borderColor:'#3CB879',
-   jaTitle:'UC3: クロスセル・アップセル（新コレクション）',
-   koTitle:'UC3: 크로스셀·업셀 (신 컬렉션)',
-   jaDef:'直近6ヶ月のオーダー履歴から顧客の嗜好カテゴリを分析し、新シーズンコレクション到着時に関連商品をレコメンド。閲覧履歴で補完。',
-   koDef:'최근 6개월 주문 이력에서 고객 선호 카테고리를 분석, 신 시즌 컬렉션 도착 시 관련 상품 추천. 브라우징 이력으로 보완.',
-   key_dmos:['Individual','Order','Order Item','Web Engagement','Product Catalog']},
+   jaTitle:'UC3: 高 LTV・RFM スコア顧客への再エンゲージ',
+   koTitle:'UC3: 고 LTV·RFM 스코어 고객 재인게이지먼트',
+   jaDef:'LTV（Life Time Value）スコアが高い（500超）にもかかわらず、直近3ヶ月購入実績がない顧客を RFM スコアで絞り込み、プロモーション金額を決定してメール配信。S3 + SFMC 活用。',
+   koDef:'LTV(Life Time Value) 스코어가 높으나(500 초과) 최근 3개월 구매 실적이 없는 고객을 RFM 스코어로 필터링하여 프로모션 금액을 결정 후 이메일 발송. S3 + SFMC 활용.',
+   key_dmos:['Individual','Sales Order','Rental (Custom)','ecomm Order','Contact Point Email']},
   {id:4, color:'#FF8B00', bg:'#FFF6E8', borderColor:'#FF8B00',
-   jaTitle:'UC4: Loyalty Tier アップグレード促進',
-   koTitle:'UC4: Loyalty Tier 업그레이드 촉진',
-   jaDef:'Bronze tier で次 tier (Silver) まで残り¥10,000以内の会員を特定し、tier アップまであと少しである旨をプッシュ通知・メール・SMSで配信。',
-   koDef:'Bronze 등급에서 다음 등급(Silver)까지 잔여 ¥10,000 이내 회원을 특정, 등급 업까지 얼마 남지 않았음을 푸시·이메일·SMS로 발송.',
-   key_dmos:['Individual','Contact Point Email','Contact Point Phone','Loyalty Program Member','SMS Engagement']},
+   jaTitle:'UC4: キャンセル予約顧客へのエンゲージ',
+   koTitle:'UC4: 예약 취소 고객 인게이지먼트',
+   jaDef:'レンタカーの予約をキャンセルした顧客リードを特定し、再予約を促すオファーを配信。Booking DLO のキャンセルステータスを活用。Marketing Cloud との連携で Email 送信。',
+   koDef:'렌터카 예약을 취소한 고객 리드를 특정하여 재예약을 유도하는 오퍼를 발송. Booking DLO의 취소 상태를 활용. Marketing Cloud와 연동하여 이메일 발송.',
+   key_dmos:['Individual','Booking (Custom)','Contact Point Email','Rental (Custom)']},
 ];
 
 const UC_COLORS = {0:'#032D60',1:'#EA001E',2:'#0070D2',3:'#3CB879',4:'#FF8B00'};
