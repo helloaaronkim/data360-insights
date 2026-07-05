@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Catalog — MUSE Apparel · Data 360</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F0F6FF; --surface:#fff; --border:rgba(0,112,210,.13);
+  --navy:#032D60; --text-1:#032D60; --text-2:#546D8F; --text-3:#9BAFC8;
+  --brand:#0070D2; --sky:#00A1E0; --green:#3CB879; --orange:#FF8B00;
+  --violet:#7C5CFC; --rose:#EA001E; --yellow:#FFD000;
+  --r:12px; --r-sm:8px; --r-pill:100px;
+  --sh-sm:0 2px 10px rgba(3,45,96,.08); --sh-md:0 8px 28px rgba(3,45,96,.11);
+  --t:.2s cubic-bezier(.4,0,.2,1);
+  /* Amundsen accent */
+  --amd:#6C4FC9; --amd-lt:#F0EDFB;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',-apple-system,'Hiragino Sans',sans-serif;background:var(--bg);color:var(--text-1);min-height:100vh;}
+
+/* ── Nav ── */
+nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);box-shadow:var(--sh-sm);padding:0 32px;height:58px;display:flex;align-items:center;gap:16px;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.sf-chip{background:var(--brand);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:.5px;}
+.amd-chip{background:var(--amd-lt);color:var(--amd);font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;display:flex;align-items:center;gap:5px;}
+.amd-dot{width:7px;height:7px;border-radius:50%;background:var(--amd);}
+.nav-sep{color:var(--text-3);font-size:18px;font-weight:300;}
+.nav-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--navy);}
+.nav-spacer{flex:1;}
+.lang-group{display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px;}
+.lang-btn{border:none;background:none;padding:4px 12px;border-radius:var(--r-pill);font-size:12px;font-weight:500;color:var(--text-2);cursor:pointer;transition:var(--t);}
+.lang-btn.active{background:#fff;color:var(--brand);box-shadow:var(--sh-sm);}
+.back-btn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;padding:6px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:500;color:var(--text-2);cursor:pointer;transition:var(--t);}
+.back-btn:hover{border-color:var(--brand);color:var(--brand);}
+
+/* ── Views ── */
+.view{display:none;}.view.active{display:block;}
+
+/* ══════════════════════════════════════
+   VIEW 0: HOME
+══════════════════════════════════════ */
+.home-hero{background:linear-gradient(135deg,#0B2342 0%,#032D60 40%,#1a4a8a 100%);padding:56px 32px 48px;text-align:center;position:relative;overflow:hidden;}
+.home-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+.home-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-pill);padding:5px 14px;font-size:11px;color:rgba(255,255,255,.7);font-family:'JetBrains Mono',monospace;margin-bottom:20px;}
+.home-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--amd);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.home-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:700;color:#fff;margin-bottom:8px;line-height:1.2;}
+.home-sub{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:32px;max-width:520px;margin-left:auto;margin-right:auto;}
+
+/* Search bar */
+.search-wrap{max-width:600px;margin:0 auto;position:relative;}
+.search-box{width:100%;padding:14px 52px 14px 48px;border-radius:var(--r-pill);border:2px solid transparent;font-size:15px;font-family:'Inter',sans-serif;outline:none;background:#fff;color:var(--text-1);box-shadow:0 8px 32px rgba(0,0,0,.25);transition:var(--t);}
+.search-box:focus{border-color:var(--amd);box-shadow:0 8px 32px rgba(0,0,0,.25),0 0 0 4px rgba(108,79,201,.15);}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);pointer-events:none;}
+.search-kbd{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-3);background:var(--bg);border:1px solid var(--border);padding:2px 6px;border-radius:4px;}
+.search-hints{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:var(--r);box-shadow:var(--sh-md);border:1px solid var(--border);margin-top:6px;overflow:hidden;z-index:100;display:none;}
+.search-hints.open{display:block;}
+.hint-item{padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background var(--t);}
+.hint-item:hover{background:var(--bg);}
+.hint-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
+.hint-name{font-size:13px;font-weight:500;color:var(--text-1);}
+.hint-meta{font-size:11px;color:var(--text-3);}
+.hint-type{font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:4px;flex-shrink:0;}
+
+/* Home body */
+.home-body{max-width:1100px;margin:0 auto;padding:36px 32px 60px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.08em;}
+.section-link{font-size:12px;color:var(--brand);text-decoration:none;font-weight:500;}
+.section-link:hover{text-decoration:underline;}
+
+/* Table card grid */
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:36px;}
+.table-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:var(--t);position:relative;overflow:hidden;}
+.table-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.table-card.dlo::before{background:var(--sky);}
+.table-card.dmo::before{background:var(--amd);}
+.table-card.mc::before{background:var(--orange);}
+.table-card:hover{border-color:var(--brand);box-shadow:var(--sh-md);transform:translateY(-2px);}
+.tc-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.tc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tc-info{flex:1;min-width:0;}
+.tc-name{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tc-source{font-size:11px;color:var(--text-3);margin-top:2px;}
+.tc-desc{font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.tc-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.tc-badge{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 8px;border-radius:4px;font-weight:500;}
+.badge-dlo{background:#E0F3FF;color:#0B6DB3;}
+.badge-dmo{background:var(--amd-lt);color:var(--amd);}
+.badge-profile{background:#D9F2E5;color:#1B7A45;}
+.badge-engagement{background:#FFF0DB;color:#9A5400;}
+.badge-mc{background:#FFF4E5;color:#A05A00;}
+.tc-cols{margin-left:auto;font-size:11px;color:var(--text-3);}
+
+/* Recent activity */
+.activity-list{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.activity-item{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.act-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.act-body{flex:1;min-width:0;}
+.act-name{font-size:13px;font-weight:500;color:var(--navy);font-family:'JetBrains Mono',monospace;}
+.act-what{font-size:11px;color:var(--text-2);margin-top:1px;}
+.act-time{font-size:11px;color:var(--text-3);flex-shrink:0;}
+
+/* Stats row */
+/* Pipeline stats */
+.pipeline-stats{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:32px;overflow-x:auto;}
+.pipeline-row{display:flex;align-items:center;gap:0;min-width:600px;}
+.pipe-node{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;}
+.pipe-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.pipe-num{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;line-height:1;}
+.pipe-label{font-size:11px;color:var(--text-3);text-align:center;font-family:'JetBrains Mono',monospace;}
+.pipe-sublabel{font-size:10px;color:var(--text-3);text-align:center;margin-top:2px;}
+.pipe-badge{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:4px;font-weight:600;margin-top:2px;}
+/* Arrow connectors */
+.pipe-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:72px;gap:4px;}
+.pipe-arrow-line{display:flex;align-items:center;width:100%;}
+.pipe-arrow-track{flex:1;height:2px;background:linear-gradient(90deg,var(--border) 0%,var(--text-3) 100%);}
+.pipe-arrow-head{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--text-3);}
+.pipe-arrow-label{font-size:9px;color:var(--text-3);font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.pipe-arrow-sublabels{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.pipe-arrow-sub{font-size:9px;color:var(--text-3);font-family:'JetBrains Mono',monospace;white-space:nowrap;opacity:.7;}
+
+/* ══════════════════════════════════════
+   VIEW 1: SEARCH RESULTS
+══════════════════════════════════════ */
+.results-wrap{max-width:1100px;margin:0 auto;padding:28px 32px;}
+.results-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;}
+.filter-panel{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;height:fit-content;position:sticky;top:70px;}
+.filter-title{font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.filter-group{margin-bottom:18px;}
+.filter-group-label{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.filter-opt{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;}
+.filter-opt input{accent-color:var(--brand);cursor:pointer;}
+.filter-opt label{font-size:13px;color:var(--text-2);cursor:pointer;flex:1;}
+.filter-opt .filter-count{font-size:11px;color:var(--text-3);}
+.results-main{}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.results-count{font-size:14px;color:var(--text-2);}
+.results-count strong{color:var(--text-1);}
+.results-sort{font-size:12px;color:var(--text-3);}
+.result-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;cursor:pointer;transition:var(--t);display:flex;gap:16px;align-items:flex-start;}
+.result-card:hover{border-color:var(--brand);box-shadow:var(--sh-sm);}
+.result-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.result-body{flex:1;min-width:0;}
+.result-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.result-name{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--navy);}
+.result-desc{font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:10px;}
+.result-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.result-stat{flex-shrink:0;text-align:right;}
+.result-cols-num{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--navy);}
+.result-cols-label{font-size:10px;color:var(--text-3);}
+
+/* ══════════════════════════════════════
+   VIEW 2: TABLE DETAIL
+══════════════════════════════════════ */
+.detail-wrap{max-width:1100px;margin:0 auto;padding:28px 32px;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);margin-bottom:20px;}
+.bc-item{cursor:pointer;color:var(--brand);text-decoration:none;}
+.bc-item:hover{text-decoration:underline;}
+.bc-sep{color:var(--text-3);}
+.bc-current{color:var(--text-2);}
+
+.detail-header{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;}
+.dh-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;}
+.dh-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.dh-title-block{flex:1;}
+.dh-name{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.dh-path{font-size:12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
+.dh-desc{font-size:14px;color:var(--text-2);line-height:1.6;}
+.dh-badges{display:flex;gap:8px;flex-wrap:wrap;}
+.dh-meta-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding-top:16px;border-top:1px solid var(--border);}
+.dh-meta-item{text-align:center;}
+.dh-meta-val{font-size:14px;font-weight:600;color:var(--navy);}
+.dh-meta-key{font-size:11px;color:var(--text-3);margin-top:2px;}
+.dh-owners{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.owner-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px;margin-bottom:20px;width:fit-content;}
+.tab-btn{padding:7px 18px;border-radius:var(--r-pill);font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;border:none;background:none;transition:var(--t);}
+.tab-btn.active{background:#fff;color:var(--brand);box-shadow:var(--sh-sm);}
+.tab-pane{display:none;}.tab-pane.active{display:block;}
+
+/* Columns table */
+.col-table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.col-table th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:10px 14px;text-align:left;}
+.col-table th:first-child{border-radius:var(--r) 0 0 0;}
+.col-table th:last-child{border-radius:0 var(--r) 0 0;}
+.col-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px;}
+.col-table tr:last-child td{border-bottom:none;}
+.col-table tr:hover td{background:var(--bg);}
+.col-name{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--navy);display:flex;align-items:center;gap:6px;}
+.col-type-chip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg);color:var(--text-2);border:1px solid var(--border);}
+.col-badge-pk{background:#D9F2E5;color:#1B7A45;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;}
+.col-badge-fk{background:#FFF0DB;color:#9A5400;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;}
+.col-badge-null{background:var(--bg);color:var(--text-3);font-size:10px;padding:2px 7px;border-radius:4px;}
+.col-sample{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);}
+.col-desc-text{font-size:12px;color:var(--text-2);}
+
+/* Lineage */
+.lineage-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:24px;overflow-x:auto;}
+.lineage-svg-wrap{min-width:700px;}
+
+/* Quality */
+.quality-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.quality-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center;}
+.quality-score{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;margin-bottom:4px;}
+.quality-label{font-size:12px;color:var(--text-2);}
+.quality-bar{height:6px;background:var(--bg);border-radius:3px;margin-top:10px;overflow:hidden;}
+.quality-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.q-green{color:var(--green);} .qf-green{background:var(--green);}
+.q-orange{color:var(--orange);} .qf-orange{background:var(--orange);}
+.q-blue{color:var(--brand);} .qf-blue{background:var(--brand);}
+
+/* Shared utilities */
+.badge{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 8px;border-radius:4px;font-weight:500;}
+.chip-tag{font-size:11px;background:var(--bg);border:1px solid var(--border);color:var(--text-2);padding:3px 9px;border-radius:var(--r-pill);}
+.chip-tag.active{background:var(--amd-lt);border-color:var(--amd);color:var(--amd);}
+
+/* ── Mapping View ── */
+.map-wrap{max-width:1200px;margin:0 auto;padding:28px 32px 60px;}
+.map-page-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.map-page-sub{font-size:13px;color:var(--text-2);margin-bottom:24px;}
+
+/* UC filter */
+.uc-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+.uc-filter-label{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;}
+.uc-chip{border:1px solid var(--border);background:#fff;padding:7px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:var(--t);font-family:'Space Grotesk',sans-serif;}
+.uc-chip:hover{border-color:currentColor;}
+.uc-chip.active{color:#fff;border-color:transparent;}
+.uc-chip[data-uc="0"].active{background:var(--navy);}
+.uc-chip[data-uc="1"].active{background:#EA001E;}
+.uc-chip[data-uc="2"].active{background:#0070D2;}
+.uc-chip[data-uc="3"].active{background:#3CB879;}
+.uc-chip[data-uc="4"].active{background:#FF8B00;}
+
+/* UC detail card */
+.uc-detail{border-radius:var(--r);padding:18px 22px;margin-bottom:22px;border-left:4px solid;animation:slide-in .2s ease;}
+@keyframes slide-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.uc-detail-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+.uc-detail-def{font-size:13px;line-height:1.6;margin-bottom:12px;}
+.uc-dmo-list{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.uc-dmo-list-label{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;}
+.uc-dmo-chip{font-size:11px;padding:3px 9px;border-radius:4px;font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.1);}
+
+/* Mapping table */
+.map-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto;}
+.map-table{width:100%;border-collapse:separate;border-spacing:0;min-width:860px;}
+.map-table th{background:var(--navy);color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:11px 14px;text-align:left;white-space:nowrap;}
+.map-table th.col-arrow{background:#0B2551;width:28px;text-align:center;padding:11px 4px;}
+.map-table td{padding:9px 14px;vertical-align:middle;font-size:12px;border-bottom:1px solid var(--border);transition:opacity .25s,background .25s;}
+.map-table td.col-arrow{text-align:center;padding:9px 4px;color:var(--text-3);font-size:14px;}
+.map-table tr:last-child td{border-bottom:none;}
+.map-row-crm td{border-left:3px solid #0070D2;}
+.map-row-s3  td{border-left:3px solid #7C5CFC;}
+.map-row-mc  td{border-left:3px solid #FF8B00;}
+.map-row-crm td:first-child{border-left:3px solid #0070D2;}
+.map-row-s3  td:first-child{border-left:3px solid #7C5CFC;}
+.map-row-mc  td:first-child{border-left:3px solid #FF8B00;}
+/* Group header row */
+.map-group-hdr td{background:var(--bg);padding:6px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);border-bottom:1px solid var(--border);}
+/* Dimmed state */
+.map-table tr.dimmed td{opacity:.2;}
+.map-table tr.highlighted td{background:#FFFBF0;}
+/* Src type badge */
+.src-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:4px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.src-crm{background:#E0F3FF;color:#0B6DB3;}
+.src-s3 {background:#F0EDFB;color:#7C5CFC;}
+.src-mc {background:#FFF0DB;color:#A05A00;}
+/* DMO type */
+.dmo-std{background:#D9F2E5;color:#1B7A45;font-size:10px;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.dmo-cus{background:#F0EDFB;color:#7C5CFC;font-size:10px;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+/* UC badges in table */
+.uc-dot{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-size:10px;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;}
+.uc-1{background:#EA001E;} .uc-2{background:#0070D2;} .uc-3{background:#3CB879;} .uc-4{background:#FF8B00;}
+.uc-dot.inactive{opacity:.15;}
+/* Monospace object name */
+.obj-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--navy);}
+
+/* View mapping link */
+.view-map-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12px;font-weight:600;color:var(--amd);cursor:pointer;text-decoration:none;padding:7px 16px;border:1px solid var(--amd);border-radius:var(--r-pill);transition:var(--t);}
+.view-map-link:hover{background:var(--amd-lt);}
+
+/* Responsive */
+@media(max-width:768px){
+  .results-layout{grid-template-columns:1fr;}
+  .filter-panel{display:none;}
+  .pipeline-stats{padding:14px 16px;}
+  .home-body,.results-wrap,.detail-wrap{padding:20px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a href="index.html" class="nav-brand">
+    <span class="sf-chip">SF</span>
+    <span class="nav-sep">/</span>
+    <span class="amd-chip"><span class="amd-dot"></span>Amundsen</span>
+  </a>
+  <span class="nav-sep" style="color:var(--text-3)">/</span>
+  <span class="nav-title">MUSE Apparel · Data Catalog</span>
+  <span class="nav-spacer"></span>
+  <div class="lang-group">
+    <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')">🇯🇵 JA</button>
+    <button class="lang-btn" data-lang="ko" onclick="switchLang('ko')">🇰🇷 KO</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     VIEW 0: HOME
+══════════════════════════════════════ -->
+<div id="view-home" class="view active">
+
+  <!-- Hero -->
+  <div class="home-hero">
+    <div class="home-eyebrow">
+      <span class="home-eyebrow-dot"></span>
+      <span>Powered by Amundsen OSS · Data 360 Integration</span>
+    </div>
+    <div class="home-title">
+      <span data-ja>MUSE Apparel データカタログ</span>
+      <span data-ko style="display:none">MUSE Apparel 데이터 카탈로그</span>
+    </div>
+    <p class="home-sub">
+      <span data-ja>Data 360 のすべての DLO・DMO・データストリームを検索・探索できます</span>
+      <span data-ko style="display:none">Data 360의 모든 DLO·DMO·데이터 스트림을 검색·탐색할 수 있습니다</span>
+    </p>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9BAFC8" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-box" id="main-search" autocomplete="off"
+        placeholder="テーブル・フィールドを検索..."
+        oninput="handleSearch(this.value)"
+        onfocus="showHints()"
+        onblur="setTimeout(hideHints,180)"
+        onkeydown="handleSearchKey(event)"/>
+      <span class="search-kbd">⌘K</span>
+      <div class="search-hints" id="search-hints"></div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="home-body">
+
+    <!-- Stats -->
+    <div class="pipeline-stats">
+      <div class="pipeline-row">
+
+        <!-- Node 1: Data Sources -->
+        <div class="pipe-node">
+          <div class="pipe-icon" style="background:#EEF4FF">📥</div>
+          <div class="pipe-num" style="color:#0070D2">3</div>
+          <div class="pipe-label" data-ja>データソース</div>
+          <div class="pipe-label" data-ko style="display:none">데이터 소스</div>
+          <div class="pipe-sublabel">CRM · S3 · MC</div>
+          <span class="pipe-badge" style="background:#EEF4FF;color:#0070D2">Source</span>
+        </div>
+
+        <!-- Arrow 1: Sources → Streams -->
+        <div class="pipe-arrow">
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-sub">ingest</span>
+          </div>
+          <div class="pipe-arrow-line">
+            <div class="pipe-arrow-track"></div>
+            <div class="pipe-arrow-head"></div>
+          </div>
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-label" data-ja>取込</span>
+            <span class="pipe-arrow-label" data-ko style="display:none">수집</span>
+          </div>
+        </div>
+
+        <!-- Node 2: Data Streams -->
+        <div class="pipe-node">
+          <div class="pipe-icon" style="background:#E0F3FF">⚡</div>
+          <div class="pipe-num" style="color:#00A1E0">11</div>
+          <div class="pipe-label" data-ja>データストリーム</div>
+          <div class="pipe-label" data-ko style="display:none">데이터 스트림</div>
+          <div class="pipe-sublabel" data-ja>4 CRM · 5 S3 · 2 MC</div>
+          <div class="pipe-sublabel" data-ko style="display:none">4 CRM · 5 S3 · 2 MC</div>
+          <span class="pipe-badge" style="background:#E0F3FF;color:#0B6DB3">Data Stream</span>
+        </div>
+
+        <!-- Arrow 2: Streams → DLO -->
+        <div class="pipe-arrow">
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-sub" data-ja>自動生成</span>
+            <span class="pipe-arrow-sub" data-ko style="display:none">자동 생성</span>
+          </div>
+          <div class="pipe-arrow-line">
+            <div class="pipe-arrow-track"></div>
+            <div class="pipe-arrow-head"></div>
+          </div>
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-label">DLO</span>
+          </div>
+        </div>
+
+        <!-- Node 3: DLO -->
+        <div class="pipe-node">
+          <div class="pipe-icon" style="background:#F0EDFB">🗄️</div>
+          <div class="pipe-num" style="color:#7C5CFC">7</div>
+          <div class="pipe-label">DLO</div>
+          <div class="pipe-sublabel" data-ja>Data Lake Object</div>
+          <div class="pipe-sublabel" data-ko style="display:none">데이터 레이크 오브젝트</div>
+          <span class="pipe-badge" style="background:#F0EDFB;color:#7C5CFC">DLO</span>
+        </div>
+
+        <!-- Arrow 3: DLO → DMO -->
+        <div class="pipe-arrow">
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-sub" data-ja>フィールド<br>マッピング</span>
+            <span class="pipe-arrow-sub" data-ko style="display:none">필드 매핑</span>
+          </div>
+          <div class="pipe-arrow-line">
+            <div class="pipe-arrow-track" style="background:linear-gradient(90deg,#C4B5FD,#7C5CFC)"></div>
+            <div class="pipe-arrow-head" style="border-left-color:#7C5CFC"></div>
+          </div>
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-label">DMO</span>
+          </div>
+        </div>
+
+        <!-- Node 4: DMO -->
+        <div class="pipe-node">
+          <div class="pipe-icon" style="background:#D9F2E5">✨</div>
+          <div class="pipe-num" style="color:#1B7A45">9</div>
+          <div class="pipe-label">DMO</div>
+          <div class="pipe-sublabel" data-ja>Data Model Object</div>
+          <div class="pipe-sublabel" data-ko style="display:none">데이터 모델 오브젝트</div>
+          <span class="pipe-badge" style="background:#D9F2E5;color:#1B7A45">DMO</span>
+        </div>
+
+        <!-- Arrow 4: DMO → Fields -->
+        <div class="pipe-arrow">
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-sub" data-ja>合計</span>
+            <span class="pipe-arrow-sub" data-ko style="display:none">합계</span>
+          </div>
+          <div class="pipe-arrow-line">
+            <div class="pipe-arrow-track" style="background:linear-gradient(90deg,#86EFAC,#3CB879)"></div>
+            <div class="pipe-arrow-head" style="border-left-color:#3CB879"></div>
+          </div>
+          <div class="pipe-arrow-sublabels">
+            <span class="pipe-arrow-label" data-ja>フィールド</span>
+            <span class="pipe-arrow-label" data-ko style="display:none">필드</span>
+          </div>
+        </div>
+
+        <!-- Node 5: Fields -->
+        <div class="pipe-node">
+          <div class="pipe-icon" style="background:#FFF9DB">📋</div>
+          <div class="pipe-num" style="color:#B45309">124</div>
+          <div class="pipe-label" data-ja>総フィールド数</div>
+          <div class="pipe-label" data-ko style="display:none">총 필드 수</div>
+          <div class="pipe-sublabel" data-ja>カタログ済</div>
+          <div class="pipe-sublabel" data-ko style="display:none">카탈로그 완료</div>
+          <span class="pipe-badge" style="background:#FFF9DB;color:#B45309">Fields</span>
+        </div>
+
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:28px;">
+      <a class="view-map-link" onclick="showMapping()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12"/><polyline points="6,12 2,12"/><circle cx="14" cy="12" r="4"/><circle cx="10" cy="12" r="0"/><line x1="6" y1="7" x2="6" y2="3"/><line x1="18" y1="7" x2="18" y2="3"/><line x1="6" y1="21" x2="6" y2="17"/><line x1="18" y1="21" x2="18" y2="17"/></svg>
+        <span data-ja>ソース → DLO → DMO → UC 詳細マッピングを見る</span>
+        <span data-ko style="display:none">소스 → DLO → DMO → UC 상세 매핑 보기</span>
+      </a>
+    </div>
+
+    <!-- Popular Tables -->
+    <div class="section-hdr">
+      <span class="section-title" data-ja>よく参照されるテーブル</span>
+      <span class="section-title" data-ko style="display:none">자주 참조되는 테이블</span>
+      <a class="section-link" onclick="showResults('',true)" href="javascript:void(0)">
+        <span data-ja>すべて見る →</span>
+        <span data-ko style="display:none">전체 보기 →</span>
+      </a>
+    </div>
+    <div class="table-grid" id="popular-grid"></div>
+
+    <!-- Recent Activity -->
+    <div class="section-hdr" style="margin-top:8px">
+      <span class="section-title" data-ja>最近の更新</span>
+      <span class="section-title" data-ko style="display:none">최근 업데이트</span>
+    </div>
+    <div class="activity-list" id="activity-list"></div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW 1: SEARCH RESULTS
+══════════════════════════════════════ -->
+<div id="view-results" class="view">
+  <div class="results-wrap">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <button class="back-btn" onclick="showHome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        <span data-ja>ホーム</span><span data-ko style="display:none">홈</span>
+      </button>
+      <div style="position:relative;flex:1;max-width:480px;">
+        <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9BAFC8" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="results-search" style="width:100%;padding:9px 14px 9px 36px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:13px;outline:none;" oninput="filterResults(this.value)" placeholder="テーブル・フィールドを検索..."/>
+      </div>
+    </div>
+
+    <div class="results-layout">
+      <!-- Filters -->
+      <div class="filter-panel">
+        <div class="filter-title" data-ja>絞り込み</div>
+        <div class="filter-title" data-ko style="display:none">필터</div>
+
+        <div class="filter-group">
+          <div class="filter-group-label" data-ja>オブジェクト種別</div>
+          <div class="filter-group-label" data-ko style="display:none">오브젝트 종류</div>
+          <div class="filter-opt"><input type="checkbox" id="f-dlo" checked onchange="applyFilters()"><label for="f-dlo">DLO <span class="filter-count">(7)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-dmo" checked onchange="applyFilters()"><label for="f-dmo">DMO <span class="filter-count">(9)</span></label></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label" data-ja>データソース</div>
+          <div class="filter-group-label" data-ko style="display:none">데이터 소스</div>
+          <div class="filter-opt"><input type="checkbox" id="f-crm" checked onchange="applyFilters()"><label for="f-crm">Salesforce CRM <span class="filter-count">(4)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-s3" checked onchange="applyFilters()"><label for="f-s3">AWS S3 <span class="filter-count">(5)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-mc" checked onchange="applyFilters()"><label for="f-mc">Marketing Cloud <span class="filter-count">(2)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-std" checked onchange="applyFilters()"><label for="f-std">Standard DMO <span class="filter-count">(6)</span></label></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label" data-ja>カテゴリ</div>
+          <div class="filter-group-label" data-ko style="display:none">카테고리</div>
+          <div class="filter-opt"><input type="checkbox" id="f-profile" checked onchange="applyFilters()"><label for="f-profile">Profile <span class="filter-count">(5)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-engagement" checked onchange="applyFilters()"><label for="f-engagement">Engagement <span class="filter-count">(6)</span></label></div>
+          <div class="filter-opt"><input type="checkbox" id="f-other" checked onchange="applyFilters()"><label for="f-other">Other <span class="filter-count">(5)</span></label></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-main">
+        <div class="results-header">
+          <div class="results-count" id="results-count"><strong>16</strong> <span data-ja>件のオブジェクト</span><span data-ko style="display:none">개 오브젝트</span></div>
+          <div class="results-sort" data-ja>並び替え: 人気順</div>
+          <div class="results-sort" data-ko style="display:none">정렬: 인기순</div>
+        </div>
+        <div id="results-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW 2: TABLE DETAIL
+══════════════════════════════════════ -->
+<div id="view-detail" class="view">
+  <div class="detail-wrap">
+    <div class="breadcrumb">
+      <a class="bc-item" onclick="showHome()">
+        <span data-ja>ホーム</span><span data-ko style="display:none">홈</span>
+      </a>
+      <span class="bc-sep">›</span>
+      <a class="bc-item" onclick="showResults('',true)">
+        <span data-ja>カタログ</span><span data-ko style="display:none">카탈로그</span>
+      </a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current" id="bc-table-name">—</span>
+    </div>
+
+    <div class="detail-header">
+      <div class="dh-top">
+        <div class="dh-icon" id="dh-icon">📦</div>
+        <div class="dh-title-block">
+          <div class="dh-name" id="dh-name">—</div>
+          <div class="dh-path" id="dh-path">—</div>
+          <div class="dh-desc" id="dh-desc">—</div>
+        </div>
+      </div>
+      <div class="dh-badges" id="dh-badges"></div>
+      <div class="dh-meta-row" id="dh-meta-row"></div>
+    </div>
+
+    <!-- Tags -->
+    <div id="dh-tags" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('columns')" data-tab="columns" data-ja>カラム一覧</button>
+      <button class="tab-btn" onclick="switchTab('columns')" data-tab="columns" data-ko style="display:none">컬럼 목록</button>
+      <button class="tab-btn" onclick="switchTab('lineage')" data-tab="lineage" data-ja>データリネージ</button>
+      <button class="tab-btn" onclick="switchTab('lineage')" data-tab="lineage" data-ko style="display:none">데이터 리니지</button>
+      <button class="tab-btn" onclick="switchTab('quality')" data-tab="quality" data-ja>データ品質</button>
+      <button class="tab-btn" onclick="switchTab('quality')" data-tab="quality" data-ko style="display:none">데이터 품질</button>
+    </div>
+
+    <!-- Columns tab -->
+    <div id="tab-columns" class="tab-pane active">
+      <table class="col-table" id="columns-table">
+        <thead>
+          <tr>
+            <th data-ja>フィールド名</th><th data-ko style="display:none">필드명</th>
+            <th data-ja>データ型</th><th data-ko style="display:none">데이터 타입</th>
+            <th data-ja>説明</th><th data-ko style="display:none">설명</th>
+            <th data-ja>サンプル値</th><th data-ko style="display:none">샘플 값</th>
+            <th data-ja>属性</th><th data-ko style="display:none">속성</th>
+          </tr>
+        </thead>
+        <tbody id="columns-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Lineage tab -->
+    <div id="tab-lineage" class="tab-pane">
+      <div class="lineage-wrap">
+        <div class="lineage-svg-wrap" id="lineage-svg"></div>
+      </div>
+    </div>
+
+    <!-- Quality tab -->
+    <div id="tab-quality" class="tab-pane">
+      <div class="quality-grid" id="quality-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW 3: MAPPING EXPLORER
+══════════════════════════════════════ -->
+<div id="view-mapping" class="view">
+  <div class="map-wrap">
+
+    <!-- Nav -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <button class="back-btn" onclick="showHome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        <span data-ja>ホーム</span><span data-ko style="display:none">홈</span>
+      </button>
+    </div>
+
+    <div class="map-page-title">
+      <span data-ja>データフロー &amp; ユースケースマッピング</span>
+      <span data-ko style="display:none">데이터 플로우 &amp; 유스케이스 매핑</span>
+    </div>
+    <p class="map-page-sub">
+      <span data-ja>どのデータソースのどのオブジェクトが DLO になり、どの DMO にマッピングされ、どのユースケースで使われるかを一覧で確認できます。UC フィルターで関連ラインをハイライトします。</span>
+      <span data-ko style="display:none">어느 데이터 소스의 어느 오브젝트가 DLO가 되고, 어느 DMO에 매핑되며, 어느 유스케이스에서 사용되는지 한눈에 확인할 수 있습니다.</span>
+    </p>
+
+    <!-- UC Filter -->
+    <div class="uc-filter">
+      <span class="uc-filter-label">Filter:</span>
+      <button class="uc-chip active" data-uc="0" onclick="filterByUC(0)">ALL</button>
+      <button class="uc-chip" data-uc="1" onclick="filterByUC(1)">
+        <span data-ja>UC1: ドーマント VIP</span><span data-ko style="display:none">UC1: 도먼트 VIP</span>
+      </button>
+      <button class="uc-chip" data-uc="2" onclick="filterByUC(2)">
+        <span data-ja>UC2: Browse Abandonment</span><span data-ko style="display:none">UC2: 브라우즈 어밴던먼트</span>
+      </button>
+      <button class="uc-chip" data-uc="3" onclick="filterByUC(3)">
+        <span data-ja>UC3: クロスセル</span><span data-ko style="display:none">UC3: 크로스셀</span>
+      </button>
+      <button class="uc-chip" data-uc="4" onclick="filterByUC(4)">
+        <span data-ja>UC4: Tier アップ</span><span data-ko style="display:none">UC4: Tier 업그레이드</span>
+      </button>
+    </div>
+
+    <!-- UC detail card (rendered by JS when filter active) -->
+    <div id="uc-detail-card"></div>
+
+    <!-- Mapping Table -->
+    <div class="map-table-wrap">
+      <table class="map-table" id="map-table">
+        <thead>
+          <tr>
+            <th data-ja>データソース</th><th data-ko style="display:none">데이터 소스</th>
+            <th data-ja>ソースオブジェクト</th><th data-ko style="display:none">소스 오브젝트</th>
+            <th data-ja>コネクタ</th><th data-ko style="display:none">커넥터</th>
+            <th class="col-arrow">→</th>
+            <th>DLO</th>
+            <th class="col-arrow">→</th>
+            <th>DMO</th>
+            <th data-ja>種別</th><th data-ko style="display:none">종류</th>
+            <th data-ja>ユースケース</th><th data-ko style="display:none">유스케이스</th>
+          </tr>
+        </thead>
+        <tbody id="map-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ─── Data ─── */
+const TABLES = [
+  /* ── DLOs ── */
+  {
+    id:'contact_ds', name:'Contact_DS', type:'dlo', source:'crm', category:'Profile',
+    icon:'👤', iconBg:'#E0F3FF', iconColor:'#0B6DB3',
+    path:'muse-apparel.crm.contact_ds',
+    jaDesc:'CRM の Contact オブジェクトから取り込まれた顧客プロファイル DLO。氏名・メール・住所・ロイヤルティ情報を含む。',
+    koDesc:'CRM Contact 오브젝트에서 수집된 고객 프로필 DLO. 이름·이메일·주소·로열티 정보 포함.',
+    tags:['Customer Profile','Identity Resolution','Loyalty'],
+    owners:[{name:'田中 健司',color:'#0070D2'},{name:'鈴木 彩香',color:'#3CB879'}],
+    lastUpdated:'2025-06-01', rowCount:'1,240,500', schedule:'10-min Incremental',
+    cols:[
+      {name:'Id',               type:'Text',     pk:true,  fk:false, nullable:false, sample:'003XX0000012abc', jaDesc:'Salesforce Contact ID (PK)',          koDesc:'Salesforce Contact ID (PK)'},
+      {name:'Email',            type:'Text',     pk:false, fk:false, nullable:true,  sample:'tanaka@muse.co.jp', jaDesc:'メールアドレス',                   koDesc:'이메일 주소'},
+      {name:'FirstName',        type:'Text',     pk:false, fk:false, nullable:true,  sample:'花子',            jaDesc:'名（ファーストネーム）',                  koDesc:'이름'},
+      {name:'LastName',         type:'Text',     pk:false, fk:false, nullable:false, sample:'田中',            jaDesc:'姓（ラストネーム）',                      koDesc:'성'},
+      {name:'Salutation',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Ms.',             jaDesc:'敬称',                                koDesc:'경칭'},
+      {name:'Birthdate',        type:'DateTime', pk:false, fk:false, nullable:true,  sample:'1990-04-15',      jaDesc:'生年月日（DateTime）',                 koDesc:'생년월일(DateTime)'},
+      {name:'Date_of_Birth',    type:'Date',     pk:false, fk:false, nullable:true,  sample:'1990-04-15',      jaDesc:'数式項目: Birthdate から Date 変換',    koDesc:'수식 필드: Birthdate에서 Date 변환'},
+      {name:'MobilePhone',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'+81-90-0000-0000',jaDesc:'携帯電話番号',                         koDesc:'휴대폰 번호'},
+      {name:'MailingStreet',    type:'Text',     pk:false, fk:false, nullable:true,  sample:'1-2-3 Jingumae', jaDesc:'郵送先住所 番地',                       koDesc:'우편 주소 번지'},
+      {name:'MailingCity',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'Shibuya-ku',     jaDesc:'郵送先 市区町村',                       koDesc:'우편 시/구/군'},
+      {name:'MailingPostalCode',type:'Text',     pk:false, fk:false, nullable:true,  sample:'150-0001',       jaDesc:'郵便番号',                             koDesc:'우편번호'},
+      {name:'MailingCountry',   type:'Text',     pk:false, fk:false, nullable:true,  sample:'Japan',          jaDesc:'国',                                  koDesc:'국가'},
+      {name:'MUSE_Member_ID__c',type:'Text',     pk:false, fk:false, nullable:true,  sample:'MM-2024-00456', jaDesc:'MUSE 会員番号（ロイヤルティ）',           koDesc:'MUSE 회원번호(로열티)'},
+      {name:'MUSE_Loyalty_Points__c',type:'Number',pk:false,fk:false,nullable:true,  sample:'12500',          jaDesc:'ロイヤルティポイント残高',               koDesc:'로열티 포인트 잔액'},
+      {name:'MUSE_Tier__c',     type:'Text',     pk:false, fk:false, nullable:true,  sample:'Gold',           jaDesc:'会員ランク: Bronze/Silver/Gold/Platinum', koDesc:'회원 등급'},
+      {name:'SystemModstamp',   type:'DateTime', pk:false, fk:false, nullable:false, sample:'2025-06-01 09:00',jaDesc:'システム更新タイムスタンプ',             koDesc:'시스템 수정 타임스탬프'},
+    ],
+    lineage:{sources:['Salesforce CRM\n(Contact)'],dlo:'Contact_DS',dmos:['Individual','Contact Point Email','Contact Point Phone','Contact Point Address','Loyalty Program Member']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:94,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:99,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:88,color:'blue'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:92,color:'green'},
+    ]
+  },
+  {
+    id:'muse_order_ds', name:'MUSE_Order__c DS', type:'dlo', source:'crm', category:'Engagement',
+    icon:'🛍️', iconBg:'#FFF0DB', iconColor:'#9A5400',
+    path:'muse-apparel.crm.muse_order__c_ds',
+    jaDesc:'受注データ DLO。EC・店舗・アプリ経由の全購買トランザクションを含む。Identity Resolution でプロファイルと紐付ける。',
+    koDesc:'주문 데이터 DLO. EC·매장·앱 경유 모든 구매 트랜잭션 포함. Identity Resolution으로 프로필과 연결.',
+    tags:['Purchase','Transactional','LTV','RFM'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-06-01', rowCount:'8,341,200', schedule:'10-min Incremental',
+    cols:[
+      {name:'Id',               type:'Text',     pk:true,  fk:false, nullable:false, sample:'a0AXX0000001abc', jaDesc:'Order レコード ID (PK)',             koDesc:'Order 레코드 ID (PK)'},
+      {name:'Order_Number__c',  type:'Text',     pk:false, fk:false, nullable:false, sample:'ORD-2024-00789',  jaDesc:'注文番号',                           koDesc:'주문번호'},
+      {name:'Contact__c',       type:'Text',     pk:false, fk:true,  nullable:true,  sample:'003XX0000012abc', jaDesc:'顧客 Contact ID (FK → Individual)', koDesc:'고객 Contact ID (FK → Individual)'},
+      {name:'Order_Date__c',    type:'Date',     pk:false, fk:false, nullable:false, sample:'2024-09-21',      jaDesc:'注文日（イベント時刻項目）',            koDesc:'주문일(이벤트 시간 필드)'},
+      {name:'Status__c',        type:'Text',     pk:false, fk:false, nullable:false, sample:'Delivered',       jaDesc:'注文ステータス (Pending/Confirmed/Shipped/Delivered/Cancelled)', koDesc:'주문 상태'},
+      {name:'Total_Amount__c',  type:'Number',   pk:false, fk:false, nullable:false, sample:'12800',           jaDesc:'合計金額（JPY）',                     koDesc:'합계 금액(JPY)'},
+      {name:'Channel__c',       type:'Text',     pk:false, fk:false, nullable:false, sample:'Online',          jaDesc:'購買チャネル (Online/In-Store/App)',  koDesc:'구매 채널'},
+      {name:'Store_Id__c',      type:'Text',     pk:false, fk:true,  nullable:true,  sample:'ST-003',          jaDesc:'店舗 ID (FK → Store)',               koDesc:'매장 ID (FK → Store)'},
+      {name:'Discount_Applied__c',type:'Number', pk:false, fk:false, nullable:true,  sample:'1000',            jaDesc:'割引適用額（JPY）',                   koDesc:'할인 적용 금액(JPY)'},
+      {name:'Points_Earned__c', type:'Number',   pk:false, fk:false, nullable:true,  sample:'128',             jaDesc:'獲得ポイント',                        koDesc:'획득 포인트'},
+      {name:'Currency__c',      type:'Text',     pk:false, fk:false, nullable:false, sample:'JPY',             jaDesc:'通貨コード',                          koDesc:'통화 코드'},
+    ],
+    lineage:{sources:['Salesforce CRM\n(MUSE_Order__c)'],dlo:'MUSE_Order__c DS',dmos:['Order','Individual (via Contact__c)']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:97,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:91,color:'green'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:95,color:'green'},
+    ]
+  },
+  {
+    id:'web_browse_event_ds', name:'web_browse_event DS', type:'dlo', source:'s3', category:'Engagement',
+    icon:'🌐', iconBg:'#E8F5FF', iconColor:'#0070D2',
+    path:'muse-apparel.s3.web_browse_event',
+    jaDesc:'EC サイトの閲覧イベントログ DLO（S3 経由、毎時取込）。商品閲覧・カート追加・検索などのイベントを含む。Browse Abandonment ユースケースの基盤データ。',
+    koDesc:'EC 사이트 브라우징 이벤트 로그 DLO(S3 경유, 시간별 수집). 상품 조회·장바구니 추가·검색 등 이벤트 포함. Browse Abandonment 유스케이스의 기반 데이터.',
+    tags:['Web Event','Browse Abandonment','Anonymous','Engagement'],
+    owners:[{name:'鈴木 彩香',color:'#3CB879'},{name:'Lee Jinhee',color:'#FF8B00'}],
+    lastUpdated:'2025-06-02', rowCount:'142,800,000', schedule:'Hourly',
+    cols:[
+      {name:'event_id',          type:'Text',     pk:true,  fk:false, nullable:false, sample:'EVT-20240921-00001', jaDesc:'イベント一意 ID (PK)',                koDesc:'이벤트 고유 ID (PK)'},
+      {name:'customer_id',       type:'Text',     pk:false, fk:true,  nullable:true,  sample:'MUSE-C-00123',       jaDesc:'ログイン済顧客 ID (FK → Individual)', koDesc:'로그인 고객 ID (FK → Individual)'},
+      {name:'session_id',        type:'Text',     pk:false, fk:false, nullable:false, sample:'SES-abc123def456',   jaDesc:'セッション ID',                       koDesc:'세션 ID'},
+      {name:'event_type',        type:'Text',     pk:false, fk:false, nullable:false, sample:'product_view',       jaDesc:'イベント種別 (page_view/product_view/add_to_cart/search)', koDesc:'이벤트 종류'},
+      {name:'event_timestamp',   type:'DateTime', pk:false, fk:false, nullable:false, sample:'2024-09-21 14:32:00',jaDesc:'イベント発生時刻（イベント時刻項目）',  koDesc:'이벤트 발생 시각(이벤트 시간 필드)'},
+      {name:'product_id',        type:'Text',     pk:false, fk:true,  nullable:true,  sample:'PRD-WOM-COAT-001',   jaDesc:'閲覧商品 ID (FK → product_catalog)', koDesc:'조회 상품 ID (FK → product_catalog)'},
+      {name:'product_category',  type:'Text',     pk:false, fk:false, nullable:true,  sample:"Women's Outerwear",  jaDesc:'商品カテゴリ',                         koDesc:'상품 카테고리'},
+      {name:'product_name',      type:'Text',     pk:false, fk:false, nullable:true,  sample:'Cashmere Blend Coat',jaDesc:'商品名',                               koDesc:'상품명'},
+      {name:'device_type',       type:'Text',     pk:false, fk:false, nullable:true,  sample:'Mobile',             jaDesc:'デバイス種別 (Mobile/Desktop/Tablet)', koDesc:'디바이스 종류'},
+      {name:'duration_seconds',  type:'Number',   pk:false, fk:false, nullable:true,  sample:'47',                 jaDesc:'ページ滞在時間（秒）',                 koDesc:'페이지 체류 시간(초)'},
+      {name:'is_authenticated',  type:'Boolean',  pk:false, fk:false, nullable:false, sample:'true',               jaDesc:'ログイン済フラグ',                     koDesc:'로그인 여부'},
+      {name:'cookie_id',         type:'Text',     pk:false, fk:false, nullable:true,  sample:'ck_xyzabc123',       jaDesc:'匿名ユーザー識別 Cookie ID',           koDesc:'익명 사용자 식별 Cookie ID'},
+    ],
+    lineage:{sources:['AWS S3\n(web_browse_event.csv)'],dlo:'web_browse_event DS',dmos:['Web Engagement','Individual (authenticated)']},
+    quality:[
+      {label:'完全性 (Completeness)',koLabel:'완전성',score:88,color:'green'},
+      {label:'一意性 (Uniqueness)',  koLabel:'고유성',score:100,color:'green'},
+      {label:'適時性 (Timeliness)',  koLabel:'적시성',score:96,color:'green'},
+      {label:'正確性 (Accuracy)',    koLabel:'정확성',score:82,color:'orange'},
+    ]
+  },
+  {
+    id:'product_catalog_ds', name:'product_catalog DS', type:'dlo', source:'s3', category:'Other',
+    icon:'👗', iconBg:'#F3EFFE', iconColor:'#7C5CFC',
+    path:'muse-apparel.s3.product_catalog',
+    jaDesc:'商品マスターデータ DLO。カテゴリ・価格・SKU・シーズンなど商品属性を含む。セグメントのレコメンデーションロジックで参照。',
+    koDesc:'상품 마스터 데이터 DLO. 카테고리·가격·SKU·시즌 등 상품 속성 포함. 세그먼트 추천 로직에서 참조.',
+    tags:['Product Catalog','Reference','Lookup'],
+    owners:[{name:'Lee Jinhee',color:'#FF8B00'}],
+    lastUpdated:'2025-05-30', rowCount:'48,200', schedule:'Daily 02:00 JST',
+    cols:[
+      {name:'product_id',    type:'Text',   pk:true,  fk:false, nullable:false, sample:'PRD-WOM-COAT-001', jaDesc:'商品 ID (PK)', koDesc:'상품 ID (PK)'},
+      {name:'product_name',  type:'Text',   pk:false, fk:false, nullable:false, sample:'Cashmere Blend Coat', jaDesc:'商品名', koDesc:'상품명'},
+      {name:'category',      type:'Text',   pk:false, fk:false, nullable:false, sample:"Women's Outerwear", jaDesc:'カテゴリ', koDesc:'카테고리'},
+      {name:'brand',         type:'Text',   pk:false, fk:false, nullable:false, sample:'MUSE Premium',     jaDesc:'ブランドライン', koDesc:'브랜드 라인'},
+      {name:'price_jpy',     type:'Number', pk:false, fk:false, nullable:false, sample:'68000',            jaDesc:'販売価格（JPY）', koDesc:'판매가(JPY)'},
+      {name:'sku',           type:'Text',   pk:false, fk:false, nullable:false, sample:'MU-WOM-COAT-BLK-M',jaDesc:'SKU コード', koDesc:'SKU 코드'},
+      {name:'season',        type:'Text',   pk:false, fk:false, nullable:true,  sample:'2025AW',           jaDesc:'シーズンコード', koDesc:'시즌 코드'},
+      {name:'is_active',     type:'Boolean',pk:false, fk:false, nullable:false, sample:'true',             jaDesc:'販売中フラグ', koDesc:'판매중 여부'},
+    ],
+    lineage:{sources:['AWS S3\n(product_catalog.csv)'],dlo:'product_catalog DS',dmos:['Product Catalog (Custom DMO)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:99,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:85,color:'blue'},{label:'正確性',koLabel:'정확성',score:97,color:'green'}]
+  },
+  {
+    id:'email_send_log_ds', name:'EmailSendLog DS', type:'dlo', source:'mc', category:'Engagement',
+    icon:'📧', iconBg:'#FFF4E5', iconColor:'#A05A00',
+    path:'muse-apparel.mc.email_send_log',
+    jaDesc:'Marketing Cloud の Email 送信ログ DLO。開封・クリック・バウンスなどのエンゲージメントデータを含む。',
+    koDesc:'Marketing Cloud Email 발송 로그 DLO. 오픈·클릭·바운스 등 인게이지먼트 데이터 포함.',
+    tags:['Email','Marketing Cloud','Engagement','Open Rate'],
+    owners:[{name:'山本 拓也',color:'#EA001E'}],
+    lastUpdated:'2025-06-02', rowCount:'34,600,000', schedule:'Daily',
+    cols:[
+      {name:'EventId',       type:'Text',     pk:true,  fk:false, nullable:false, sample:'EVT-MC-00001',    jaDesc:'MC イベント ID (PK)', koDesc:'MC 이벤트 ID (PK)'},
+      {name:'EmailAddress',  type:'Text',     pk:false, fk:true,  nullable:false, sample:'tanaka@muse.co.jp',jaDesc:'送信先メールアドレス (FK → Individual)', koDesc:'발송 이메일 주소 (FK → Individual)'},
+      {name:'JobId',         type:'Text',     pk:false, fk:false, nullable:false, sample:'JOB-20240901-001',jaDesc:'メール送信 Job ID', koDesc:'이메일 발송 Job ID'},
+      {name:'EventDate',     type:'DateTime', pk:false, fk:false, nullable:false, sample:'2024-09-01 10:00',jaDesc:'イベント発生日時（イベント時刻項目）', koDesc:'이벤트 발생 일시'},
+      {name:'EventType',     type:'Text',     pk:false, fk:false, nullable:false, sample:'Open',            jaDesc:'イベント種別 (Open/Click/Bounce/Unsub)', koDesc:'이벤트 종류'},
+      {name:'CampaignName',  type:'Text',     pk:false, fk:false, nullable:true,  sample:'FW2024_VIP_Reengagement', jaDesc:'キャンペーン名', koDesc:'캠페인명'},
+    ],
+    lineage:{sources:['Marketing Cloud\n(EmailSendLog)'],dlo:'EmailSendLog DS',dmos:['Web Engagement (Email)','Individual (via EmailAddress)']},
+    quality:[{label:'完全性',koLabel:'완전성',score:96,color:'green'},{label:'一意性',koLabel:'고유성',score:99,color:'green'},{label:'適時性',koLabel:'적시성',score:94,color:'green'},{label:'正確性',koLabel:'정확성',score:98,color:'green'}]
+  },
+  /* ── DMOs ── */
+  {
+    id:'dmo_individual', name:'Individual', type:'dmo', source:'std', category:'Profile',
+    icon:'🧑', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
+    path:'data360.standard.Individual',
+    jaDesc:'Data 360 標準 DMO。すべての顧客プロファイルの統合ハブ。CRM Contact・S3 顧客プロファイル・会員データから Identity Resolution を経て生成される Unified Individual。',
+    koDesc:'Data 360 표준 DMO. 모든 고객 프로필의 통합 허브. CRM Contact·S3 고객 프로필·회원 데이터로부터 Identity Resolution을 거쳐 생성되는 Unified Individual.',
+    tags:['Standard DMO','Unified Profile','Identity Resolution','Hub'],
+    owners:[{name:'田中 健司',color:'#0070D2'},{name:'鈴木 彩香',color:'#3CB879'}],
+    lastUpdated:'2025-06-02', rowCount:'980,400', schedule:'Real-time',
+    cols:[
+      {name:'Individual__Id',      type:'Text', pk:true,  fk:false, nullable:false, sample:'IND-00000001',  jaDesc:'統合プロファイル ID (PK)', koDesc:'통합 프로필 ID (PK)'},
+      {name:'First_Name',          type:'Text', pk:false, fk:false, nullable:true,  sample:'花子',          jaDesc:'名', koDesc:'이름'},
+      {name:'Last_Name',           type:'Text', pk:false, fk:false, nullable:false, sample:'田中',          jaDesc:'姓', koDesc:'성'},
+      {name:'Person_Name',         type:'Text', pk:false, fk:false, nullable:true,  sample:'田中 花子',     jaDesc:'氏名（フルネーム）', koDesc:'성명(풀네임)'},
+      {name:'Birth_Date',          type:'Date', pk:false, fk:false, nullable:true,  sample:'1990-04-15',   jaDesc:'生年月日', koDesc:'생년월일'},
+      {name:'Salutation',          type:'Text', pk:false, fk:false, nullable:true,  sample:'Ms.',          jaDesc:'敬称', koDesc:'경칭'},
+      {name:'External_Record_Id',  type:'Text', pk:false, fk:false, nullable:true,  sample:'MUSE-C-00123', jaDesc:'外部システム ID', koDesc:'외부 시스템 ID'},
+    ],
+    lineage:{sources:['Contact_DS','MUSE_Member__c DS','segment_score DS'],dlo:'Identity Resolution',dmos:['Unified Individual']},
+    quality:[{label:'完全性',koLabel:'완전성',score:91,color:'green'},{label:'一意性',koLabel:'고유성',score:99,color:'green'},{label:'適時性',koLabel:'적시성',score:95,color:'green'},{label:'正確性',koLabel:'정확성',score:93,color:'green'}]
+  },
+  {
+    id:'dmo_cpe', name:'Contact Point Email', type:'dmo', source:'std', category:'Profile',
+    icon:'📨', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
+    path:'data360.standard.ContactPointEmail',
+    jaDesc:'個人に紐付くメールアドレスを管理する標準 DMO。Identity Resolution の主要 ID として使用。',
+    koDesc:'개인과 연결된 이메일 주소를 관리하는 표준 DMO. Identity Resolution의 주요 ID로 사용.',
+    tags:['Standard DMO','Email','Identity Key'],
+    owners:[{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-06-01', rowCount:'1,120,000', schedule:'10-min Incremental',
+    cols:[
+      {name:'Contact_Point_Email__Id',type:'Text',pk:true,  fk:false,nullable:false,sample:'CPE-00000001',   jaDesc:'Email DMO PK', koDesc:'Email DMO PK'},
+      {name:'Party',                  type:'Text',pk:false, fk:true, nullable:false,sample:'IND-00000001',   jaDesc:'Individual ID (FK)', koDesc:'Individual ID (FK)'},
+      {name:'Email_Address',          type:'Text',pk:false, fk:false,nullable:false,sample:'tanaka@muse.co.jp',jaDesc:'メールアドレス', koDesc:'이메일 주소'},
+    ],
+    lineage:{sources:['Contact_DS (Email field)','EmailSendLog DS'],dlo:'Contact_DS',dmos:['Contact Point Email → Individual']},
+    quality:[{label:'完全性',koLabel:'완전성',score:97,color:'green'},{label:'一意性',koLabel:'고유성',score:98,color:'green'},{label:'適時性',koLabel:'적시성',score:95,color:'green'},{label:'正確性',koLabel:'정확성',score:96,color:'green'}]
+  },
+  {
+    id:'dmo_loyalty', name:'Loyalty Program Member', type:'dmo', source:'std', category:'Profile',
+    icon:'🏅', iconBg:'#F0EDFB', iconColor:'#7C5CFC',
+    path:'data360.standard.LoyaltyProgramMember',
+    jaDesc:'ロイヤルティプログラム会員 DMO。tier・ポイント残高・有効期限を管理。セグメント「Dormant VIP Members」「Tier Upgrade Nudge」で主要属性として利用。',
+    koDesc:'로열티 프로그램 회원 DMO. 등급·포인트 잔액·만료일 관리. 세그먼트 "Dormant VIP Members"·"Tier Upgrade Nudge"의 주요 속성으로 활용.',
+    tags:['Standard DMO','Loyalty','VIP','Segmentation'],
+    owners:[{name:'山本 拓也',color:'#EA001E'},{name:'田中 健司',color:'#0070D2'}],
+    lastUpdated:'2025-06-01', rowCount:'560,200', schedule:'10-min Incremental',
+    cols:[
+      {name:'Loyalty_Program_Member__Id',type:'Text',  pk:true, fk:false,nullable:false,sample:'LPM-00000001', jaDesc:'Loyalty Member PK', koDesc:'Loyalty Member PK'},
+      {name:'Individual_Id',             type:'Text',  pk:false,fk:true, nullable:false,sample:'IND-00000001', jaDesc:'Individual ID (FK)', koDesc:'Individual ID (FK)'},
+      {name:'Membership_Number',         type:'Text',  pk:false,fk:false,nullable:false,sample:'MM-2024-00456',jaDesc:'会員番号', koDesc:'회원번호'},
+      {name:'Tier_Level',                type:'Text',  pk:false,fk:false,nullable:false,sample:'Gold',         jaDesc:'会員ランク (Bronze/Silver/Gold/Platinum)', koDesc:'회원 등급'},
+      {name:'Points_Balance',            type:'Number',pk:false,fk:false,nullable:true, sample:'12500',        jaDesc:'ポイント残高', koDesc:'포인트 잔액'},
+      {name:'Points_Expiry_Date',        type:'Date',  pk:false,fk:false,nullable:true, sample:'2025-12-31',   jaDesc:'ポイント有効期限', koDesc:'포인트 만료일'},
+    ],
+    lineage:{sources:['Contact_DS (MUSE_Member_ID__c)','MUSE_Member__c DS'],dlo:'Contact_DS / MUSE_Member__c DS',dmos:['Loyalty Program Member → Individual']},
+    quality:[{label:'完全性',koLabel:'완전성',score:93,color:'green'},{label:'一意性',koLabel:'고유성',score:100,color:'green'},{label:'適時性',koLabel:'적시성',score:89,color:'blue'},{label:'正確性',koLabel:'정확성',score:94,color:'green'}]
+  },
+];
+
+
+/* Popular tables for home view */
+const POPULAR_IDS = ['contact_ds','muse_order_ds','web_browse_event_ds','dmo_individual','dmo_loyalty','email_send_log_ds'];
+
+const RECENT = [
+  {tableId:'web_browse_event_ds', action:'jaDesc:スキーマ更新 — cookie_id フィールド追加', koAction:'스키마 업데이트 — cookie_id 필드 추가', time:'2h ago',     color:'#0070D2', icon:'📝'},
+  {tableId:'dmo_individual',      action:'jaDesc:ID 解決ルール 7件に更新',                 koAction:'ID 해결 규칙 7건으로 업데이트',          time:'5h ago',     color:'#7C5CFC', icon:'🔗'},
+  {tableId:'muse_order_ds',       action:'jaDesc:品質スコア確認 — 完全性 97% 達成',        koAction:'품질 점수 확인 — 완전성 97% 달성',       time:'1 day ago',  color:'#3CB879', icon:'✅'},
+  {tableId:'product_catalog_ds',  action:'jaDesc:2025AW コレクション 商品 312点 追加',     koAction:'2025AW 컬렉션 상품 312건 추가',          time:'2 days ago', color:'#7C5CFC', icon:'🆕'},
+  {tableId:'dmo_loyalty',         action:'jaDesc:Platinum tier 判定ロジック変更',          koAction:'Platinum 등급 판정 로직 변경',           time:'3 days ago', color:'#FF8B00', icon:'⚙️'},
+];
+
+/* ─── Language ─── */
+let currentLang = new URLSearchParams(location.search).get('lang') || 'ja';
+function switchLang(l){
+  currentLang = l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+  document.querySelectorAll('[data-ja]').forEach(el=>el.style.display=l==='ja'?'':'none');
+  document.querySelectorAll('[data-ko]').forEach(el=>el.style.display=l==='ko'?'':'none');
+  // Update search placeholder
+  document.getElementById('main-search').placeholder = l==='ja'?'テーブル・フィールドを検索...':'테이블·필드 검색...';
+  const rs = document.getElementById('results-search');
+  if(rs) rs.placeholder = l==='ja'?'テーブル・フィールドを検索...':'테이블·필드 검색...';
+}
+switchLang(currentLang);
+
+/* ─── View navigation ─── */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showHome(){showView('view-home');}
+function showResults(q,scroll){
+  document.getElementById('results-search').value = q||'';
+  renderResults(q||'');
+  showView('view-results');
+}
+
+/* ─── Home rendering ─── */
+function init(){
+  renderPopular();
+  renderActivity();
+  switchLang(currentLang);
+}
+
+function renderPopular(){
+  const grid = document.getElementById('popular-grid');
+  grid.innerHTML = POPULAR_IDS.map(id=>{
+    const t = TABLES.find(x=>x.id===id);
+    if(!t) return '';
+    return `
+    <div class="table-card ${t.type}" onclick="openDetail('${t.id}')">
+      <div class="tc-header">
+        <div class="tc-icon" style="background:${t.iconBg}">${t.icon}</div>
+        <div class="tc-info">
+          <div class="tc-name">${t.name}</div>
+          <div class="tc-source">${sourceLabel(t.source)}</div>
+        </div>
+      </div>
+      <div class="tc-desc">
+        <span data-ja>${t.jaDesc}</span>
+        <span data-ko style="display:none">${t.koDesc}</span>
+      </div>
+      <div class="tc-footer">
+        <span class="tc-badge badge-${t.type}">${t.type.toUpperCase()}</span>
+        <span class="tc-badge badge-${t.category.toLowerCase()}">${t.category}</span>
+        <span class="tc-cols">${t.cols.length} cols</span>
+      </div>
+    </div>`;
+  }).join('');
+  switchLang(currentLang);
+}
+
+function renderActivity(){
+  const list = document.getElementById('activity-list');
+  list.innerHTML = RECENT.map(r=>{
+    const t = TABLES.find(x=>x.id===r.tableId);
+    const action = r.action.replace('jaDesc:','');
+    return `
+    <div class="activity-item" onclick="openDetail('${r.tableId}')" style="cursor:pointer">
+      <div class="act-icon" style="background:${t.iconBg};color:${t.iconColor}">${r.icon}</div>
+      <div class="act-body">
+        <div class="act-name">${t.name}</div>
+        <div class="act-what">
+          <span data-ja>${action}</span>
+          <span data-ko style="display:none">${r.koAction}</span>
+        </div>
+      </div>
+      <div class="act-time">${r.time}</div>
+    </div>`;
+  }).join('');
+  switchLang(currentLang);
+}
+
+function sourceLabel(s){
+  return {crm:'Salesforce CRM',s3:'AWS S3',mc:'Marketing Cloud',std:'Standard DMO'}[s]||s;
+}
+
+/* ─── Search ─── */
+function handleSearch(val){
+  if(val.trim()){
+    updateHints(val);
+  } else {
+    hideHints();
+  }
+}
+function showHints(){
+  const val = document.getElementById('main-search').value;
+  if(val.trim()) updateHints(val);
+}
+function updateHints(q){
+  const hints = document.getElementById('search-hints');
+  const matches = TABLES.filter(t=>
+    t.name.toLowerCase().includes(q.toLowerCase()) ||
+    (currentLang==='ja'?t.jaDesc:t.koDesc).toLowerCase().includes(q.toLowerCase()) ||
+    t.cols.some(c=>c.name.toLowerCase().includes(q.toLowerCase()))
+  ).slice(0,5);
+  if(!matches.length){hints.classList.remove('open');return;}
+  hints.innerHTML = matches.map(t=>`
+    <div class="hint-item" onclick="openDetail('${t.id}')">
+      <div class="hint-icon" style="background:${t.iconBg}">${t.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="hint-name">${t.name}</div>
+        <div class="hint-meta">${sourceLabel(t.source)} · ${t.cols.length} columns</div>
+      </div>
+      <span class="hint-type badge-${t.type}"
+        style="background:${t.type==='dlo'?'#E0F3FF':'#F0EDFB'};color:${t.type==='dlo'?'#0B6DB3':'#7C5CFC'};font-size:10px;padding:2px 7px;border-radius:4px;">${t.type.toUpperCase()}</span>
+    </div>`).join('');
+  hints.classList.add('open');
+}
+function hideHints(){document.getElementById('search-hints').classList.remove('open');}
+function handleSearchKey(e){
+  if(e.key==='Enter'){
+    const q = document.getElementById('main-search').value;
+    hideHints();
+    showResults(q);
+  }
+}
+
+/* ─── Results rendering ─── */
+let currentQuery = '';
+function renderResults(q){
+  currentQuery = q;
+  applyFilters();
+}
+function filterResults(q){
+  currentQuery = q;
+  applyFilters();
+}
+function applyFilters(){
+  const fDlo = document.getElementById('f-dlo').checked;
+  const fDmo = document.getElementById('f-dmo').checked;
+  const fCrm = document.getElementById('f-crm').checked;
+  const fS3  = document.getElementById('f-s3').checked;
+  const fMc  = document.getElementById('f-mc').checked;
+  const fStd = document.getElementById('f-std').checked;
+  const fProf= document.getElementById('f-profile').checked;
+  const fEng = document.getElementById('f-engagement').checked;
+  const fOth = document.getElementById('f-other').checked;
+  const q = currentQuery.toLowerCase();
+
+  const filtered = TABLES.filter(t=>{
+    if(q && !t.name.toLowerCase().includes(q) &&
+       !(currentLang==='ja'?t.jaDesc:t.koDesc).toLowerCase().includes(q) &&
+       !t.cols.some(c=>c.name.toLowerCase().includes(q))) return false;
+    if(t.type==='dlo' && !fDlo) return false;
+    if(t.type==='dmo' && !fDmo) return false;
+    if(t.source==='crm' && !fCrm) return false;
+    if(t.source==='s3'  && !fS3)  return false;
+    if(t.source==='mc'  && !fMc)  return false;
+    if(t.source==='std' && !fStd) return false;
+    if(t.category==='Profile'    && !fProf) return false;
+    if(t.category==='Engagement' && !fEng)  return false;
+    if(t.category==='Other'      && !fOth)  return false;
+    return true;
+  });
+
+  document.getElementById('results-count').innerHTML =
+    `<strong>${filtered.length}</strong> <span data-ja>件のオブジェクト</span><span data-ko style="display:none">개 오브젝트</span>`;
+
+  document.getElementById('results-list').innerHTML = filtered.map(t=>`
+    <div class="result-card" onclick="openDetail('${t.id}')">
+      <div class="result-icon" style="background:${t.iconBg}">${t.icon}</div>
+      <div class="result-body">
+        <div class="result-name-row">
+          <span class="result-name">${t.name}</span>
+          <span class="badge badge-${t.type}" style="background:${t.type==='dlo'?'#E0F3FF':'#F0EDFB'};color:${t.type==='dlo'?'#0B6DB3':'#7C5CFC'}">${t.type.toUpperCase()}</span>
+          <span class="badge badge-${t.category.toLowerCase()}">${t.category}</span>
+        </div>
+        <div class="result-desc">
+          <span data-ja>${t.jaDesc}</span>
+          <span data-ko style="display:none">${t.koDesc}</span>
+        </div>
+        <div class="result-tags">
+          ${t.tags.slice(0,4).map(tag=>`<span class="chip-tag">${tag}</span>`).join('')}
+        </div>
+      </div>
+      <div class="result-stat">
+        <div class="result-cols-num">${t.cols.length}</div>
+        <div class="result-cols-label">columns</div>
+      </div>
+    </div>`).join('');
+  switchLang(currentLang);
+}
+
+/* ─── Detail rendering ─── */
+function openDetail(id){
+  const t = TABLES.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('bc-table-name').textContent = t.name;
+  document.getElementById('dh-icon').textContent = t.icon;
+  document.getElementById('dh-icon').style.background = t.iconBg;
+  document.getElementById('dh-name').textContent = t.name;
+  document.getElementById('dh-path').textContent = t.path;
+  document.getElementById('dh-desc').innerHTML =
+    `<span data-ja>${t.jaDesc}</span><span data-ko style="display:none">${t.koDesc}</span>`;
+
+  // Badges
+  document.getElementById('dh-badges').innerHTML = [
+    `<span class="badge badge-${t.type}">${t.type.toUpperCase()}</span>`,
+    `<span class="badge badge-${t.category.toLowerCase()}">${t.category}</span>`,
+    `<span class="badge" style="background:#E8F5FF;color:#0B6DB3">${sourceLabel(t.source)}</span>`,
+    `<span class="badge" style="background:#D9F2E5;color:#1B7A45">⏱ ${t.schedule}</span>`,
+  ].join('');
+
+  // Meta row
+  const owners = t.owners.map(o=>
+    `<div class="owner-avatar" title="${o.name}" style="background:${o.color}">${o.name[0]}</div>`).join('');
+  document.getElementById('dh-meta-row').innerHTML = `
+    <div class="dh-meta-item"><div class="dh-meta-val">${t.rowCount}</div><div class="dh-meta-key" data-ja>行数</div><div class="dh-meta-key" data-ko style="display:none">행 수</div></div>
+    <div class="dh-meta-item"><div class="dh-meta-val">${t.cols.length}</div><div class="dh-meta-key" data-ja>フィールド数</div><div class="dh-meta-key" data-ko style="display:none">필드 수</div></div>
+    <div class="dh-meta-item"><div class="dh-meta-val">${t.lastUpdated}</div><div class="dh-meta-key" data-ja>最終更新</div><div class="dh-meta-key" data-ko style="display:none">최종 업데이트</div></div>
+    <div class="dh-meta-item">
+      <div class="dh-owners">${owners}</div>
+      <div class="dh-meta-key" data-ja>オーナー</div><div class="dh-meta-key" data-ko style="display:none">소유자</div>
+    </div>`;
+
+  // Tags
+  document.getElementById('dh-tags').innerHTML =
+    t.tags.map(tag=>`<span class="chip-tag active">🏷 ${tag}</span>`).join('');
+
+  // Columns
+  document.getElementById('columns-body').innerHTML = t.cols.map(c=>`
+    <tr>
+      <td>
+        <div class="col-name">
+          ${c.name}
+          ${c.pk?'<span class="col-badge-pk">PK</span>':''}
+          ${c.fk?'<span class="col-badge-fk">FK</span>':''}
+        </div>
+      </td>
+      <td><span class="col-type-chip">${c.type}</span></td>
+      <td class="col-desc-text">
+        <span data-ja>${c.jaDesc}</span>
+        <span data-ko style="display:none">${c.koDesc}</span>
+      </td>
+      <td class="col-sample">${c.sample||'—'}</td>
+      <td>${c.nullable?'<span class="col-badge-null">nullable</span>':'<span class="col-badge-pk" style="background:#E0F3FF;color:#0B6DB3">not null</span>'}</td>
+    </tr>`).join('');
+
+  // Lineage SVG
+  renderLineage(t.lineage);
+
+  // Quality
+  document.getElementById('quality-grid').innerHTML = t.quality.map(q=>`
+    <div class="quality-card">
+      <div class="quality-score q-${q.color}">${q.score}%</div>
+      <div class="quality-label">
+        <span data-ja>${q.label}</span>
+        <span data-ko style="display:none">${q.koLabel}</span>
+      </div>
+      <div class="quality-bar"><div class="quality-fill qf-${q.color}" style="width:0%" data-target="${q.score}%"></div></div>
+    </div>`).join('');
+
+  switchTab('columns');
+  showView('view-detail');
+  switchLang(currentLang);
+
+  // Animate quality bars
+  setTimeout(()=>{
+    document.querySelectorAll('.quality-fill').forEach(el=>{
+      el.style.width = el.dataset.target;
+    });
+  }, 100);
+}
+
+function renderLineage(lin){
+  const sources = lin.sources;
+  const dlo = lin.dlo;
+  const dmos = lin.dmos;
+
+  const svgW = 700, svgH = Math.max(140, dmos.length * 56 + 60);
+  const boxW = 160, boxH = 46, gap = 80;
+  const col1x = 20, col2x = col1x + boxW + gap, col3x = col2x + boxW + gap;
+  const midY = svgH / 2;
+
+  let arrows = '';
+  let boxes = '';
+
+  // Source boxes
+  sources.forEach((s,i)=>{
+    const y = midY - ((sources.length-1)/2 - i) * 60 - boxH/2;
+    boxes += nodeBox(col1x, y, boxW, boxH, s, '#E0F3FF', '#0B6DB3', '📥');
+    const lineY = y + boxH/2;
+    arrows += `<path d="M${col1x+boxW},${lineY} C${col1x+boxW+gap/2},${lineY} ${col2x-gap/2},${midY} ${col2x},${midY}" stroke="#9BAFC8" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>`;
+    arrows += arrowHead(col2x, midY);
+  });
+
+  // DLO box
+  boxes += nodeBox(col2x, midY - boxH/2, boxW, boxH, dlo, '#F0EDFB', '#7C5CFC', '🗄️');
+
+  // DMO boxes
+  dmos.forEach((d,i)=>{
+    const y = midY - ((dmos.length-1)/2 - i) * 56 - boxH/2;
+    boxes += nodeBox(col3x, y, boxW, boxH, d, '#D9F2E5', '#1B7A45', '✨');
+    const lineY = y + boxH/2;
+    arrows += `<path d="M${col2x+boxW},${midY} C${col2x+boxW+gap/2},${midY} ${col3x-gap/2},${lineY} ${col3x},${lineY}" stroke="#9BAFC8" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>`;
+    arrows += arrowHead(col3x, lineY);
+  });
+
+  // Labels
+  const labelY = svgH - 14;
+  const labelStyle = 'font-size:10px;fill:#9BAFC8;font-family:JetBrains Mono,monospace';
+  const labels = `
+    <text x="${col1x + boxW/2}" y="${labelY}" text-anchor="middle" style="${labelStyle}" data-ja>データソース</text>
+    <text x="${col2x + boxW/2}" y="${labelY}" text-anchor="middle" style="${labelStyle}">DLO</text>
+    <text x="${col3x + boxW/2}" y="${labelY}" text-anchor="middle" style="${labelStyle}">DMO</text>
+  `;
+
+  document.getElementById('lineage-svg').innerHTML =
+    `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%;height:${svgH}px">${arrows}${boxes}${labels}</svg>`;
+}
+
+function nodeBox(x, y, w, h, label, bg, color, emoji){
+  const lines = label.split('\n');
+  const textY1 = y + h/2 - (lines.length > 1 ? 7 : 0);
+  const textY2 = y + h/2 + 12;
+  return `
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${bg}" stroke="${color}" stroke-width="1.5"/>
+    <text x="${x+28}" y="${textY1}" font-size="11" fill="${color}" font-family="JetBrains Mono, monospace" font-weight="600">${lines[0]}</text>
+    ${lines[1]?`<text x="${x+28}" y="${textY2}" font-size="10" fill="${color}" font-family="JetBrains Mono, monospace">${lines[1]}</text>`:''}
+    <text x="${x+10}" y="${y+h/2+5}" font-size="14">${emoji}</text>
+  `;
+}
+function arrowHead(x, y){
+  return `<polygon points="${x},${y} ${x-8},${y-4} ${x-8},${y+4}" fill="#9BAFC8"/>`;
+}
+
+/* ─── Tabs ─── */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===tab);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p=>{
+    p.classList.toggle('active', p.id==='tab-'+tab);
+  });
+}
+
+/* ═══════════════════════════════════════
+   MAPPING EXPLORER DATA & LOGIC
+═══════════════════════════════════════ */
+const MAPPING_ROWS = [
+  // { src_type, src_obj, connector, dlo, dmo, dmo_type:'standard'|'custom', ucs:[] }
+  // ── CRM ──
+  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Individual',             dmo_type:'standard', ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Contact Point Email',    dmo_type:'standard', ucs:[1,2,4]},
+  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Contact Point Phone',    dmo_type:'standard', ucs:[4]},
+  {src_type:'CRM', src_obj:'Contact',             connector:'Salesforce CRM', dlo:'Contact_DS',              dmo:'Loyalty Program Member', dmo_type:'standard', ucs:[1,4]},
+  {src_type:'CRM', src_obj:'MUSE_Order__c',       connector:'Salesforce CRM', dlo:'MUSE_Order__c DS',        dmo:'Order',                  dmo_type:'custom',   ucs:[1,2,3,4]},
+  {src_type:'CRM', src_obj:'MUSE_Order_Item__c',  connector:'Salesforce CRM', dlo:'MUSE_Order_Item__c DS',   dmo:'Order Item',             dmo_type:'custom',   ucs:[3]},
+  {src_type:'CRM', src_obj:'MUSE_Member__c',      connector:'Salesforce CRM', dlo:'MUSE_Member__c DS',       dmo:'Loyalty Program Member', dmo_type:'standard', ucs:[1,4]},
+  // ── S3 ──
+  {src_type:'S3',  src_obj:'web_browse_event.csv',connector:'AWS S3',         dlo:'web_browse_event DS',     dmo:'Web Engagement',         dmo_type:'custom',   ucs:[2]},
+  {src_type:'S3',  src_obj:'app_event.csv',       connector:'AWS S3',         dlo:'app_event DS',            dmo:'Web Engagement',         dmo_type:'custom',   ucs:[2,3]},
+  {src_type:'S3',  src_obj:'product_catalog.csv', connector:'AWS S3',         dlo:'product_catalog DS',      dmo:'Product Catalog',        dmo_type:'custom',   ucs:[3]},
+  {src_type:'S3',  src_obj:'store_lookup.csv',    connector:'AWS S3',         dlo:'store_lookup DS',         dmo:'Store',                  dmo_type:'custom',   ucs:[1]},
+  {src_type:'S3',  src_obj:'segment_score.csv',   connector:'AWS S3',         dlo:'segment_score DS',        dmo:'Individual',             dmo_type:'standard', ucs:[1,2,3,4]},
+  // ── MC ──
+  {src_type:'MC',  src_obj:'EmailSendLog',        connector:'Marketing Cloud',dlo:'EmailSendLog DS',         dmo:'Email Engagement',       dmo_type:'custom',   ucs:[1,2]},
+  {src_type:'MC',  src_obj:'SMSSendLog',          connector:'Marketing Cloud',dlo:'SMSSendLog DS',           dmo:'SMS Engagement',         dmo_type:'custom',   ucs:[4]},
+];
+
+const USE_CASES = [
+  {id:1, color:'#EA001E', bg:'#FEF0F0', borderColor:'#EA001E',
+   jaTitle:'UC1: ドーマント VIP 会員 再エンゲージメント',
+   koTitle:'UC1: 도먼트 VIP 회원 재인게이지먼트',
+   jaDef:'過去12ヶ月購入なし・累計購入金額上位20%のシルバー・ゴールド・プラチナ会員を特定し、ロイヤルティポイント有効期限前に限定オファーを配信。',
+   koDef:'최근 12개월 구매 없는 누적 구매액 상위 20% 실버·골드·플래티넘 회원을 특정, 로열티 포인트 만료 전 한정 오퍼 발송.',
+   key_dmos:['Individual','Contact Point Email','Loyalty Program Member','Order','Store','Email Engagement']},
+  {id:2, color:'#0070D2', bg:'#EEF6FF', borderColor:'#0070D2',
+   jaTitle:'UC2: Browse Abandonment 転換',
+   koTitle:'UC2: Browse Abandonment 전환',
+   jaDef:'EC サイトで商品詳細ページを3回以上閲覧したが購入に至っていない顧客を特定し、閲覧商品のパーソナライズ提案メールを24時間以内に配信。',
+   koDef:'EC 사이트에서 상품 상세 페이지를 3회 이상 조회했으나 미구매 고객을 특정, 조회 상품 개인화 추천 메일을 24시간 내 발송.',
+   key_dmos:['Individual','Contact Point Email','Web Engagement','Order','Email Engagement']},
+  {id:3, color:'#3CB879', bg:'#EDFAF3', borderColor:'#3CB879',
+   jaTitle:'UC3: クロスセル・アップセル（新コレクション）',
+   koTitle:'UC3: 크로스셀·업셀 (신 컬렉션)',
+   jaDef:'直近6ヶ月のオーダー履歴から顧客の嗜好カテゴリを分析し、新シーズンコレクション到着時に関連商品をレコメンド。閲覧履歴で補完。',
+   koDef:'최근 6개월 주문 이력에서 고객 선호 카테고리를 분석, 신 시즌 컬렉션 도착 시 관련 상품 추천. 브라우징 이력으로 보완.',
+   key_dmos:['Individual','Order','Order Item','Web Engagement','Product Catalog']},
+  {id:4, color:'#FF8B00', bg:'#FFF6E8', borderColor:'#FF8B00',
+   jaTitle:'UC4: Loyalty Tier アップグレード促進',
+   koTitle:'UC4: Loyalty Tier 업그레이드 촉진',
+   jaDef:'Bronze tier で次 tier (Silver) まで残り¥10,000以内の会員を特定し、tier アップまであと少しである旨をプッシュ通知・メール・SMSで配信。',
+   koDef:'Bronze 등급에서 다음 등급(Silver)까지 잔여 ¥10,000 이내 회원을 특정, 등급 업까지 얼마 남지 않았음을 푸시·이메일·SMS로 발송.',
+   key_dmos:['Individual','Contact Point Email','Contact Point Phone','Loyalty Program Member','SMS Engagement']},
+];
+
+const UC_COLORS = {0:'#032D60',1:'#EA001E',2:'#0070D2',3:'#3CB879',4:'#FF8B00'};
+
+let activeUC = 0;
+
+function showMapping(){
+  renderMapTable();
+  showView('view-mapping');
+  switchLang(currentLang);
+}
+
+function renderMapTable(){
+  const srcColorMap = {CRM:'#0070D2',S3:'#7C5CFC',MC:'#FF8B00'};
+  const srcBgMap    = {CRM:'#E0F3FF',S3:'#F0EDFB',MC:'#FFF0DB'};
+  const srcTextMap  = {CRM:'#0B6DB3',S3:'#6C4FC9',MC:'#A05A00'};
+  const srcIconMap  = {CRM:'🏢',S3:'☁️',MC:'📧'};
+
+  let html = '';
+  let lastSrcType = null;
+
+  MAPPING_ROWS.forEach((row, i) => {
+    // Group header row when source type changes
+    if(row.src_type !== lastSrcType){
+      const label = row.src_type === 'CRM' ? 'Salesforce CRM Connector'
+                  : row.src_type === 'S3'  ? 'AWS S3 Connector'
+                  : 'Marketing Cloud Connector';
+      html += `<tr class="map-group-hdr">
+        <td colspan="9" style="border-left:3px solid ${srcColorMap[row.src_type]};color:${srcColorMap[row.src_type]}">
+          ${srcIconMap[row.src_type]} ${label}
+        </td>
+      </tr>`;
+      lastSrcType = row.src_type;
+    }
+
+    const ucDots = [1,2,3,4].map(n =>
+      `<span class="uc-dot uc-${n}${row.ucs.includes(n)?'':' inactive'}" title="UC${n}">UC${n}</span>`
+    ).join('');
+
+    const matchesFilter = activeUC === 0 || row.ucs.includes(activeUC);
+    const rowClass = `map-row-${row.src_type.toLowerCase()}${activeUC !== 0 ? (matchesFilter ? ' highlighted' : ' dimmed') : ''}`;
+
+    html += `<tr class="${rowClass}" data-ucs="${row.ucs.join(',')}">
+      <td><span class="src-badge src-${row.src_type.toLowerCase()}">${srcIconMap[row.src_type]} ${row.src_type}</span></td>
+      <td><span class="obj-name">${row.src_obj}</span></td>
+      <td><span style="font-size:11px;color:var(--text-3)">${row.connector}</span></td>
+      <td class="col-arrow">→</td>
+      <td><span class="obj-name" style="color:#7C5CFC">${row.dlo}</span></td>
+      <td class="col-arrow">→</td>
+      <td><span class="obj-name" style="color:#1B7A45">${row.dmo}</span></td>
+      <td><span class="${row.dmo_type==='standard'?'dmo-std':'dmo-cus'}">${row.dmo_type==='standard'?'Standard':'Custom'}</span></td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">${ucDots}</div></td>
+    </tr>`;
+  });
+
+  document.getElementById('map-tbody').innerHTML = html;
+}
+
+function filterByUC(n){
+  activeUC = n;
+  // Update chips
+  document.querySelectorAll('.uc-chip').forEach(c => {
+    c.classList.toggle('active', parseInt(c.dataset.uc) === n);
+  });
+
+  // Show/hide UC detail card
+  const card = document.getElementById('uc-detail-card');
+  if(n === 0){
+    card.innerHTML = '';
+  } else {
+    const uc = USE_CASES.find(u=>u.id===n);
+    const dmoChips = uc.key_dmos.map(d =>
+      `<span class="uc-dmo-chip">${d}</span>`
+    ).join('');
+    card.innerHTML = `
+      <div class="uc-detail" style="background:${uc.bg};border-color:${uc.borderColor};">
+        <div class="uc-detail-title" style="color:${uc.color}">
+          <span data-ja>${uc.jaTitle}</span>
+          <span data-ko style="display:none">${uc.koTitle}</span>
+        </div>
+        <div class="uc-detail-def" style="color:#374151">
+          <span data-ja>${uc.jaDef}</span>
+          <span data-ko style="display:none">${uc.koDef}</span>
+        </div>
+        <div class="uc-dmo-list">
+          <span class="uc-dmo-list-label" data-ja>必要 DMO:</span>
+          <span class="uc-dmo-list-label" data-ko style="display:none">필요 DMO:</span>
+          ${dmoChips}
+        </div>
+      </div>`;
+    switchLang(currentLang);
+  }
+
+  // Re-render table rows
+  renderMapTable();
+  switchLang(currentLang);
+}
+
+/* ─── Init ─── */
+init();
+document.addEventListener('keydown', e=>{
+  if((e.metaKey||e.ctrlKey) && e.key==='k'){
+    e.preventDefault();
+    document.getElementById('main-search').focus();
+    showView('view-home');
+  }
+});
+</script>
+
+</body>
+</html>

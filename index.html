@@ -381,7 +381,7 @@ footer {
         サーバー不要。すぐに開けます。
       </p>
       <div class="meta-pills">
-        <div class="mpill">📁 <strong>7</strong> demos</div>
+        <div class="mpill">📁 <strong>10</strong> demos</div>
         <div class="mpill">🌐 <strong>JA · KO</strong></div>
         <div class="mpill">⚡ No install required</div>
       </div>
@@ -1219,6 +1219,288 @@ footer {
       </div>
     </div>
 
+
+    <!-- ── Demo 08: Data Stream 등록 ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-brand">Demo 08</span>
+        <div class="sect-info">
+          <div class="sect-title">Connector &amp; Data Stream 登録</div>
+          <div class="sect-desc">Connector 선택 → 소스 오브젝트 → 필드 선택 → 스트림 설정 → 활성화 · 5-step wizard</div>
+        </div>
+      </div>
+
+      <div id="card-datastream" class="demo-card">
+        <div class="card-char char-brand">
+          <div class="char-orb" style="width:42px;height:42px;background:#0070D2;opacity:.20;top:7%;left:6%;"></div>
+          <div class="char-orb" style="width:22px;height:22px;background:#FFD000;opacity:.36;bottom:12%;right:8%;"></div>
+          <div class="char-orb" style="width:26px;height:26px;background:#00A1E0;opacity:.22;top:52%;right:16%;"></div>
+
+          <!-- Data pipeline flow icon -->
+          <svg class="char-svg char-float" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Source system -->
+            <rect x="8"  y="62" width="36" height="36" rx="10" fill="#032D60"/>
+            <rect x="14" y="68" width="24" height="4"  rx="2"  fill="#00A1E0" opacity=".8"/>
+            <rect x="14" y="76" width="18" height="4"  rx="2"  fill="#00A1E0" opacity=".55"/>
+            <rect x="14" y="84" width="20" height="4"  rx="2"  fill="#00A1E0" opacity=".4"/>
+            <!-- Arrow 1 -->
+            <path d="M46 80 L60 80 M56 75 L62 80 L56 85" stroke="#0070D2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Connector -->
+            <circle cx="76" cy="80" r="14" fill="#0070D2"/>
+            <text x="76" y="84" text-anchor="middle" font-size="8" fill="white" font-family="monospace" font-weight="bold">CON</text>
+            <!-- Arrow 2 -->
+            <path d="M90 80 L104 80 M100 75 L106 80 L100 85" stroke="#0070D2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- DLO -->
+            <rect x="107" y="62" width="36" height="36" rx="10" fill="#00A1E0"/>
+            <text x="125" y="77" text-anchor="middle" font-size="9" fill="white" font-family="monospace" font-weight="bold">DLO</text>
+            <rect x="113" y="81" width="24" height="3" rx="1.5" fill="white" opacity=".6"/>
+            <rect x="113" y="87" width="18" height="3" rx="1.5" fill="white" opacity=".4"/>
+            <!-- Step labels -->
+            <text x="26"  y="110" text-anchor="middle" font-size="6.5" fill="#546D8F" font-family="monospace">Source</text>
+            <text x="76"  y="106" text-anchor="middle" font-size="6.5" fill="#546D8F" font-family="monospace">Connector</text>
+            <text x="125" y="110" text-anchor="middle" font-size="6.5" fill="#546D8F" font-family="monospace">DLO</text>
+            <!-- Data Stream label above connector -->
+            <rect x="55" y="44" width="42" height="14" rx="5" fill="#032D60" opacity=".08"/>
+            <text x="76" y="54" text-anchor="middle" font-size="6" fill="#032D60" font-family="monospace" font-weight="bold">Data Stream</text>
+            <!-- Sparkles -->
+            <circle cx="14"  cy="44"  r="3" fill="#FFD000" opacity=".7"/>
+            <circle cx="148" cy="100" r="4" fill="#3CB879" opacity=".6"/>
+            <circle cx="148" cy="56"  r="2.5" fill="#00A1E0" opacity=".6"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-datastream-ja"><div class="card-title">Connector &amp;<br>Data Stream 登録</div></div>
+              <div data-lc="card-datastream-ko" style="display:none"><div class="card-title">커넥터 &amp;<br>Data Stream 등록</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-datastream" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-datastream" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-datastream-ja">
+            <p class="card-sub">Connector 選択 → ソースオブジェクト → フィールド選択 → ストリーム設定 → アクティベーションまでの 5ステップをインタラクティブに体験します。</p>
+          </div>
+          <div data-lc="card-datastream-ko" style="display:none">
+            <p class="card-sub">커넥터 선택 → 소스 오브젝트 → 필드 선택 → 스트림 설정 → 활성화까지 Data Stream 등록 과정을 5단계로 체험합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-datastream-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">Salesforce CRM / MC / Ingestion API / S3 コネクタ選択</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">Contact オブジェクト 9フィールド選択・ID 解決必須フィールド</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">アクティベーション → パイプライン点灯アニメーション</span></div>
+            </div>
+            <div data-lc="card-datastream-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">CRM / MC / Ingestion API / S3 커넥터 선택</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">Contact 오브젝트 9개 필드 선택·ID 해석 필수 필드</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">활성화 → 파이프라인 점등 애니메이션</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Connector</span>
+            <span class="tag">Data Stream</span>
+            <span class="tag">Data Lake Object</span>
+            <span class="tag">Field Mapping</span>
+            <span class="tag">Refresh Mode</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="data360-datastream.html?lang=ja" id="btn-datastream">Open Demo →</a>
+            <div class="card-stat">6 connectors<br>5-step wizard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 09: Consent & Privacy Management ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-orange">Demo 09</span>
+        <div class="sect-info">
+          <div class="sect-title">Consent &amp; Privacy Management</div>
+          <div class="sect-desc">동의 프로필 · 개인정보 요청(GDPR/PIPL) · 동의 영향 분석 · 3-tab interactive demo</div>
+        </div>
+      </div>
+
+      <div id="card-consent" class="demo-card">
+        <div class="card-char char-orange">
+          <div class="char-orb" style="width:44px;height:44px;background:#3CB879;opacity:.18;top:8%;left:5%;"></div>
+          <div class="char-orb" style="width:24px;height:24px;background:#FFD000;opacity:.32;bottom:10%;right:10%;"></div>
+          <div class="char-orb" style="width:28px;height:28px;background:#0070D2;opacity:.20;top:55%;right:14%;"></div>
+
+          <!-- Shield / consent icon -->
+          <svg class="char-svg char-float" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shield body -->
+            <path d="M80 18 L128 36 L128 84 C128 112 80 140 80 140 C80 140 32 112 32 84 L32 36 Z" fill="#032D60" opacity=".9"/>
+            <path d="M80 28 L120 43 L120 84 C120 107 80 130 80 130 C80 130 40 107 40 84 L40 43 Z" fill="#0070D2" opacity=".3"/>
+            <!-- Check mark inside shield -->
+            <path d="M60 82 L74 96 L102 66" stroke="#FFD000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Channel dots below -->
+            <circle cx="50" cy="150" r="6" fill="#3CB879"/>
+            <circle cx="68" cy="150" r="6" fill="#3CB879"/>
+            <circle cx="86" cy="150" r="6" fill="#EA001E"/>
+            <circle cx="104" cy="150" r="6" fill="#3CB879"/>
+            <circle cx="122" cy="150" r="6" fill="#CBD5E1"/>
+            <!-- Labels -->
+            <text x="50"  y="162" text-anchor="middle" font-size="5.5" fill="#546D8F" font-family="monospace">Email</text>
+            <text x="68"  y="162" text-anchor="middle" font-size="5.5" fill="#546D8F" font-family="monospace">SMS</text>
+            <text x="86"  y="162" text-anchor="middle" font-size="5.5" fill="#546D8F" font-family="monospace">Push</text>
+            <text x="104" y="162" text-anchor="middle" font-size="5.5" fill="#546D8F" font-family="monospace">Mail</text>
+            <text x="122" y="162" text-anchor="middle" font-size="5.5" fill="#546D8F" font-family="monospace">Tel</text>
+            <!-- Sparkles -->
+            <circle cx="18"  cy="50"  r="3" fill="#FFD000" opacity=".7"/>
+            <circle cx="142" cy="40"  r="3.5" fill="#3CB879" opacity=".6"/>
+            <circle cx="148" cy="110" r="2.5" fill="#0070D2" opacity=".5"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-consent-ja"><div class="card-title">同意 &amp;<br>プライバシー管理</div></div>
+              <div data-lc="card-consent-ko" style="display:none"><div class="card-title">동의 &amp;<br>개인정보 관리</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-consent" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-consent" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-consent-ja">
+            <p class="card-sub">ContactPoint Consent モデルで個人別の同意設定・GDPR/PIPL リクエスト処理・同意フィルターがセグメントに与える影響を 3タブでインタラクティブに体験します。</p>
+          </div>
+          <div data-lc="card-consent-ko" style="display:none">
+            <p class="card-sub">ContactPoint Consent 모델로 개인별 동의 설정, GDPR/PIPL 요청 처리, 동의 필터가 세그먼트에 미치는 영향을 3개 탭으로 인터랙티브하게 체험합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-consent-ja">
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">チャネル別同意トグル → リアルタイム Audit Log 更新</span></div>
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">GDPR/PIPL 削除権・アクセス権リクエスト処理アニメーション</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">同意フィルター適用前後のセグメントサイズ比較</span></div>
+            </div>
+            <div data-lc="card-consent-ko" style="display:none">
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">채널별 동의 토글 → 실시간 Audit Log 업데이트</span></div>
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">GDPR/PIPL 삭제권·접근권 요청 처리 애니메이션</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">동의 필터 적용 전후 세그먼트 규모 비교</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">ContactPoint Consent</span>
+            <span class="tag">GDPR / PIPL</span>
+            <span class="tag">Individual Privacy</span>
+            <span class="tag">Segment Filter</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="data360-consent.html?lang=ja" id="btn-consent">Open Demo →</a>
+            <div class="card-stat">3 channels<br>3-tab demo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demo 10: Data Catalog (Amundsen) ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-violet">Demo 10</span>
+        <div class="sect-info">
+          <div class="sect-title">Data Catalog — Powered by Amundsen</div>
+          <div class="sect-desc">DLO · DMO 메타데이터 카탈로그 · 필드 검색 · 데이터 리니지 · 품질 스코어</div>
+        </div>
+      </div>
+
+      <div id="card-catalog" class="demo-card">
+        <div class="card-char char-violet">
+          <div class="char-orb" style="width:40px;height:40px;background:#7C5CFC;opacity:.15;top:10%;left:8%;"></div>
+          <div class="char-orb" style="width:22px;height:22px;background:#00A1E0;opacity:.25;bottom:12%;right:8%;"></div>
+          <div class="char-orb" style="width:30px;height:30px;background:#3CB879;opacity:.18;top:50%;right:16%;"></div>
+
+          <!-- Amundsen-style catalog illustration -->
+          <svg class="char-svg char-float" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Search magnifier -->
+            <circle cx="72" cy="68" r="28" stroke="#7C5CFC" stroke-width="4" fill="#F0EDFB" opacity=".9"/>
+            <line x1="92" y1="88" x2="112" y2="108" stroke="#7C5CFC" stroke-width="5" stroke-linecap="round"/>
+            <!-- Table rows inside magnifier -->
+            <rect x="56" y="58" width="32" height="5" rx="2" fill="#7C5CFC" opacity=".5"/>
+            <rect x="56" y="66" width="24" height="4" rx="2" fill="#0070D2" opacity=".4"/>
+            <rect x="56" y="73" width="28" height="4" rx="2" fill="#3CB879" opacity=".4"/>
+            <!-- DLO nodes -->
+            <rect x="12" y="26" width="42" height="22" rx="6" fill="#E0F3FF" stroke="#0070D2" stroke-width="1.5"/>
+            <text x="33" y="41" text-anchor="middle" font-size="7" fill="#0070D2" font-family="monospace" font-weight="600">DLO</text>
+            <!-- DMO node -->
+            <rect x="106" y="26" width="42" height="22" rx="6" fill="#F0EDFB" stroke="#7C5CFC" stroke-width="1.5"/>
+            <text x="127" y="41" text-anchor="middle" font-size="7" fill="#7C5CFC" font-family="monospace" font-weight="600">DMO</text>
+            <!-- Lineage arrows -->
+            <path d="M54 37 Q80 37 106 37" stroke="#9BAFC8" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+            <polygon points="106,37 100,34 100,40" fill="#9BAFC8"/>
+            <!-- Stats pills at bottom -->
+            <rect x="14" y="120" width="34" height="16" rx="8" fill="#D9F2E5"/>
+            <text x="31" y="131" text-anchor="middle" font-size="7" fill="#1B7A45" font-weight="600">11 DS</text>
+            <rect x="55" y="120" width="34" height="16" rx="8" fill="#E0F3FF"/>
+            <text x="72" y="131" text-anchor="middle" font-size="7" fill="#0B6DB3" font-weight="600">7 DLO</text>
+            <rect x="96" y="120" width="34" height="16" rx="8" fill="#F0EDFB"/>
+            <text x="113" y="131" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="600">9 DMO</text>
+            <!-- Amundsen dot -->
+            <circle cx="140" cy="20" r="5" fill="#7C5CFC" opacity=".7"/>
+            <circle cx="20" cy="100" r="3.5" fill="#FFD000" opacity=".6"/>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-catalog-ja"><div class="card-title">データカタログ<br>(Amundsen)</div></div>
+              <div data-lc="card-catalog-ko" style="display:none"><div class="card-title">데이터 카탈로그<br>(Amundsen)</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-catalog" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-catalog" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-catalog-ja">
+            <p class="card-sub">オープンソースデータカタログ Amundsen を Data 360 プロジェクトに適用。架空ブランド MUSE Apparel の DLO・DMO メタデータを検索・閲覧し、フィールドレベルのリネージと品質スコアを確認できます。</p>
+          </div>
+          <div data-lc="card-catalog-ko" style="display:none">
+            <p class="card-sub">오픈소스 데이터 카탈로그 Amundsen을 Data 360 프로젝트에 적용. 가상 브랜드 MUSE Apparel의 DLO·DMO 메타데이터를 검색·탐색하고 필드 수준 리니지와 품질 스코어를 확인합니다.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-catalog-ja">
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">テーブル検索 → フィールド一覧 → 型・説明・サンプル値</span></div>
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">データリネージ可視化: データソース → DLO → DMO</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">完全性・一意性・適時性・正確性の品質スコア表示</span></div>
+            </div>
+            <div data-lc="card-catalog-ko" style="display:none">
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">테이블 검색 → 필드 목록 → 타입·설명·샘플 값</span></div>
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">데이터 리니지 시각화: 데이터 소스 → DLO → DMO</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">완전성·고유성·적시성·정확성 품질 스코어 표시</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Amundsen</span>
+            <span class="tag">Data Dictionary</span>
+            <span class="tag">DLO / DMO</span>
+            <span class="tag">Data Lineage</span>
+            <span class="tag">Data Quality</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-violet" href="data360-datadictionary.html?lang=ja" id="btn-catalog">Open Demo →</a>
+            <div class="card-stat">8 tables<br>3-view catalog</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1243,15 +1525,21 @@ footer {
     'card-identity':  { ja: 'data360-identity.html?lang=ja',          ko: 'data360-identity.html?lang=ko' },
     'card-profile':   { ja: 'data360-realtime-profile.html?lang=ja',  ko: 'data360-realtime-profile.html?lang=ko' },
     'card-insights':  { ja: 'data360-calculated-insights.html?lang=ja', ko: 'data360-calculated-insights.html?lang=ko' },
-    'card-dmo':       { ja: 'data360-dmo-explorer.html?lang=ja',      ko: 'data360-dmo-explorer.html?lang=ko' }
+    'card-dmo':        { ja: 'data360-dmo-explorer.html?lang=ja',     ko: 'data360-dmo-explorer.html?lang=ko' },
+    'card-datastream': { ja: 'data360-datastream.html?lang=ja',       ko: 'data360-datastream.html?lang=ko' },
+    'card-consent':    { ja: 'data360-consent.html?lang=ja',          ko: 'data360-consent.html?lang=ko' },
+    'card-catalog':    { ja: 'data360-datadictionary.html?lang=ja',   ko: 'data360-datadictionary.html?lang=ko' }
   };
   const BTNS = {
-    'card-streaming': document.getElementById('btn-streaming'),
-    'card-timeline':  document.getElementById('btn-timeline'),
-    'card-identity':  document.getElementById('btn-identity'),
-    'card-profile':   document.getElementById('btn-profile'),
-    'card-insights':  document.getElementById('btn-insights'),
-    'card-dmo':       document.getElementById('btn-dmo')
+    'card-streaming':  document.getElementById('btn-streaming'),
+    'card-timeline':   document.getElementById('btn-timeline'),
+    'card-identity':   document.getElementById('btn-identity'),
+    'card-profile':    document.getElementById('btn-profile'),
+    'card-insights':   document.getElementById('btn-insights'),
+    'card-dmo':        document.getElementById('btn-dmo'),
+    'card-datastream': document.getElementById('btn-datastream'),
+    'card-consent':    document.getElementById('btn-consent'),
+    'card-catalog':    document.getElementById('btn-catalog')
   };
 
   function switchLang(cardId, lang) {
@@ -1277,7 +1565,10 @@ footer {
   switchLang('card-identity',  'ja');
   switchLang('card-profile',   'ja');
   switchLang('card-insights',  'ja');
-  switchLang('card-dmo',       'ja');
+  switchLang('card-dmo',        'ja');
+  switchLang('card-datastream', 'ja');
+  switchLang('card-consent',    'ja');
+  switchLang('card-catalog',    'ja');
 })();
 </script>
 

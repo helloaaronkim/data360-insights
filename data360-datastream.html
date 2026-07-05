@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data 360 / Data Stream 登録 · 데이터 스트림 등록 — Demo 08</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F0F6FF;
+    --white: #FFFFFF;
+    --navy: #032D60;
+    --secondary: #546D8F;
+    --tertiary: #9BAFC8;
+    --blue: #0070D2;
+    --sky: #00A1E0;
+    --violet: #8B5CF6;
+    --green: #3CB879;
+    --orange: #FF8B00;
+    --yellow: #FFD000;
+    --border: rgba(0,112,210,.14);
+    --shadow: 0 8px 32px rgba(3,45,96,.11);
+    --r-card: 14px;
+    --r-pill: 100px;
+    color-scheme: light;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--navy); min-height: 100vh; }
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ── APP BAR ── */
+  .appbar {
+    position: sticky; top: 0; z-index: 100;
+    height: 56px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .appbar-left { display: flex; align-items: center; gap: 12px; }
+  .sf-box {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .appbar-title {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: var(--navy);
+    line-height: 1.3;
+  }
+  .appbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .lang-toggle { display: flex; border: 1.5px solid var(--border); border-radius: var(--r-pill); overflow: hidden; }
+  .lang-btn {
+    padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+    border: none; background: transparent; color: var(--secondary); font-family: 'Space Grotesk', sans-serif;
+    transition: background .15s, color .15s;
+  }
+  .lang-btn.active { background: var(--blue); color: #fff; }
+  .back-link {
+    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
+    color: var(--secondary); text-decoration: none; padding: 6px 12px;
+    border: 1.5px solid var(--border); border-radius: var(--r-pill);
+    transition: border-color .15s, color .15s;
+  }
+  .back-link:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--white); border-bottom: 1px solid var(--border);
+  }
+  .hero-inner {
+    max-width: 960px; margin: 0 auto; padding: 56px 48px 40px;
+  }
+  .eyebrow-pill {
+    display: inline-block; padding: 4px 14px; border-radius: var(--r-pill);
+    background: rgba(0,112,210,.08); border: 1px solid rgba(0,112,210,.18);
+    color: var(--blue); font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    font-family: 'JetBrains Mono', monospace; margin-bottom: 20px;
+  }
+  .hero-title {
+    font-size: 36px; font-weight: 700; color: var(--navy); line-height: 1.2; margin-bottom: 14px;
+  }
+  .hero-sub {
+    font-size: 16px; color: var(--secondary); line-height: 1.7; max-width: 680px; margin-bottom: 36px;
+  }
+
+  /* ── PIPELINE FLOW ── */
+  .pipeline { display: flex; align-items: flex-start; gap: 0; flex-wrap: wrap; }
+  .pipe-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pipe-node {
+    padding: 7px 16px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif; white-space: nowrap;
+  }
+  .pipe-node.src { background: rgba(255,139,0,.12); color: #b35e00; border: 1.5px solid rgba(255,139,0,.3); }
+  .pipe-node.conn { background: rgba(0,112,210,.1); color: var(--blue); border: 1.5px solid rgba(0,112,210,.25); }
+  .pipe-node.ds { background: rgba(0,161,224,.1); color: #0077a8; border: 1.5px solid rgba(0,161,224,.3); }
+  .pipe-node.dlo { background: rgba(139,92,246,.1); color: #6d3fc8; border: 1.5px solid rgba(139,92,246,.3); }
+  .pipe-node.dmo { background: rgba(60,184,121,.1); color: #228a55; border: 1.5px solid rgba(60,184,121,.3); }
+  .pipe-node.unified { background: rgba(3,45,96,.1); color: var(--navy); border: 1.5px solid rgba(3,45,96,.2); }
+  .pipe-caption { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--tertiary); }
+  .pipe-arrow {
+    font-size: 18px; color: var(--tertiary); padding: 0 6px; margin-top: 9px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 960px; margin: 0 auto; padding: 40px 24px 64px; }
+  section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── CONNECTOR CARDS ── */
+  .conn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 700px) { .conn-grid { grid-template-columns: repeat(2, 1fr); } }
+  .conn-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 16px 20px; transition: transform .18s, box-shadow .18s;
+  }
+  .conn-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .conn-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+  .conn-icon { font-size: 24px; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: var(--r-pill);
+    font-size: 10px; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: .04em;
+  }
+  .badge-green { background: rgba(60,184,121,.12); color: #1d7a47; border: 1px solid rgba(60,184,121,.25); }
+  .badge-orange { background: rgba(255,139,0,.12); color: #944e00; border: 1px solid rgba(255,139,0,.25); }
+  .badge-sky { background: rgba(0,161,224,.12); color: #006a94; border: 1px solid rgba(0,161,224,.25); }
+  .conn-card-name { font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--navy); }
+  .conn-card-desc { font-size: 12px; color: var(--secondary); line-height: 1.6; margin-bottom: 12px; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500;
+    background: var(--bg); color: var(--secondary); border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── WIZARD ── */
+  .wizard {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 16px; box-shadow: var(--shadow); overflow: hidden;
+  }
+
+  /* Stepper */
+  .stepper {
+    display: flex; align-items: center; padding: 24px 32px 0;
+    background: var(--white); border-bottom: 1px solid var(--border);
+    overflow-x: auto; gap: 0;
+  }
+  .step-item { display: flex; align-items: center; flex: 1; min-width: 0; }
+  .step-item:last-child { flex: 0; }
+  .step-circle {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--tertiary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+    color: var(--tertiary); background: var(--white); flex-shrink: 0;
+    transition: all .25s;
+    cursor: default;
+  }
+  .step-circle.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+  .step-circle.done { border-color: var(--green); background: var(--green); color: #fff; }
+  .step-label {
+    font-size: 11px; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+    color: var(--tertiary); margin-top: 6px; text-align: center; white-space: nowrap;
+  }
+  .step-label.active { color: var(--blue); }
+  .step-label.done { color: var(--green); }
+  .step-col { display: flex; flex-direction: column; align-items: center; padding-bottom: 14px; }
+  .step-connector {
+    flex: 1; height: 2px; background: var(--border); margin: 0 4px; margin-bottom: 20px;
+    transition: background .3s;
+  }
+  .step-connector.done { background: var(--green); }
+  .step-connector.active { background: var(--blue); }
+
+  /* Step content */
+  .step-content { padding: 32px; }
+  .step-heading { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 20px; }
+
+  /* Wizard nav */
+  .wizard-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px; border-top: 1px solid var(--border); background: rgba(240,246,255,.5);
+  }
+  .btn {
+    padding: 9px 22px; border-radius: var(--r-pill); font-size: 14px; font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all .18s;
+    border: 2px solid transparent;
+  }
+  .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-primary:hover { background: #005db5; border-color: #005db5; }
+  .btn-outline { background: transparent; color: var(--secondary); border-color: var(--border); }
+  .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-green { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-green:hover { background: #2da065; border-color: #2da065; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .step-counter { font-size: 13px; color: var(--secondary); font-weight: 500; }
+
+  /* ── STEP 1: Connector Select ── */
+  .sel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 600px) { .sel-grid { grid-template-columns: 1fr; } }
+  .sel-card {
+    border: 2px solid var(--border); border-radius: 12px; padding: 16px 18px;
+    cursor: pointer; transition: all .18s; position: relative; background: var(--white);
+  }
+  .sel-card:hover { border-color: var(--blue); background: rgba(0,112,210,.02); }
+  .sel-card.selected {
+    border-color: var(--blue); background: rgba(0,112,210,.03);
+    box-shadow: 0 0 0 3px rgba(0,112,210,.12);
+  }
+  .sel-check {
+    position: absolute; top: 10px; right: 10px; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 11px;
+    opacity: 0; transition: opacity .18s;
+  }
+  .sel-card.selected .sel-check { opacity: 1; }
+  .sel-card-icon { font-size: 22px; margin-bottom: 8px; }
+  .sel-card-name { font-weight: 700; font-size: 14px; color: var(--navy); margin-bottom: 3px; }
+  .sel-card-sub { font-size: 12px; color: var(--secondary); margin-bottom: 8px; }
+  .sel-hint {
+    font-size: 11px; color: var(--blue); font-weight: 600;
+    margin-top: 6px; display: none;
+  }
+  .sel-card.selected .sel-hint { display: block; }
+  .info-banner {
+    padding: 12px 16px; border-radius: 10px; font-size: 13px; color: #005577;
+    background: rgba(0,161,224,.08); border: 1px solid rgba(0,161,224,.22); line-height: 1.6;
+  }
+  .info-banner-yellow { background: rgba(255,208,0,.1); border-color: rgba(255,208,0,.3); color: #7a5800; }
+  .info-banner-green { background: rgba(60,184,121,.08); border-color: rgba(60,184,121,.25); color: #1a6b3d; }
+
+  /* ── STEP 2: Object Table ── */
+  .obj-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  .obj-table th {
+    text-align: left; font-size: 11px; font-weight: 600; color: var(--secondary);
+    text-transform: uppercase; letter-spacing: .06em; padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .obj-table td { padding: 11px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .obj-table tr.obj-row { cursor: pointer; transition: background .12s; }
+  .obj-table tr.obj-row:hover { background: rgba(0,112,210,.04); }
+  .obj-table tr.obj-row.selected { background: rgba(0,112,210,.06); }
+  .obj-table tr.obj-row.selected td:first-child { border-left: 3px solid var(--blue); }
+  .obj-name { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .obj-records { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--secondary); }
+  .star-badge {
+    display: inline-block; padding: 1px 8px; border-radius: var(--r-pill); font-size: 10px;
+    font-weight: 600; background: rgba(255,208,0,.15); color: #7a5800;
+    border: 1px solid rgba(255,208,0,.3);
+  }
+  .obj-summary-box {
+    padding: 14px 18px; border-radius: 10px; background: rgba(0,112,210,.04);
+    border: 1.5px solid rgba(0,112,210,.14); font-size: 13px; color: var(--secondary);
+  }
+  .obj-summary-box strong { color: var(--navy); }
+
+  /* ── STEP 3: Field Table ── */
+  .field-table-wrap { max-height: 320px; overflow-y: auto; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 12px; }
+  .field-table { width: 100%; border-collapse: collapse; }
+  .field-table th {
+    text-align: left; font-size: 10px; font-weight: 600; color: var(--secondary);
+    text-transform: uppercase; letter-spacing: .06em; padding: 8px 10px;
+    border-bottom: 2px solid var(--border); background: var(--bg);
+    position: sticky; top: 0; z-index: 2;
+  }
+  .field-table td { padding: 9px 10px; font-size: 12px; border-bottom: 1px solid var(--border); }
+  .field-table tr:last-child td { border-bottom: none; }
+  .field-table tr.locked { background: rgba(240,246,255,.6); }
+  .field-table tr:hover:not(.locked) { background: rgba(0,112,210,.03); }
+  .field-api { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--navy); }
+  .field-map { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--violet); }
+  .field-badge {
+    display: inline-block; padding: 1px 7px; border-radius: var(--r-pill);
+    font-size: 10px; font-weight: 600;
+  }
+  .fb-primary { background: rgba(3,45,96,.1); color: var(--navy); }
+  .fb-id { background: rgba(0,161,224,.1); color: #006a94; }
+  .field-count { font-size: 13px; color: var(--secondary); font-weight: 500; }
+  .field-count strong { color: var(--navy); }
+
+  /* ── STEP 4: Config Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; margin-bottom: 24px; }
+  @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--secondary); }
+  .form-input, .form-select {
+    padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--border);
+    font-size: 14px; color: var(--navy); font-family: 'JetBrains Mono', monospace;
+    background: var(--white); transition: border-color .15s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--blue); }
+  .form-hint { font-size: 11px; color: var(--tertiary); }
+  .radio-pills { display: flex; flex-direction: column; gap: 8px; }
+  .radio-pill {
+    display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px;
+    border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer;
+    transition: all .15s; background: var(--white);
+  }
+  .radio-pill:hover { border-color: var(--blue); }
+  .radio-pill.selected { border-color: var(--blue); background: rgba(0,112,210,.04); }
+  .radio-pill input { display: none; }
+  .radio-pill-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .radio-pill-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .radio-pill-desc { font-size: 11px; color: var(--secondary); margin-top: 1px; }
+  .config-summary {
+    background: var(--navy); color: #a8c4e0; border-radius: 10px;
+    padding: 18px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.9;
+  }
+  .config-summary .cs-key { color: var(--tertiary); }
+  .config-summary .cs-val { color: #7dd3fc; }
+
+  /* ── STEP 5: Mapping Table ── */
+  .map-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  .map-table th {
+    text-align: left; font-size: 10px; font-weight: 600; letter-spacing: .07em;
+    text-transform: uppercase; padding: 8px 10px; border-bottom: 2px solid var(--border);
+    color: var(--secondary);
+  }
+  .map-table td { padding: 9px 10px; font-size: 12px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; }
+  .map-table tr:last-child td { border-bottom: none; }
+  .map-src { background: rgba(255,139,0,.07); }
+  .map-dlo { background: rgba(0,161,224,.07); }
+  .map-dmo { background: rgba(139,92,246,.08); }
+  .map-arrow { color: var(--tertiary); font-size: 14px; padding: 0 6px; text-align: center; }
+  .map-status { color: var(--green); font-weight: 600; font-size: 12px; font-family: 'Inter', sans-serif; }
+
+  /* ── STEP 6: Activation ── */
+  .summary-card {
+    background: rgba(60,184,121,.06); border: 1.5px solid rgba(60,184,121,.2);
+    border-radius: 12px; padding: 22px 24px; margin-bottom: 24px;
+  }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+  @media (max-width: 560px) { .summary-grid { grid-template-columns: 1fr; } }
+  .sum-item { display: flex; flex-direction: column; gap: 2px; }
+  .sum-label { font-size: 11px; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: .05em; }
+  .sum-value { font-size: 14px; font-weight: 600; color: var(--navy); font-family: 'JetBrains Mono', monospace; }
+  .btn-activate {
+    width: 100%; height: 52px; border-radius: 12px; border: none;
+    background: var(--green); color: #fff; font-size: 16px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-activate:hover:not(:disabled) { background: #2da065; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(60,184,121,.35); }
+  .btn-activate:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+  /* Pipeline animation */
+  .act-pipeline { display: flex; align-items: flex-start; justify-content: center; flex-wrap: wrap; gap: 0; margin: 28px 0 20px; }
+  .act-node {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .act-node-pill {
+    padding: 8px 16px; border-radius: var(--r-pill); font-size: 12px; font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif; background: var(--border);
+    color: var(--tertiary); border: 2px solid transparent;
+    transition: all .4s ease;
+  }
+  .act-node-pill.lit {
+    background: var(--green); color: #fff;
+    box-shadow: 0 0 12px rgba(60,184,121,.5); border-color: var(--green);
+    animation: node-activate-in .4s ease;
+  }
+  .act-node-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--tertiary); opacity: 0; transition: opacity .3s; }
+  .act-node.lit .act-node-label { opacity: 1; color: var(--green); }
+  .act-arrow { font-size: 16px; color: var(--tertiary); padding: 0 5px; margin-top: 11px; }
+  @keyframes node-activate {
+    0% { background: #9BAFC8; }
+    100% { background: #3CB879; box-shadow: 0 0 12px rgba(60,184,121,.5); }
+  }
+  @keyframes node-activate-in {
+    0% { transform: scale(.85); opacity: .4; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+    animation: spin .7s linear infinite; display: inline-block;
+  }
+  @keyframes checkmark-scale {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .success-check {
+    width: 72px; height: 72px; border-radius: 50%; background: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 20px;
+    animation: checkmark-scale .5s cubic-bezier(.175,.885,.32,1.275) forwards;
+  }
+  .success-title {
+    font-size: 20px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 10px;
+  }
+  .success-stats {
+    text-align: center; font-size: 13px; color: var(--secondary); margin-bottom: 24px;
+    line-height: 1.7;
+  }
+  .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 600px) { .concept-grid { grid-template-columns: 1fr; } }
+  .concept-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-card);
+    padding: 20px 22px;
+  }
+  .concept-icon { font-size: 22px; margin-bottom: 10px; }
+  .concept-name { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .concept-sub { font-size: 11px; color: var(--tertiary); font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
+  .concept-desc { font-size: 13px; color: var(--secondary); line-height: 1.65; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy); color: rgba(168,196,224,.7);
+    text-align: center; padding: 28px 24px;
+    font-size: 12px; line-height: 2;
+  }
+  footer strong { color: rgba(168,196,224,.95); }
+
+  /* Utility */
+  [data-ko], [data-ja] { /* controlled by JS */ }
+</style>
+</head>
+<body>
+
+<!-- ── APP BAR ── -->
+<header class="appbar">
+  <div class="appbar-left">
+    <div class="sf-box">SF</div>
+    <div class="appbar-title">
+      Data 360 &nbsp;/&nbsp;
+      <span data-ja>Data Stream 登録</span>
+      <span data-ko>데이터 스트림 등록</span>
+    </div>
+  </div>
+  <div class="appbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btn-ko" onclick="switchLang('ko')">KO</button>
+      <button class="lang-btn" id="btn-ja" onclick="switchLang('ja')">JA</button>
+    </div>
+    <a href="index.html" class="back-link">
+      ← <span data-ja>デモ一覧</span><span data-ko>데모 목록</span>
+    </a>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow-pill">SALESFORCE DATA 360 · Demo 08</div>
+    <h1 class="hero-title">
+      <span data-ko>Data Stream 등록 시뮬레이터</span>
+      <span data-ja>データストリーム登録シミュレーター</span>
+    </h1>
+    <p class="hero-sub">
+      <span data-ko>Data 360 Connector를 이용해 외부 소스 데이터를 Data 360으로 연결하는 Data Stream 등록 과정을 5단계로 체험합니다.</span>
+      <span data-ja>Data 360 Connector を使って外部ソースデータを Data 360 に接続するデータストリーム登録プロセスを 5ステップで体験します。</span>
+    </p>
+    <div class="pipeline">
+      <div class="pipe-item">
+        <div class="pipe-node src"><span data-ko>외부 소스</span><span data-ja>外部ソース</span></div>
+        <div class="pipe-caption">Source</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node conn">Connector</div>
+        <div class="pipe-caption">Connector</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node ds">Data Stream</div>
+        <div class="pipe-caption">Stream</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node dlo">DLO</div>
+        <div class="pipe-caption">Data Lake Obj</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- CONNECTOR REFERENCE -->
+  <section>
+    <h2 class="section-title">
+      <span data-ko>사용 가능한 커넥터</span>
+      <span data-ja>利用可能なコネクタ</span>
+    </h2>
+    <div class="conn-grid">
+      <!-- Card 1 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">☁️</div>
+          <span class="badge badge-green">Streaming + Batch</span>
+        </div>
+        <div class="conn-card-name">Salesforce CRM Connector</div>
+        <div class="conn-card-desc">
+          <span data-ko>Sales/Service Cloud의 Contact·Account·Lead 등 표준·커스텀 오브젝트를 실시간 또는 배치로 Data 360에 연결합니다.</span>
+          <span data-ja>Sales/Service Cloud の Contact・Account・Lead などの標準・カスタムオブジェクトをリアルタイムまたはバッチで Data 360 に接続します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">Contact</span><span class="tag">Account</span>
+          <span class="tag">Lead</span><span class="tag">Opportunity</span><span class="tag">Case</span>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">📧</div>
+          <span class="badge badge-orange">Batch</span>
+        </div>
+        <div class="conn-card-name">Marketing Cloud Connector</div>
+        <div class="conn-card-desc">
+          <span data-ko>Marketing Cloud의 Subscriber, Email 전송·열람·클릭 인게이지먼트 데이터를 배치로 수집합니다.</span>
+          <span data-ja>Marketing Cloud の Subscriber やメール送信・開封・クリックのエンゲージメントデータをバッチで収集します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">Subscriber</span><span class="tag">Email Open</span>
+          <span class="tag">Email Click</span><span class="tag">Journey</span>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">🔌</div>
+          <span class="badge badge-sky">Streaming + Bulk</span>
+        </div>
+        <div class="conn-card-name">Ingestion API</div>
+        <div class="conn-card-desc">
+          <span data-ko>외부 시스템에서 HTTP REST API로 커스텀 데이터를 실시간(Streaming) 또는 대량(Bulk) 업로드 방식으로 전송합니다.</span>
+          <span data-ja>外部システムから HTTP REST API でカスタムデータをリアルタイム（Streaming）または大量（Bulk）アップロード形式で送信します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">Custom Schema</span><span class="tag">REST API</span><span class="tag">JSON/CSV</span>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">🗄️</div>
+          <span class="badge badge-orange">Batch</span>
+        </div>
+        <div class="conn-card-name">Amazon S3 / Cloud Storage</div>
+        <div class="conn-card-desc">
+          <span data-ko>Amazon S3, Google Cloud Storage, SFTP 버킷의 CSV/JSON 파일을 스케줄에 따라 자동 수집합니다.</span>
+          <span data-ja>Amazon S3・Google Cloud Storage・SFTP バケットの CSV/JSON ファイルをスケジュールに従い自動収集します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">CSV</span><span class="tag">JSON</span>
+          <span class="tag">S3</span><span class="tag">GCS</span><span class="tag">SFTP</span>
+        </div>
+      </div>
+      <!-- Card 5 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">🛒</div>
+          <span class="badge badge-orange">Batch</span>
+        </div>
+        <div class="conn-card-name">Commerce Cloud Connector</div>
+        <div class="conn-card-desc">
+          <span data-ko>Salesforce B2C/B2B Commerce Cloud의 주문·장바구니·상품 데이터를 Data 360과 연결합니다.</span>
+          <span data-ja>Salesforce B2C/B2B Commerce Cloud の注文・カート・商品データを Data 360 に接続します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">Order</span><span class="tag">Cart</span><span class="tag">Product Catalog</span>
+        </div>
+      </div>
+      <!-- Card 6 -->
+      <div class="conn-card">
+        <div class="conn-card-header">
+          <div class="conn-icon">🔗</div>
+          <span class="badge badge-green">Streaming + Batch</span>
+        </div>
+        <div class="conn-card-name">MuleSoft Connector</div>
+        <div class="conn-card-desc">
+          <span data-ko>MuleSoft Anypoint Platform을 통해 ERP, 레거시 시스템, 서드파티 API 데이터를 유연하게 연결합니다.</span>
+          <span data-ja>MuleSoft Anypoint Platform を介して ERP・レガシーシステム・サードパーティ API データを柔軟に接続します。</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag">ERP</span><span class="tag">SAP</span>
+          <span class="tag">Legacy System</span><span class="tag">API</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIZARD -->
+  <section>
+    <h2 class="section-title">
+      <span data-ko>Data Stream 등록 시뮬레이터</span>
+      <span data-ja>データストリーム登録シミュレーター</span>
+    </h2>
+    <div class="wizard">
+      <!-- Stepper -->
+      <div class="stepper" id="stepper"></div>
+      <!-- Content -->
+      <div class="step-content" id="step-content"></div>
+      <!-- Nav -->
+      <div class="wizard-nav" id="wizard-nav"></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT CARDS -->
+  <section>
+    <h2 class="section-title">
+      <span data-ko>핵심 개념</span>
+      <span data-ja>主要概念</span>
+    </h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">🌊</div>
+        <div class="concept-name">Data Stream</div>
+        <div class="concept-sub"><span data-ko>데이터 스트림</span><span data-ja>データストリーム</span></div>
+        <div class="concept-desc">
+          <span data-ko>외부 소스와 Data 360을 연결하는 구성 단위. 커넥터, 소스 오브젝트, 필드, 새로고침 스케줄 등을 정의합니다.</span>
+          <span data-ja>外部ソースと Data 360 を接続する設定単位。コネクタ・ソースオブジェクト・フィールド・更新スケジュールなどを定義します。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🗃️</div>
+        <div class="concept-name">Data Lake Object (DLO)</div>
+        <div class="concept-sub"><span data-ko>데이터 레이크 오브젝트</span><span data-ja>データレイクオブジェクト</span></div>
+        <div class="concept-desc">
+          <span data-ko>Data Stream이 수집한 원본 데이터를 저장하는 레이어. 소스 스키마가 그대로 보존되어 이후 분석·세그멘테이션에 활용됩니다.</span>
+          <span data-ja>データストリームが収集した元データを格納するレイヤー。ソーススキーマがそのまま保持され、以降の分析・セグメンテーションに活用されます。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔄</div>
+        <div class="concept-name">Refresh Mode</div>
+        <div class="concept-sub"><span data-ko>새로고침 모드</span><span data-ja>更新モード</span></div>
+        <div class="concept-desc">
+          <span data-ko>Streaming: 변경 즉시 동기화. Hourly/Daily: 스케줄 배치. 데이터 유형과 실시간성 요구에 따라 선택합니다.</span>
+          <span data-ja>Streaming：変更を即時同期。Hourly/Daily：スケジュールバッチ。データ種別とリアルタイム要件に応じて選択します。</span>
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🏢</div>
+        <div class="concept-name">Data Space</div>
+        <div class="concept-sub"><span data-ko>데이터 스페이스</span><span data-ja>データスペース</span></div>
+        <div class="concept-desc">
+          <span data-ko>Data 360 내의 데이터 격리 공간. 조직 내 여러 비즈니스 유닛이 데이터를 독립적으로 관리할 수 있습니다.</span>
+          <span data-ja>Data 360 内のデータ分離空間。組織内の複数のビジネスユニットがデータを独立して管理できます。</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Salesforce Data 360 · Data Stream 登録シミュレーター · 데이터 스트림 등록 시뮬레이터</strong><br>
+  All data is fictional. Demo 08 — Educational Use Only.
+</footer>
+
+<script>
+// ── STATE ──
+let currentLang = new URLSearchParams(location.search).get('lang') || 'ja';
+let currentStep = 1;
+const TOTAL_STEPS = 5;
+let selectedConnector = 'crm';
+let selectedObject = 'Contact';
+let checkedFields = new Set(['Id','Email','Phone','FirstName','LastName','MobilePhone','Birthdate','MailingCity','MailingCountry']);
+let lockedFields  = new Set(['Id','Email','Phone','FirstName','LastName']);
+
+// Form state
+let formState = {
+  name: 'CRM_Contact_DS_2026',
+  primaryKey: 'Id',
+  segmentKey: 'Id',
+  refreshMode: 'Streaming',
+  dataSpace: 'default',
+  category: 'Profile'
+};
+
+// Step labels
+const stepLabels = {
+  ko: ['커넥터 선택','소스 오브젝트','필드 선택','스트림 설정','활성화'],
+  ja: ['コネクタ選択','ソースオブジェクト','フィールド選択','ストリーム設定','アクティベーション']
+};
+
+// ── PER-CONNECTOR DEFAULTS ──
+const connectorDefaults = {
+  crm: { object:'Contact',               streamName:'CRM_Contact_DS_2026',        locked:['Id','Email','Phone','FirstName','LastName'] },
+  mc:  { object:'EmailSendLog',          streamName:'MC_EmailSendLog_DS_2026',     locked:['SubscriberId','JobId','EmailAddress'] },
+  api: { object:'custom_event',          streamName:'API_CustomEvent_DS_2026',     locked:['id','event_type','user_id','timestamp'] },
+  s3:  { object:'customer_profiles.csv', streamName:'S3_CustomerProfiles_DS_2026', locked:['customer_id','email','first_name','last_name'] }
+};
+
+// ── PER-CONNECTOR OBJECT DATA ──
+const connectorObjects = {
+  crm: [
+    { name:'Contact',        ko:'고객 연락처 (이메일·전화 포함)', ja:'顧客連絡先（メール・電話含む）',   records:'~120,000',   fields:'Id, Email, Phone, Name, Birthdate', star:true },
+    { name:'Account',        ko:'법인/조직 레코드',               ja:'法人/組織レコード',              records:'~18,000',    fields:'Id, Name, Industry, AnnualRevenue', star:false },
+    { name:'Lead',           ko:'잠재 고객 레코드',               ja:'見込み客レコード',               records:'~45,000',    fields:'Id, Email, Phone, Status', star:false },
+    { name:'Opportunity',    ko:'영업 기회',                      ja:'商談',                          records:'~32,000',    fields:'Id, Amount, Stage, CloseDate', star:false },
+    { name:'Case',           ko:'고객 지원 케이스',               ja:'サポートケース',                 records:'~67,000',    fields:'Id, Status, Priority, Subject', star:false },
+    { name:'CampaignMember', ko:'캠페인 참여 레코드',             ja:'キャンペーン参加レコード',       records:'~280,000',   fields:'Id, ContactId, Status, HasResponded', star:false }
+  ],
+  mc: [
+    { name:'EmailSendLog',   ko:'이메일 발송 로그',               ja:'メール送信ログ',                 records:'~850,000',   fields:'JobId, SubscriberId, EmailAddress, SendDate', star:true },
+    { name:'ClickEvent',     ko:'링크 클릭 이벤트',               ja:'リンククリックイベント',         records:'~210,000',   fields:'JobId, SubscriberId, URL, EventDate', star:false },
+    { name:'OpenEvent',      ko:'이메일 열람 이벤트',             ja:'メール開封イベント',             records:'~340,000',   fields:'JobId, SubscriberId, EventDate', star:false },
+    { name:'BounceEvent',    ko:'반송 이벤트',                    ja:'バウンスイベント',               records:'~12,000',    fields:'JobId, SubscriberId, BounceType, EventDate', star:false },
+    { name:'SubscriberList', ko:'구독자 목록',                    ja:'購読者リスト',                   records:'~95,000',    fields:'SubscriberKey, EmailAddress, Status, CreatedDate', star:false }
+  ],
+  api: [
+    { name:'custom_event',   ko:'커스텀 이벤트 스트림',           ja:'カスタムイベントストリーム',     records:'실시간',     fields:'id, event_type, user_id, timestamp, properties', star:true },
+    { name:'page_view',      ko:'페이지 뷰 이벤트',               ja:'ページビューイベント',           records:'실시간',     fields:'session_id, page_url, user_id, timestamp', star:false },
+    { name:'purchase',       ko:'구매 이벤트',                    ja:'購入イベント',                   records:'실시간',     fields:'order_id, user_id, amount, currency, items', star:false }
+  ],
+  s3: [
+    { name:'customer_profiles.csv', ko:'고객 프로필 (CSV)',       ja:'顧客プロファイル (CSV)',         records:'~500,000',   fields:'customer_id, email, first_name, last_name, birthdate', star:true },
+    { name:'purchase_history.csv',  ko:'구매 이력 (CSV)',         ja:'購入履歴 (CSV)',                 records:'~2,100,000', fields:'order_id, customer_id, amount, currency, date', star:false },
+    { name:'loyalty_data.csv',      ko:'로열티 데이터 (CSV)',     ja:'ロイヤルティデータ (CSV)',       records:'~480,000',   fields:'customer_id, tier, points, last_activity_date', star:false }
+  ]
+};
+
+// ── PER-CONNECTOR FIELD DATA ──
+const connectorFields = {
+  crm: [
+    { api:'Id',             ko:'레코드 ID',         ja:'レコード ID',         type:'ID',       badge:'primary', locked:true,  checked:true  },
+    { api:'Email',          ko:'이메일',             ja:'メール',              type:'Email',    badge:'id',      locked:true,  checked:true  },
+    { api:'Phone',          ko:'전화',               ja:'電話',                type:'Phone',    badge:'id',      locked:true,  checked:true  },
+    { api:'FirstName',      ko:'이름',               ja:'名',                  type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'LastName',       ko:'성',                 ja:'姓',                  type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'MobilePhone',    ko:'휴대폰',             ja:'携帯',                type:'Phone',    badge:'',        locked:false, checked:true  },
+    { api:'Birthdate',      ko:'생년월일',           ja:'生年月日',            type:'Date',     badge:'',        locked:false, checked:true  },
+    { api:'MailingCity',    ko:'우편 도시',           ja:'郵便市区',            type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'MailingCountry', ko:'우편 국가',           ja:'郵便国名',            type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'AccountId',      ko:'계정 ID',             ja:'取引先 ID',           type:'Lookup',   badge:'',        locked:false, checked:false },
+    { api:'Title',          ko:'직함',               ja:'役職',                type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'Department',     ko:'부서',               ja:'部署',                type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'CreatedDate',    ko:'생성일',             ja:'作成日',              type:'DateTime', badge:'',        locked:false, checked:false },
+    { api:'LastModifiedDate',ko:'수정일',            ja:'更新日',              type:'DateTime', badge:'',        locked:false, checked:false }
+  ],
+  mc: [
+    { api:'SubscriberId',   ko:'구독자 ID',          ja:'購読者 ID',            type:'ID',       badge:'primary', locked:true,  checked:true  },
+    { api:'JobId',          ko:'발송 작업 ID',        ja:'送信ジョブ ID',        type:'ID',       badge:'id',      locked:true,  checked:true  },
+    { api:'EmailAddress',   ko:'이메일',             ja:'メールアドレス',       type:'Email',    badge:'id',      locked:true,  checked:true  },
+    { api:'SendDate',       ko:'발송일시',           ja:'送信日時',             type:'DateTime', badge:'',        locked:false, checked:true  },
+    { api:'EventType',      ko:'이벤트 유형',        ja:'イベント種別',         type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'Status',         ko:'상태',               ja:'ステータス',           type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'IsUnique',       ko:'중복 제거 여부',     ja:'重複除外フラグ',       type:'Boolean',  badge:'',        locked:false, checked:false },
+    { api:'Locale',         ko:'로케일',             ja:'ロケール',             type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'CreatedDate',    ko:'생성일',             ja:'作成日',               type:'DateTime', badge:'',        locked:false, checked:false }
+  ],
+  api: [
+    { api:'id',             ko:'레코드 ID',          ja:'レコード ID',          type:'Text',     badge:'primary', locked:true,  checked:true  },
+    { api:'event_type',     ko:'이벤트 유형',        ja:'イベント種別',         type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'user_id',        ko:'사용자 ID',          ja:'ユーザー ID',          type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'timestamp',      ko:'타임스탬프',         ja:'タイムスタンプ',       type:'DateTime', badge:'id',      locked:true,  checked:true  },
+    { api:'session_id',     ko:'세션 ID',            ja:'セッション ID',        type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'properties',     ko:'이벤트 속성 (JSON)', ja:'イベントプロパティ (JSON)', type:'Text', badge:'',       locked:false, checked:true  },
+    { api:'ip_address',     ko:'IP 주소',            ja:'IPアドレス',           type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'user_agent',     ko:'사용자 에이전트',    ja:'ユーザーエージェント', type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'referrer',       ko:'리퍼러 URL',         ja:'リファラー URL',       type:'Text',     badge:'',        locked:false, checked:false }
+  ],
+  s3: [
+    { api:'customer_id',    ko:'고객 ID',            ja:'顧客 ID',              type:'Text',     badge:'primary', locked:true,  checked:true  },
+    { api:'email',          ko:'이메일',             ja:'メールアドレス',       type:'Email',    badge:'id',      locked:true,  checked:true  },
+    { api:'first_name',     ko:'이름',               ja:'名',                   type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'last_name',      ko:'성',                 ja:'姓',                   type:'Text',     badge:'id',      locked:true,  checked:true  },
+    { api:'birthdate',      ko:'생년월일',           ja:'生年月日',             type:'Date',     badge:'',        locked:false, checked:true  },
+    { api:'phone',          ko:'전화번호',           ja:'電話番号',             type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'city',           ko:'도시',               ja:'市区',                 type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'country',        ko:'국가',               ja:'国',                   type:'Text',     badge:'',        locked:false, checked:true  },
+    { api:'loyalty_tier',   ko:'로열티 등급',        ja:'ロイヤルティ等級',     type:'Text',     badge:'',        locked:false, checked:false },
+    { api:'signup_date',    ko:'가입일',             ja:'登録日',               type:'DateTime', badge:'',        locked:false, checked:false }
+  ]
+};
+
+// Mapping data
+const mappings = [
+  { src:'Id', dlo:'contact__dll.Id__c', dmo:'Individual.IndividualId' },
+  { src:'FirstName', dlo:'contact__dll.FirstName__c', dmo:'Individual.FirstName' },
+  { src:'LastName', dlo:'contact__dll.LastName__c', dmo:'Individual.LastName' },
+  { src:'Email', dlo:'contact__dll.Email__c', dmo:'ContactPointEmail.EmailAddress' },
+  { src:'Phone', dlo:'contact__dll.Phone__c', dmo:'ContactPointPhone.TelephoneNumber' },
+  { src:'MobilePhone', dlo:'contact__dll.MobilePhone__c', dmo:'ContactPointPhone.TelephoneNumber' },
+  { src:'Birthdate', dlo:'contact__dll.Birthdate__c', dmo:'Individual.BirthDate' },
+  { src:'MailingCity', dlo:'contact__dll.MailingCity__c', dmo:'ContactPointAddress.City' },
+  { src:'MailingCountry', dlo:'contact__dll.MailingCountry__c', dmo:'ContactPointAddress.Country' }
+];
+
+// ── LANGUAGE ──
+function switchLang(l) {
+  currentLang = l;
+  document.querySelectorAll('[data-ko]').forEach(el => el.style.display = l === 'ko' ? '' : 'none');
+  document.querySelectorAll('[data-ja]').forEach(el => el.style.display = l === 'ja' ? '' : 'none');
+  document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+  document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+  renderStepper();
+  renderStep(currentStep);
+  renderNav();
+}
+
+function t(ko, ja) { return currentLang === 'ko' ? ko : ja; }
+
+// ── STEPPER ──
+function renderStepper() {
+  const el = document.getElementById('stepper');
+  const labels = stepLabels[currentLang];
+  let html = '';
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const done = i < currentStep;
+    const active = i === currentStep;
+    const circleClass = done ? 'done' : active ? 'active' : '';
+    const labelClass = done ? 'done' : active ? 'active' : '';
+    html += `<div class="step-col">
+      <div class="step-circle ${circleClass}">${done ? '✓' : i}</div>
+      <div class="step-label ${labelClass}">${labels[i-1]}</div>
+    </div>`;
+    if (i < TOTAL_STEPS) {
+      const connClass = done ? 'done' : (active ? 'active' : '');
+      html += `<div class="step-connector ${connClass}"></div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+// ── NAV ──
+function renderNav() {
+  const el = document.getElementById('wizard-nav');
+  const prevBtn = currentStep > 1
+    ? `<button class="btn btn-outline" onclick="goStep(currentStep-1)">${t('← 이전','← 前へ')}</button>`
+    : `<span></span>`;
+  const counter = `<span class="step-counter">${t('단계','ステップ')} ${currentStep} / ${TOTAL_STEPS}</span>`;
+  let nextBtn;
+  if (currentStep === TOTAL_STEPS) {
+    nextBtn = ''; // handled inside step 5
+  } else {
+    nextBtn = `<button class="btn btn-primary" onclick="goStep(currentStep+1)">${t('다음 →','次へ →')}</button>`;
+  }
+  el.innerHTML = `${prevBtn}${counter}${nextBtn}`;
+}
+
+// ── STEP ROUTER ──
+function goStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
+  currentStep = n;
+  renderStepper();
+  renderStep(n);
+  renderNav();
+  document.getElementById('stepper').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderStep(n) {
+  const el = document.getElementById('step-content');
+  switch(n) {
+    case 1: el.innerHTML = renderStep1(); bindStep1(); break;
+    case 2: el.innerHTML = renderStep2(); bindStep2(); break;
+    case 3: el.innerHTML = renderStep3(); bindStep3(); break;
+    case 4: el.innerHTML = renderStep4(); bindStep4(); break;
+    case 5: el.innerHTML = renderStep5(); bindStep5(); break;
+  }
+}
+
+// ── STEP 1 ──
+const connectors = [
+  { id:'crm', icon:'☁️', name:'Salesforce CRM', sub:'Sales/Service Cloud', badge:'Streaming', badgeClass:'badge-sky', hint:true },
+  { id:'mc', icon:'📧', name:'Marketing Cloud', sub:'Engagement data', badge:'Batch', badgeClass:'badge-orange', hint:false },
+  { id:'api', icon:'🔌', name:'Ingestion API', sub:'Custom data via REST', badge:'Streaming + Bulk', badgeClass:'badge-sky', hint:false },
+  { id:'s3', icon:'🗄️', name:'Amazon S3', sub:'Bulk file upload', badge:'Batch', badgeClass:'badge-orange', hint:false }
+];
+const connectorBanners = {
+  crm: ['Salesforce CRM Connector는 OAuth로 자동 인증됩니다. 별도의 자격증명 입력이 필요 없습니다.', 'Salesforce CRM Connector は OAuth で自動認証されます。認証情報の別途入力は不要です。'],
+  mc:  ['Marketing Cloud Connector는 API 통합 사용자 자격증명으로 인증합니다.', 'Marketing Cloud Connector は API 統合ユーザーの認証情報で接続します。'],
+  api: ['Ingestion API는 클라이언트 ID·비밀 키로 인증하며 REST 엔드포인트에서 실시간으로 수집합니다.', 'Ingestion API はクライアント ID・シークレットで認証し、REST エンドポイントからリアルタイムで収集します。'],
+  s3:  ['Amazon S3 Connector는 IAM 역할 또는 액세스 키로 S3 버킷에 접근합니다.', 'Amazon S3 Connector は IAM ロールまたはアクセスキーで S3 バケットにアクセスします。']
+};
+function renderStep1() {
+  let cards = connectors.map(c => `
+    <div class="sel-card ${c.id === selectedConnector ? 'selected' : ''}" data-conn="${c.id}">
+      <div class="sel-check">✓</div>
+      <div class="sel-card-icon">${c.icon}</div>
+      <div class="sel-card-name">${c.name}</div>
+      <div class="sel-card-sub">${c.sub}</div>
+      <span class="badge ${c.badgeClass}">${c.badge}</span>
+    </div>`).join('');
+  const [bKo, bJa] = connectorBanners[selectedConnector];
+  const banner = `<div class="info-banner">ℹ️ ${t(bKo, bJa)}</div>`;
+  return `<h2 class="step-heading">${t('Data 360에 연결할 커넥터를 선택하세요','Data 360 に接続するコネクタを選択してください')}</h2>
+    <div class="sel-grid">${cards}</div>${banner}`;
+}
+function bindStep1() {
+  document.querySelectorAll('[data-conn]').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedConnector = el.dataset.conn;
+      const def = connectorDefaults[selectedConnector];
+      selectedObject = def.object;
+      lockedFields   = new Set(def.locked);
+      checkedFields  = new Set(connectorFields[selectedConnector].filter(f => f.checked).map(f => f.api));
+      formState.name = def.streamName;
+      renderStep(1);
+      bindStep1();
+    });
+  });
+}
+
+// ── STEP 2 ──
+function step2Heading() {
+  const cName = connectors.find(c => c.id === selectedConnector)?.name || '';
+  if (selectedConnector === 's3')  return t('S3 버킷에서 가져올 파일을 선택하세요', 'S3 バケットから取り込むファイルを選択してください');
+  if (selectedConnector === 'api') return t('수집할 이벤트 스키마를 선택하세요', '収集するイベントスキーマを選択してください');
+  return t(`가져올 ${cName} 오브젝트를 선택하세요`, `取り込む ${cName} オブジェクトを選択してください`);
+}
+function renderStep2() {
+  const objs = connectorObjects[selectedConnector];
+  let rows = objs.map(o => `
+    <tr class="obj-row ${o.name === selectedObject ? 'selected' : ''}" data-obj="${o.name}">
+      <td><span class="obj-name">${o.name}</span></td>
+      <td>${t(o.ko, o.ja)}</td>
+      <td><span class="obj-records">${o.records}</span></td>
+      <td><span class="mono" style="font-size:11px;color:var(--secondary)">${o.fields}</span></td>
+      <td>${o.star ? `<span class="star-badge">${t('⭐ ID 해석 권장','⭐ ID 解決推奨')}</span>` : '—'}</td>
+    </tr>`).join('');
+  const sel = objs.find(o => o.name === selectedObject);
+  const totalFields = connectorFields[selectedConnector].length;
+  const summary = sel ? `<div class="obj-summary-box">${t(
+    `선택된 오브젝트: <strong>${sel.name}</strong> &nbsp;·&nbsp; 예상 레코드: 약 ${sel.records} &nbsp;·&nbsp; 총 사용 가능 필드: <strong>${totalFields}개</strong>`,
+    `選択されたオブジェクト: <strong>${sel.name}</strong> &nbsp;·&nbsp; 予想レコード: 約${sel.records} &nbsp;·&nbsp; 利用可能フィールド合計: <strong>${totalFields}件</strong>`
+  )}</div>` : '';
+  return `<h2 class="step-heading">${step2Heading()}</h2>
+    <table class="obj-table">
+      <thead><tr>
+        <th>${t('오브젝트','オブジェクト')}</th>
+        <th>${t('설명','説明')}</th>
+        <th>${t('예상 레코드','予想レコード')}</th>
+        <th>${t('주요 필드','主要フィールド')}</th>
+        <th>${t('권장','推奨')}</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>${summary}`;
+}
+function bindStep2() {
+  document.querySelectorAll('.obj-row').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedObject = el.dataset.obj;
+      renderStep(2); bindStep2();
+    });
+  });
+}
+
+// ── STEP 3 ──
+function renderStep3() {
+  let rows = connectorFields[selectedConnector].map(f => {
+    const isChecked = checkedFields.has(f.api);
+    const badgeHtml = f.badge === 'primary'
+      ? `<span class="field-badge fb-primary">🔑 Primary Key</span>`
+      : f.badge === 'id'
+      ? `<span class="field-badge fb-id">⚡ ID ${t('해석','解決')}</span>`
+      : '—';
+    return `<tr class="${f.locked ? 'locked' : ''}">
+      <td><input type="checkbox" ${isChecked ? 'checked' : ''} ${f.locked ? 'disabled' : ''} data-field="${f.api}" style="width:15px;height:15px;cursor:${f.locked ? 'not-allowed' : 'pointer'}"></td>
+      <td><span class="field-api">${f.api}</span></td>
+      <td>${t(f.ko, f.ja)}</td>
+      <td><span class="tag" style="font-size:10px">${f.type}</span></td>
+      <td>${badgeHtml}</td>
+    </tr>`;
+  }).join('');
+  const total = checkedFields.size;
+  return `<h2 class="step-heading">${t('Data 360으로 가져올 필드를 선택하세요','Data 360 に取り込むフィールドを選択してください')}</h2>
+    <div class="info-banner info-banner-yellow" style="margin-bottom:16px">✦ ${t('ID 해석 필수 필드는 해제할 수 없습니다.','ID 解決必須フィールドはチェックを外せません。')}</div>
+    <div class="field-table-wrap">
+      <table class="field-table">
+        <thead><tr>
+          <th style="width:36px">☑</th>
+          <th>API Name</th>
+          <th>${t('레이블','ラベル')}</th>
+          <th>${t('유형','型')}</th>
+          <th>${t('배지','バッジ')}</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="field-count" id="field-count">${t(
+      `<strong>${total}개</strong> 필드 선택됨 (필수 5개 포함)`,
+      `<strong>${total}フィールド</strong>選択（必須5件含む）`
+    )}</div>`;
+}
+function bindStep3() {
+  document.querySelectorAll('[data-field]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) checkedFields.add(cb.dataset.field);
+      else checkedFields.delete(cb.dataset.field);
+      const total = checkedFields.size;
+      document.getElementById('field-count').innerHTML = t(
+        `<strong>${total}개</strong> 필드 선택됨 (필수 5개 포함)`,
+        `<strong>${total}フィールド</strong>選択（必須5件含む）`
+      );
+    });
+  });
+}
+
+// ── STEP 4 ──
+function renderStep4() {
+  const refreshOptions = [
+    { val:'Streaming', icon:'🟢', ko:'Streaming', ja:'Streaming', descKo:'이벤트 발생 시 즉시 동기화', descJa:'イベント発生時に即時同期' },
+    { val:'Hourly', icon:'🕐', ko:'Hourly (매시간)', ja:'Hourly (毎時)', descKo:'1시간마다 변경분 수집', descJa:'1時間ごとに変更分を収集' },
+    { val:'Daily', icon:'📅', ko:'Daily (매일)', ja:'Daily (毎日)', descKo:'매일 새벽 2시 전체 수집', descJa:'毎日深夜2時に全件収集' }
+  ];
+  const categoryOptions = [
+    { val:'Profile', icon:'🧑', ko:'Profile — 개인 정보 (주소·연락처 등)', ja:'Profile — 個人情報（住所・連絡先等）' },
+    { val:'Engagement', icon:'📊', ko:'Engagement — 행동/인터랙션 데이터', ja:'Engagement — 行動/インタラクションデータ' },
+    { val:'Other', icon:'📦', ko:'Other — 기타', ja:'Other — その他' }
+  ];
+  const refreshHtml = refreshOptions.map(r => `
+    <label class="radio-pill ${formState.refreshMode === r.val ? 'selected' : ''}">
+      <input type="radio" name="refresh" value="${r.val}" ${formState.refreshMode === r.val ? 'checked' : ''}>
+      <span class="radio-pill-icon">${r.icon}</span>
+      <span>
+        <div class="radio-pill-label">${t(r.ko, r.ja)}</div>
+        <div class="radio-pill-desc">${t(r.descKo, r.descJa)}</div>
+      </span>
+    </label>`).join('');
+  const categoryHtml = categoryOptions.map(c => `
+    <label class="radio-pill ${formState.category === c.val ? 'selected' : ''}">
+      <input type="radio" name="category" value="${c.val}" ${formState.category === c.val ? 'checked' : ''}>
+      <span class="radio-pill-icon">${c.icon}</span>
+      <span><div class="radio-pill-label">${t(c.ko, c.ja)}</div></span>
+    </label>`).join('');
+  const summary = buildConfigSummary();
+  return `<h2 class="step-heading">${t('Data Stream을 구성하세요','データストリームを設定してください')}</h2>
+    <div class="form-grid">
+      <div>
+        <div class="form-field" style="margin-bottom:18px">
+          <label class="form-label">${t('Data Stream 이름','データストリーム名')}</label>
+          <input class="form-input" id="cfg-name" type="text" value="${formState.name}">
+          <div class="form-hint">${t('영문·숫자·_ 만 사용 가능','英数字と_のみ使用可')}</div>
+        </div>
+        <div class="form-field" style="margin-bottom:18px">
+          <label class="form-label">${t('기본 키 (Primary Key)','主キー (Primary Key)')}</label>
+          <select class="form-select" id="cfg-pk">
+            <option value="Id" ${formState.primaryKey==='Id'?'selected':''}>Id</option>
+            <option value="Email" ${formState.primaryKey==='Email'?'selected':''}>Email</option>
+          </select>
+          <div class="form-hint">${t('레코드의 고유 식별자 필드를 선택합니다','レコードの一意識別子フィールドを選択します')}</div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">${t('세그먼트 키','セグメントキー')}</label>
+          <select class="form-select" id="cfg-sk">
+            <option value="Id" ${formState.segmentKey==='Id'?'selected':''}>Id</option>
+            <option value="Email" ${formState.segmentKey==='Email'?'selected':''}>Email</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="form-field" style="margin-bottom:18px">
+          <label class="form-label">${t('새로고침 모드','更新モード')}</label>
+          <div class="radio-pills" id="refresh-pills">${refreshHtml}</div>
+        </div>
+        <div class="form-field" style="margin-bottom:18px">
+          <label class="form-label">${t('데이터 스페이스','データスペース')}</label>
+          <select class="form-select" id="cfg-ds">
+            <option value="default">default</option>
+            <option value="marketing">marketing</option>
+            <option value="commerce">commerce</option>
+          </select>
+          <div class="form-hint">${t("일반적으로 'default' 사용","通常は 'default' を使用")}</div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">${t('카테고리','カテゴリ')}</label>
+          <div class="radio-pills" id="category-pills">${categoryHtml}</div>
+        </div>
+      </div>
+    </div>
+    <div class="config-summary" id="config-summary">${summary}</div>`;
+}
+function connectorName() { return connectors.find(c => c.id === selectedConnector)?.name || selectedConnector; }
+function dloName() { return selectedObject.replace('.csv','').replace(/[^a-zA-Z0-9]/g,'_').toLowerCase() + '__dll'; }
+function buildConfigSummary() {
+  const pad = (s, n) => s + ' '.repeat(Math.max(0, n - s.length));
+  const lines = [
+    [pad('Data Stream Name',17), formState.name],
+    [pad('Connector',17), connectorName()],
+    [pad('Source Object',17), selectedObject],
+    [pad('Primary Key',17), formState.primaryKey],
+    [pad('Refresh Mode',17), formState.refreshMode],
+    [pad('Data Space',17), formState.dataSpace],
+    [pad('Category',17), formState.category],
+    [pad('Selected Fields',17), checkedFields.size]
+  ];
+  return lines.map(([k,v]) => `<span class="cs-key">${k}</span> : <span class="cs-val">${v}</span>`).join('<br>');
+}
+function bindStep4() {
+  const update = () => {
+    formState.name = document.getElementById('cfg-name')?.value || formState.name;
+    formState.primaryKey = document.getElementById('cfg-pk')?.value || formState.primaryKey;
+    formState.segmentKey = document.getElementById('cfg-sk')?.value || formState.segmentKey;
+    formState.dataSpace = document.getElementById('cfg-ds')?.value || formState.dataSpace;
+    const sumEl = document.getElementById('config-summary');
+    if (sumEl) sumEl.innerHTML = buildConfigSummary();
+  };
+  ['cfg-name','cfg-pk','cfg-sk','cfg-ds'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', update);
+    document.getElementById(id)?.addEventListener('change', update);
+  });
+  document.querySelectorAll('[name="refresh"]').forEach(r => {
+    r.addEventListener('change', e => {
+      formState.refreshMode = e.target.value;
+      document.querySelectorAll('#refresh-pills .radio-pill').forEach(p => p.classList.remove('selected'));
+      e.target.closest('.radio-pill').classList.add('selected');
+      update();
+    });
+  });
+  document.querySelectorAll('[name="category"]').forEach(r => {
+    r.addEventListener('change', e => {
+      formState.category = e.target.value;
+      document.querySelectorAll('#category-pills .radio-pill').forEach(p => p.classList.remove('selected'));
+      e.target.closest('.radio-pill').classList.add('selected');
+      update();
+    });
+  });
+}
+
+// ── STEP 5 ──
+function renderStep5() {
+  const items = [
+    [t('커넥터','コネクタ'), connectorName()],
+    [t('소스 오브젝트','ソースオブジェクト'), selectedObject],
+    [t('Data Stream 이름','データストリーム名'), formState.name],
+    [t('기본 키','主キー'), formState.primaryKey],
+    [t('새로고침 모드','更新モード'), formState.refreshMode],
+    [t('선택 필드','選択フィールド'), `${checkedFields.size}${t('개','件')}`],
+    [t('DLO 이름','DLO 名'), dloName()]
+  ];
+  const gridItems = items.map(([l,v]) => `
+    <div class="sum-item">
+      <div class="sum-label">${l}</div>
+      <div class="sum-value">${v}</div>
+    </div>`).join('');
+  return `<h2 class="step-heading">${t('Data Stream 활성화 준비 완료','データストリーム有効化の準備が整いました')}</h2>
+    <div class="summary-card">
+      <div class="summary-grid">${gridItems}</div>
+    </div>
+    <div id="activation-area">
+      <button class="btn-activate" id="btn-activate" onclick="startActivation()">
+        🚀 ${t('Data Stream 활성화','データストリームを有効化')}
+      </button>
+    </div>`;
+}
+function bindStep5() {
+  // nothing to bind yet; activation handled inline
+}
+
+function startActivation() {
+  const btn = document.getElementById('btn-activate');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> ${t('활성화 중...','有効化中...')}`;
+
+  const pipeNodes = [
+    { label: selectedObject, caption: 'Source' },
+    { label: 'Connector', caption: connectorName() },
+    { label: 'Data Stream', caption: formState.name },
+    { label: 'DLO', caption: dloName() }
+  ];
+  let pipeHtml = '';
+  pipeNodes.forEach((n, i) => {
+    pipeHtml += `<div class="act-node" id="act-node-${i}">
+      <div class="act-node-pill" id="act-pill-${i}">${n.label}</div>
+      <div class="act-node-label" id="act-cap-${i}">${n.caption}</div>
+    </div>`;
+    if (i < pipeNodes.length - 1) pipeHtml += `<div class="act-arrow" id="act-arr-${i}">→</div>`;
+  });
+
+  setTimeout(() => {
+    document.getElementById('activation-area').innerHTML = `<div class="act-pipeline">${pipeHtml}</div>`;
+    let delay = 0;
+    pipeNodes.forEach((_, i) => {
+      setTimeout(() => {
+        const pill = document.getElementById(`act-pill-${i}`);
+        const node = document.getElementById(`act-node-${i}`);
+        const cap  = document.getElementById(`act-cap-${i}`);
+        const arr  = document.getElementById(`act-arr-${i - 1}`);
+        if (pill) { pill.classList.add('lit'); }
+        if (node) { node.classList.add('lit'); }
+        if (cap)  { cap.style.opacity = '1'; cap.style.color = 'var(--green)'; }
+        if (arr)  { arr.style.color = 'var(--green)'; }
+        if (i === pipeNodes.length - 1) {
+          setTimeout(showSuccess, 600);
+        }
+      }, delay);
+      delay += 600;
+    });
+  }, 800);
+}
+
+function showSuccess() {
+  document.getElementById('activation-area').innerHTML = `
+    <div style="text-align:center;padding:24px 0 8px">
+      <div class="success-check">✅</div>
+      <div class="success-title">${t('Data Stream이 성공적으로 활성화되었습니다!','データストリームが正常に有効化されました！')}</div>
+      <div class="success-stats">${t(
+        '예상 첫 동기화: 약 2-3분 후 &nbsp;·&nbsp; 레코드: ~120,000건 &nbsp;·&nbsp; 상태: <strong style="color:var(--green)">Active</strong>',
+        '初回同期予定: 約2〜3分後 &nbsp;·&nbsp; レコード: 約120,000件 &nbsp;·&nbsp; ステータス: <strong style="color:var(--green)">Active</strong>'
+      )}</div>
+      <div class="success-actions">
+        <button class="btn btn-outline" onclick="resetWizard()">${t('새 Data Stream 등록','新しいデータストリームを登録')}</button>
+        <a href="index.html" class="btn btn-primary">${t('데모 목록으로','デモ一覧へ')} →</a>
+      </div>
+    </div>`;
+  // hide default nav next button (already hidden for last step)
+}
+
+function resetWizard() {
+  currentStep = 1;
+  selectedConnector = 'crm';
+  const def = connectorDefaults['crm'];
+  selectedObject = def.object;
+  lockedFields   = new Set(def.locked);
+  checkedFields  = new Set(connectorFields['crm'].filter(f => f.checked).map(f => f.api));
+  formState = { name: def.streamName, primaryKey:'Id', segmentKey:'Id', refreshMode:'Streaming', dataSpace:'default', category:'Profile' };
+  renderStepper();
+  renderStep(1);
+  bindStep1();
+  renderNav();
+}
+
+// ── INIT ──
+function init() {
+  switchLang(currentLang);
+  renderStepper();
+  renderStep(1);
+  renderNav();
+}
+
+init();
+</script>
+</body>
+</html>

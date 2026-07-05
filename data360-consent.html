@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data 360 – Consent & Privacy Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue:    #0070D2;
+      --navy:    #032D60;
+      --sky:     #00A1E0;
+      --green:   #3CB879;
+      --red:     #EA001E;
+      --orange:  #FF8B00;
+      --amber:   #FFD000;
+      --violet:  #8B5CF6;
+      --teal:    #06B6D4;
+      --bg:      #F3F5F9;
+      --card:    #FFFFFF;
+      --border:  #E0E5EE;
+      --text:    #181C27;
+      --secondary:#546D8F;
+      --mono:    'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── APP BAR ── */
+    .appbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(3,45,96,.92); backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; height: 54px;
+    }
+    .appbar-left { display: flex; align-items: center; gap: 10px; }
+    .appbar-logo { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .4px; }
+    .appbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,.25); }
+    .appbar-title { font-size: 13px; color: rgba(255,255,255,.75); letter-spacing: .3px; }
+    .lang-row { display: flex; gap: 6px; }
+    .lang-btn { padding: 4px 12px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,.3); background: transparent; color: rgba(255,255,255,.7); font-size: 12px; cursor: pointer; transition: all .18s; }
+    .lang-btn.active { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.6); }
+
+    /* ── HERO ── */
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, #0a3d7a 60%, #0f5298 100%); padding: 44px 28px 36px; color: #fff; }
+    .hero-inner { max-width: 900px; margin: 0 auto; }
+    .eyebrow-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #FFD000; margin-bottom: 16px; }
+    .hero-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(22px, 4vw, 34px); font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+    .hero-title span { color: #FFD000; }
+    .hero-sub { font-size: 14px; color: rgba(255,255,255,.75); line-height: 1.7; max-width: 680px; margin-bottom: 28px; }
+    .pipeline { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+    .pipe-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .pipe-node { padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: var(--mono); white-space: nowrap; }
+    .pipe-node.ind  { background: rgba(255,208,0,.18); color: #FFD000; border: 1.5px solid rgba(255,208,0,.35); }
+    .pipe-node.cpt  { background: rgba(0,161,224,.18); color: #6DD5F8; border: 1.5px solid rgba(0,161,224,.35); }
+    .pipe-node.cons { background: rgba(60,184,121,.18); color: #7EE8A2; border: 1.5px solid rgba(60,184,121,.35); }
+    .pipe-node.seg  { background: rgba(139,92,246,.18); color: #C4B5FD; border: 1.5px solid rgba(139,92,246,.35); }
+    .pipe-node.act  { background: rgba(255,139,0,.18); color: #FDBA74; border: 1.5px solid rgba(255,139,0,.35); }
+    .pipe-caption { font-size: 10px; color: rgba(255,255,255,.5); }
+    .pipe-arrow { color: rgba(255,255,255,.35); font-size: 18px; padding: 0 8px; margin-bottom: 14px; }
+
+    /* ── MAIN ── */
+    .main { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 4px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 6px; margin-bottom: 24px; }
+    .tab-btn { flex: 1; padding: 9px 12px; border-radius: 8px; border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--secondary); cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .tab-btn.active { background: var(--blue); color: #fff; font-weight: 600; }
+    .tab-btn:hover:not(.active) { background: var(--bg); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SECTION TITLE ── */
+    .sec-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .sec-sub { font-size: 13px; color: var(--secondary); margin-bottom: 20px; line-height: 1.6; }
+
+    /* ── INDIVIDUAL SELECTOR ── */
+    .ind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .ind-card { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all .18s; }
+    .ind-card:hover { border-color: var(--sky); }
+    .ind-card.active { border-color: var(--blue); background: rgba(0,112,210,.04); }
+    .ind-name { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .ind-id { font-family: var(--mono); font-size: 10px; color: var(--secondary); background: var(--bg); display: inline-block; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; }
+    .ind-summary { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ind-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .ind-dot.on  { background: var(--green); }
+    .ind-dot.off { background: var(--red); }
+    .ind-dot.na  { background: #CBD5E1; }
+
+    /* ── CONSENT PANEL ── */
+    .consent-panel { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+    .consent-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .panel-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+    .panel-id { font-family: var(--mono); font-size: 11px; color: var(--secondary); }
+    .last-updated { font-size: 11px; color: var(--secondary); }
+    .consent-group { margin-bottom: 22px; }
+    .consent-group-title { font-size: 11px; font-weight: 600; letter-spacing: .8px; color: var(--secondary); text-transform: uppercase; margin-bottom: 12px; }
+    .consent-rows { display: flex; flex-direction: column; gap: 10px; }
+    .consent-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg); border-radius: 9px; border: 1px solid var(--border); transition: background .12s; }
+    .consent-row:hover { background: rgba(0,112,210,.04); }
+    .consent-left { display: flex; align-items: center; gap: 10px; }
+    .consent-icon { font-size: 16px; width: 28px; text-align: center; }
+    .consent-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .consent-since { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+    .consent-right { display: flex; align-items: center; gap: 10px; }
+    .consent-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .badge-on  { background: rgba(60,184,121,.12); color: #1a7a40; border: 1px solid rgba(60,184,121,.3); }
+    .badge-off { background: rgba(234,0,30,.08); color: #c0001a; border: 1px solid rgba(234,0,30,.2); }
+    .badge-na  { background: rgba(84,109,143,.1); color: var(--secondary); border: 1px solid var(--border); }
+
+    /* Toggle switch */
+    .toggle { position: relative; width: 40px; height: 22px; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; border-radius: 11px; background: #CBD5E1; transition: background .2s; }
+    .toggle input:checked + .toggle-track { background: var(--green); }
+    .toggle-thumb { position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(18px); }
+
+    /* ── AUDIT LOG ── */
+    .audit-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-top: 20px; }
+    .audit-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    .audit-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+    .audit-entry { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; padding: 8px 10px; background: var(--bg); border-radius: 7px; animation: slideIn .3s ease; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    .audit-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+    .audit-dot.on  { background: var(--green); }
+    .audit-dot.off { background: var(--red); }
+    .audit-time { color: var(--secondary); white-space: nowrap; }
+    .audit-text { color: var(--text); flex: 1; }
+
+    /* ── PRIVACY REQUESTS TAB ── */
+    .req-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .btn-new { background: var(--blue); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .18s; }
+    .btn-new:hover { background: #005fb2; }
+    .req-table-wrap { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+    .req-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .req-table th { background: var(--bg); padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .6px; color: var(--secondary); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .req-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .req-table tr:last-child td { border-bottom: none; }
+    .req-table tr:hover td { background: rgba(0,112,210,.03); }
+    .req-type { font-weight: 600; color: var(--navy); }
+    .req-id { font-family: var(--mono); font-size: 11px; color: var(--secondary); }
+    .status-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .status-pending    { background: rgba(255,208,0,.18); color: #7a5900; border: 1px solid rgba(255,208,0,.5); }
+    .status-processing { background: rgba(0,161,224,.12); color: #005f8a; border: 1px solid rgba(0,161,224,.3); }
+    .status-completed  { background: rgba(60,184,121,.12); color: #1a7a40; border: 1px solid rgba(60,184,121,.3); }
+    .status-rejected   { background: rgba(234,0,30,.08); color: #c0001a; border: 1px solid rgba(234,0,30,.2); }
+    .btn-process { background: transparent; border: 1.5px solid var(--blue); color: var(--blue); padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .btn-process:hover { background: var(--blue); color: #fff; }
+    .btn-process:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Processing modal / inline area */
+    .processing-area { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 24px; margin-top: 4px; }
+    .proc-steps { display: flex; flex-direction: column; gap: 12px; }
+    .proc-step { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--bg); opacity: .4; transition: all .4s; }
+    .proc-step.active { border-color: var(--blue); background: rgba(0,112,210,.04); opacity: 1; }
+    .proc-step.done { border-color: var(--green); background: rgba(60,184,121,.05); opacity: 1; }
+    .proc-step-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; background: var(--border); flex-shrink: 0; }
+    .proc-step.active .proc-step-icon { background: var(--blue); color: #fff; }
+    .proc-step.done  .proc-step-icon { background: var(--green); color: #fff; }
+    .proc-step-label { font-size: 13px; font-weight: 500; }
+    .proc-step.active .proc-step-label { color: var(--blue); font-weight: 600; }
+    .proc-step.done  .proc-step-label { color: var(--green); }
+    .proc-step-desc { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+    .spinner-sm { width: 14px; height: 14px; border: 2px solid rgba(0,112,210,.25); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── CONSENT IMPACT TAB ── */
+    .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+    .impact-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; }
+    .impact-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+    .channel-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .channel-label { font-size: 12px; color: var(--text); width: 90px; flex-shrink: 0; }
+    .bar-track { flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 5px; transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+    .bar-fill.on  { background: linear-gradient(90deg, var(--green), #6DECB9); }
+    .bar-fill.mid { background: linear-gradient(90deg, var(--orange), #FDBA74); }
+    .bar-fill.low { background: linear-gradient(90deg, var(--red), #F87171); }
+    .bar-pct { font-family: var(--mono); font-size: 11px; color: var(--secondary); width: 36px; text-align: right; }
+
+    .seg-compare { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+    .seg-compare-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+    .seg-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; background: var(--bg); }
+    .seg-row:last-child { margin-bottom: 0; }
+    .seg-name { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+    .seg-cond { font-size: 11px; color: var(--secondary); }
+    .seg-counts { display: flex; align-items: center; gap: 14px; }
+    .seg-count-box { text-align: center; }
+    .seg-count-num { font-family: var(--mono); font-size: 15px; font-weight: 700; }
+    .seg-count-num.before { color: var(--secondary); }
+    .seg-count-num.after  { color: var(--blue); }
+    .seg-count-lbl { font-size: 10px; color: var(--secondary); margin-top: 1px; }
+    .seg-arrow { color: var(--secondary); font-size: 14px; }
+    .seg-delta { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: rgba(234,0,30,.08); color: #c0001a; border: 1px solid rgba(234,0,30,.15); }
+
+    /* ── INFO BANNER ── */
+    .info-banner { background: rgba(0,112,210,.07); border: 1px solid rgba(0,112,210,.2); border-radius: 9px; padding: 11px 14px; font-size: 12.5px; color: #004a8f; line-height: 1.6; margin-top: 16px; }
+    .warn-banner { background: rgba(255,139,0,.08); border: 1px solid rgba(255,139,0,.25); border-radius: 9px; padding: 11px 14px; font-size: 12.5px; color: #7a4300; line-height: 1.6; margin-top: 10px; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--navy); color: #fff; font-size: 13px; padding: 12px 18px; border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.25); z-index: 999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; max-width: 320px; line-height: 1.5; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast-icon { margin-right: 6px; }
+
+    /* ── FORM ── */
+    .new-req-form { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-top: 16px; }
+    .form-row { margin-bottom: 16px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--secondary); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: .5px; }
+    .form-select, .form-input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); outline: none; transition: border-color .15s; }
+    .form-select:focus, .form-input:focus { border-color: var(--blue); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn-submit { background: var(--navy); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .18s; }
+    .btn-submit:hover { background: var(--blue); }
+    .btn-cancel { background: transparent; border: 1.5px solid var(--border); color: var(--secondary); padding: 10px 18px; border-radius: 8px; font-size: 13px; cursor: pointer; margin-left: 8px; }
+
+    /* ── HOW-IT-WORKS SECTION ── */
+    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    .how-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px 22px; }
+    .how-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+    .how-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .how-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .how-num { width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .how-num.green { background: var(--green); }
+    .how-num.sky   { background: var(--sky); }
+    .how-item-label { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+    .how-item-desc  { font-size: 12px; color: var(--secondary); line-height: 1.6; }
+    .how-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: rgba(0,112,210,.1); color: var(--blue); margin-top: 4px; font-family: var(--mono); }
+    @media (max-width: 640px) { .how-grid { grid-template-columns: 1fr; } }
+
+    /* ── BACK NAV ── */
+    .back-nav { padding: 14px 28px 0; }
+    .back-link { font-size: 13px; color: rgba(255,255,255,.7); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+    .back-link:hover { color: #fff; }
+
+    @media (max-width: 640px) {
+      .ind-grid { grid-template-columns: 1fr; }
+      .impact-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .tabs { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── APP BAR ── -->
+<div style="background:rgba(3,45,96,.95)">
+  <div class="back-nav">
+    <a class="back-link" href="index.html">← <span data-ko>데모 목록으로</span><span data-ja>デモ一覧へ</span></a>
+  </div>
+  <div class="appbar">
+    <div class="appbar-left">
+      <div class="appbar-logo">Salesforce Data 360</div>
+      <div class="appbar-sep"></div>
+      <div class="appbar-title">
+        <span data-ko>동의 및 개인정보 관리</span>
+        <span data-ja>同意とプライバシー管理</span>
+      </div>
+    </div>
+    <div class="lang-row">
+      <button class="lang-btn" id="btn-ko" onclick="switchLang('ko')">🇰🇷 KO</button>
+      <button class="lang-btn active" id="btn-ja" onclick="switchLang('ja')">🇯🇵 JA</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow-pill">SALESFORCE DATA 360 · Demo 09</div>
+    <h1 class="hero-title">
+      <span data-ko>동의 및 <span style="color:#FFD000">개인정보 관리</span></span>
+      <span data-ja>同意と<span style="color:#FFD000">プライバシー管理</span></span>
+    </h1>
+    <p class="hero-sub">
+      <span data-ko>Data 360의 ContactPoint Consent 모델을 통해 채널별 동의 설정, 개인정보 요청 처리(GDPR/PIPL), 동의가 세그먼트에 미치는 영향을 인터랙티브하게 체험합니다.</span>
+      <span data-ja>Data 360 の ContactPoint Consent モデルを通じて、チャネル別同意設定・個人情報リクエスト処理（GDPR/PIPL）・同意がセグメントに与える影響をインタラクティブに体験します。</span>
+    </p>
+    <div class="pipeline">
+      <div class="pipe-item">
+        <div class="pipe-node ind">Individual</div>
+        <div class="pipe-caption">Unified Profile</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node cpt">ContactPoint</div>
+        <div class="pipe-caption">Email / SMS / Push</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node cons">Consent Store</div>
+        <div class="pipe-caption">Opt-in / Opt-out</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node seg">Segment Filter</div>
+        <div class="pipe-caption">Auto-exclude</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-item">
+        <div class="pipe-node act">Activation</div>
+        <div class="pipe-caption">Compliant Send</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- ── HOW CONSENT IS COLLECTED ── -->
+  <div class="how-grid">
+
+    <!-- 수집 방법 -->
+    <div class="how-card">
+      <div class="how-card-title">
+        📥 <span data-ko>동의는 어떻게 수집하나요?</span><span data-ja>同意はどのように収集しますか？</span>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num">1</div>
+        <div>
+          <div class="how-item-label">
+            <span data-ko>MC Preference Center</span><span data-ja>MC Preference Center</span>
+          </div>
+          <div class="how-item-desc">
+            <span data-ko>이메일 하단 "구독 관리" 링크 → MC 호스팅 페이지에서 채널별 옵트인/아웃 → MC Connector로 Data 360 자동 동기화.</span>
+            <span data-ja>メール下部の「配信設定」リンク → MC ホスト型ページでチャネル別オプトイン/アウト → MC Connector 経由で Data 360 に自動同期。</span>
+          </div>
+          <div class="how-tag">ContactPointTypeConsent</div>
+        </div>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num sky">2</div>
+        <div>
+          <div class="how-item-label">Ingestion API</div>
+          <div class="how-item-desc">
+            <span data-ko>자사 웹사이트·앱의 쿠키 배너, 회원가입 동의 체크박스 등에서 고객이 동의하는 순간 REST API로 Data 360에 실시간 push. GDPR 배너 연동에 주로 사용.</span>
+            <span data-ja>自社 Web・アプリのクッキーバナーや登録時の同意チェックボックスから、顧客が同意した瞬間に REST API で Data 360 へリアルタイム push。GDPR バナー連携に多用。</span>
+          </div>
+          <div class="how-tag">Streaming Ingestion</div>
+        </div>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num green">3</div>
+        <div>
+          <div class="how-item-label">
+            <span data-ko>CRM Connector (기존 필드 매핑)</span><span data-ja>CRM Connector（既存フィールドマッピング）</span>
+          </div>
+          <div class="how-item-desc">
+            <span data-ko>Salesforce CRM의 <code style="font-family:var(--mono);font-size:11px">HasOptedOutOfEmail</code>, <code style="font-family:var(--mono);font-size:11px">DoNotCall</code> 등 기존 동의 필드를 Data 360 consent 레코드로 자동 매핑.</span>
+            <span data-ja>Salesforce CRM の <code style="font-family:var(--mono);font-size:11px">HasOptedOutOfEmail</code>・<code style="font-family:var(--mono);font-size:11px">DoNotCall</code> など既存の同意フィールドを Data 360 consent レコードに自動マッピング。</span>
+          </div>
+          <div class="how-tag">CRM Connector → DLO → Consent</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI 확인 위치 -->
+    <div class="how-card">
+      <div class="how-card-title">
+        🖥️ <span data-ko>Data 360 UI에서 어디서 확인하나요?</span><span data-ja>Data 360 UI のどこで確認できますか？</span>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num">A</div>
+        <div>
+          <div class="how-item-label">Profile Explorer</div>
+          <div class="how-item-desc">
+            <span data-ko>Individual ID 또는 이메일로 특정 고객 검색 → 해당 프로필의 ContactPoint·ConsentRecord를 채널별 Opted In/Out 상태와 변경 타임스탬프와 함께 열람 가능.</span>
+            <span data-ja>Individual ID またはメールアドレスで顧客を検索 → ContactPoint・ConsentRecord をチャネル別の Opted In/Out 状態と変更タイムスタンプとともに閲覧可能。</span>
+          </div>
+          <div class="how-tag">Setup → Profile Explorer</div>
+        </div>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num sky">B</div>
+        <div>
+          <div class="how-item-label">Individual Privacy Center</div>
+          <div class="how-item-desc">
+            <span data-ko>GDPR/PIPL 등 법적 요청 접수·처리 전용 관리 화면. 삭제 요청 처리 시 해당 Individual의 PII 자동 익명화 및 활성 Journey·세그먼트에서 즉시 제외.</span>
+            <span data-ja>GDPR/PIPL などの法的リクエスト受付・処理専用の管理画面。削除リクエスト処理時、対象 Individual の PII が自動匿名化され、アクティブな Journey・セグメントから即時除外。</span>
+          </div>
+          <div class="how-tag">Setup → Individual Privacy Center</div>
+        </div>
+      </div>
+
+      <div class="how-item">
+        <div class="how-num green">C</div>
+        <div>
+          <div class="how-item-label">
+            <span data-ko>Segment Builder (필터 조건)</span><span data-ja>Segment Builder（フィルター条件）</span>
+          </div>
+          <div class="how-item-desc">
+            <span data-ko>세그먼트 빌더에서 "Email Opt-in = true" 같은 동의 조건을 필터로 추가 가능. 세그먼트 평가 시 opted-out 고객이 자동 제외되어 컴플라이언트 발송 보장.</span>
+            <span data-ja>セグメントビルダーで「Email Opt-in = true」などの同意条件をフィルターとして追加可能。セグメント評価時に opted-out の顧客が自動除外され、コンプライアントな送信を保証。</span>
+          </div>
+          <div class="how-tag">Segment Builder → Consent Filter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" onclick="switchTab(0)" id="tab0">
+      🛡️ <span data-ko>동의 프로필</span><span data-ja>同意プロファイル</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(1)" id="tab1">
+      📋 <span data-ko>개인정보 요청</span><span data-ja>プライバシーリクエスト</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(2)" id="tab2">
+      📊 <span data-ko>동의 영향 분석</span><span data-ja>同意影響分析</span>
+    </button>
+  </div>
+
+  <!-- ─ TAB 0: 동의 프로필 ─ -->
+  <div class="tab-panel active" id="panel-0">
+    <div class="sec-title">
+      <span data-ko>개인별 동의 프로필</span>
+      <span data-ja>個人別同意プロファイル</span>
+    </div>
+    <p class="sec-sub">
+      <span data-ko>고객을 선택하여 채널별 동의 상태를 확인하고 토글로 변경해 보세요. 변경 사항은 실시간으로 Audit Log에 기록됩니다.</span>
+      <span data-ja>顧客を選択してチャネル別の同意状態を確認し、トグルで変更してみてください。変更内容はリアルタイムで Audit Log に記録されます。</span>
+    </p>
+
+    <!-- Individual cards -->
+    <div class="ind-grid" id="ind-grid"></div>
+
+    <!-- Consent detail panel -->
+    <div class="consent-panel" id="consent-panel"></div>
+
+    <!-- Audit log -->
+    <div class="audit-card">
+      <div class="audit-title">
+        📝 <span data-ko>동의 변경 Audit Log</span><span data-ja>同意変更 Audit Log</span>
+      </div>
+      <div class="audit-list" id="audit-list">
+        <div class="audit-entry">
+          <div class="audit-dot on"></div>
+          <div class="audit-time">2026-06-15 09:22</div>
+          <div class="audit-text"><span data-ko>UI-100847 · 이메일 마케팅 → Opted In (source: Web Form)</span><span data-ja>UI-100847 · メールマーケティング → Opted In（source: Web Form）</span></div>
+        </div>
+        <div class="audit-entry">
+          <div class="audit-dot off"></div>
+          <div class="audit-time">2026-05-30 14:08</div>
+          <div class="audit-text"><span data-ko>UI-293847 · SMS → Opted Out (source: Preference Center)</span><span data-ja>UI-293847 · SMS → Opted Out（source: Preference Center）</span></div>
+        </div>
+        <div class="audit-entry">
+          <div class="audit-dot off"></div>
+          <div class="audit-time">2026-04-12 18:41</div>
+          <div class="audit-text"><span data-ko>UI-182930 · 전체 채널 → Opted Out (source: GDPR 삭제 요청)</span><span data-ja>UI-182930 · 全チャネル → Opted Out（source: GDPR 削除リクエスト）</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ TAB 1: 개인정보 요청 ─ -->
+  <div class="tab-panel" id="panel-1">
+    <div class="sec-title">
+      <span data-ko>개인정보 요청 처리</span>
+      <span data-ja>プライバシーリクエスト処理</span>
+    </div>
+    <p class="sec-sub">
+      <span data-ko>GDPR, PIPL, CCPA 등 법적 요청을 Data 360 Individual Privacy Center에서 처리합니다. 요청 유형에 따라 접근권·삭제권·이동권·정정권을 지원합니다.</span>
+      <span data-ja>GDPR・PIPL・CCPA などの法的リクエストを Data 360 Individual Privacy Center で処理します。リクエスト種別に応じてアクセス権・削除権・ポータビリティ権・訂正権をサポートします。</span>
+    </p>
+
+    <div class="req-controls">
+      <div style="font-size:13px;color:var(--secondary)">
+        <span data-ko>처리 대기 중: <strong style="color:var(--orange)">2건</strong></span>
+        <span data-ja>処理待ち: <strong style="color:var(--orange)">2件</strong></span>
+      </div>
+      <button class="btn-new" onclick="toggleNewForm()">
+        + <span data-ko>새 요청 등록</span><span data-ja>新規リクエスト</span>
+      </button>
+    </div>
+
+    <div class="req-table-wrap">
+      <table class="req-table" id="req-table">
+        <thead>
+          <tr>
+            <th><span data-ko>요청 ID</span><span data-ja>リクエスト ID</span></th>
+            <th><span data-ko>유형</span><span data-ja>種別</span></th>
+            <th><span data-ko>대상 Individual</span><span data-ja>対象 Individual</span></th>
+            <th><span data-ko>법적 근거</span><span data-ja>法的根拠</span></th>
+            <th><span data-ko>접수일</span><span data-ja>受付日</span></th>
+            <th><span data-ko>상태</span><span data-ja>ステータス</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="req-tbody"></tbody>
+      </table>
+    </div>
+
+    <div id="processing-area" style="display:none"></div>
+    <div id="new-req-form" style="display:none"></div>
+
+    <div class="info-banner">
+      💡 <span data-ko>삭제 요청(Right to Erasure) 처리 시 해당 Individual 및 연결된 ContactPoint·ConsentRecord가 모두 익명화됩니다. 활성 Journey 및 세그먼트에서 자동으로 제외됩니다.</span>
+      <span data-ja>削除リクエスト（Right to Erasure）処理時、対象 Individual および紐づく ContactPoint・ConsentRecord がすべて匿名化されます。アクティブな Journey およびセグメントから自動的に除外されます。</span>
+    </div>
+  </div>
+
+  <!-- ─ TAB 2: 동의 영향 분석 ─ -->
+  <div class="tab-panel" id="panel-2">
+    <div class="sec-title">
+      <span data-ko>동의 영향 분석</span>
+      <span data-ja>同意影響分析</span>
+    </div>
+    <p class="sec-sub">
+      <span data-ko>채널별 옵트인율과 동의 필터 적용 전후의 세그먼트 규모 변화를 확인합니다.</span>
+      <span data-ja>チャネル別オプトイン率と、同意フィルター適用前後のセグメントサイズ変化を確認します。</span>
+    </p>
+
+    <div class="impact-grid">
+      <!-- Channel Opt-in rates -->
+      <div class="impact-card">
+        <div class="impact-card-title">
+          <span data-ko>채널별 옵트인율</span><span data-ja>チャネル別オプトイン率</span>
+        </div>
+        <div id="channel-bars"></div>
+      </div>
+
+      <!-- Consent data processing -->
+      <div class="impact-card">
+        <div class="impact-card-title">
+          <span data-ko>데이터 처리 동의율</span><span data-ja>データ処理同意率</span>
+        </div>
+        <div id="processing-bars"></div>
+      </div>
+    </div>
+
+    <!-- Segment comparison -->
+    <div class="seg-compare">
+      <div class="seg-compare-title">
+        <span data-ko>동의 필터 적용 전후 세그먼트 비교</span>
+        <span data-ja>同意フィルター適用前後のセグメント比較</span>
+      </div>
+      <div id="seg-rows"></div>
+    </div>
+
+    <div class="warn-banner">
+      ⚠️ <span data-ko>동의 없는 개인에게 마케팅 메시지를 발송하면 GDPR 위반 시 전 세계 연간 매출의 4% 또는 최대 2,000만 유로의 과징금이 부과될 수 있습니다. Data 360의 Consent 자동 필터링이 이 위험을 차단합니다.</span>
+      <span data-ja>同意のない個人へのマーケティング送信は GDPR 違反となり、全世界年間売上の4%または最大2,000万ユーロの制裁金が科される可能性があります。Data 360 の自動同意フィルタリングがこのリスクをブロックします。</span>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── LANGUAGE ──
+let currentLang = new URLSearchParams(location.search).get('lang') || 'ja';
+function switchLang(l) {
+  currentLang = l;
+  document.querySelectorAll('[data-ko]').forEach(el => el.style.display = l === 'ko' ? '' : 'none');
+  document.querySelectorAll('[data-ja]').forEach(el => el.style.display = l === 'ja' ? '' : 'none');
+  document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+  document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+}
+function t(ko, ja) { return currentLang === 'ko' ? ko : ja; }
+
+// ── TABS ──
+function switchTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  if (idx === 2) renderImpactTab();
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.innerHTML = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── DATA: INDIVIDUALS ──
+const individuals = [
+  {
+    id: 'UI-100847',
+    ko: '김민준', ja: '田中さくら',
+    email: 'minjun.kim@example.com',
+    channels: [
+      { key:'email', icon:'📧', ko:'이메일 마케팅', ja:'メールマーケティング', status:'on',  since:'2026-03-15' },
+      { key:'sms',   icon:'💬', ko:'SMS',          ja:'SMS',                 status:'off', since:'2026-06-20' },
+      { key:'push',  icon:'🔔', ko:'푸시 알림',    ja:'プッシュ通知',        status:'on',  since:'2026-01-10' },
+      { key:'phone', icon:'📞', ko:'전화',          ja:'電話',                status:'na',  since:null },
+      { key:'mail',  icon:'✉️', ko:'우편',           ja:'ダイレクトメール',   status:'on',  since:'2026-03-15' }
+    ],
+    processing: [
+      { key:'profiling', icon:'🧠', ko:'프로파일링 및 개인화',   ja:'プロファイリング・パーソナライズ', status:'on',  since:'2026-01-10' },
+      { key:'analytics', icon:'📈', ko:'분석 및 리포트',         ja:'分析・レポート',                   status:'on',  since:'2026-01-10' },
+      { key:'thirdparty',icon:'🤝', ko:'제3자 공유',             ja:'サードパーティ共有',               status:'off', since:'2026-03-01' }
+    ]
+  },
+  {
+    id: 'UI-293847',
+    ko: '박지수', ja: '鈴木雄太',
+    email: 'jisu.park@example.com',
+    channels: [
+      { key:'email', icon:'📧', ko:'이메일 마케팅', ja:'メールマーケティング', status:'on',  since:'2025-11-05' },
+      { key:'sms',   icon:'💬', ko:'SMS',          ja:'SMS',                 status:'on',  since:'2025-11-05' },
+      { key:'push',  icon:'🔔', ko:'푸시 알림',    ja:'プッシュ通知',        status:'off', since:'2026-02-28' },
+      { key:'phone', icon:'📞', ko:'전화',          ja:'電話',                status:'on',  since:'2025-11-05' },
+      { key:'mail',  icon:'✉️', ko:'우편',           ja:'ダイレクトメール',   status:'na',  since:null }
+    ],
+    processing: [
+      { key:'profiling', icon:'🧠', ko:'프로파일링 및 개인화',   ja:'プロファイリング・パーソナライズ', status:'on',  since:'2025-11-05' },
+      { key:'analytics', icon:'📈', ko:'분석 및 리포트',         ja:'分析・レポート',                   status:'on',  since:'2025-11-05' },
+      { key:'thirdparty',icon:'🤝', ko:'제3자 공유',             ja:'サードパーティ共有',               status:'on',  since:'2025-11-05' }
+    ]
+  },
+  {
+    id: 'UI-182930',
+    ko: '이서연', ja: '山田花子',
+    email: 'seoyeon.lee@example.com',
+    channels: [
+      { key:'email', icon:'📧', ko:'이메일 마케팅', ja:'メールマーケティング', status:'off', since:'2026-04-12' },
+      { key:'sms',   icon:'💬', ko:'SMS',          ja:'SMS',                 status:'off', since:'2026-04-12' },
+      { key:'push',  icon:'🔔', ko:'푸시 알림',    ja:'プッシュ通知',        status:'off', since:'2026-04-12' },
+      { key:'phone', icon:'📞', ko:'전화',          ja:'電話',                status:'off', since:'2026-04-12' },
+      { key:'mail',  icon:'✉️', ko:'우편',           ja:'ダイレクトメール',   status:'off', since:'2026-04-12' }
+    ],
+    processing: [
+      { key:'profiling', icon:'🧠', ko:'프로파일링 및 개인화',   ja:'プロファイリング・パーソナライズ', status:'off', since:'2026-04-12' },
+      { key:'analytics', icon:'📈', ko:'분석 및 리포트',         ja:'分析・レポート',                   status:'on',  since:'2025-08-01' },
+      { key:'thirdparty',icon:'🤝', ko:'제3자 공유',             ja:'サードパーティ共有',               status:'off', since:'2026-04-12' }
+    ]
+  }
+];
+
+let selectedIndividual = 0;
+
+function renderIndividualGrid() {
+  const el = document.getElementById('ind-grid');
+  el.innerHTML = individuals.map((ind, idx) => {
+    const dots = [...ind.channels, ...ind.processing].map(c =>
+      `<div class="ind-dot ${c.status}" title="${t(c.ko,c.ja)}"></div>`
+    ).join('');
+    const onCount = [...ind.channels, ...ind.processing].filter(c => c.status === 'on').length;
+    return `<div class="ind-card ${idx === selectedIndividual ? 'active' : ''}" onclick="selectIndividual(${idx})">
+      <div class="ind-name">${t(ind.ko, ind.ja)}</div>
+      <div class="ind-id">${ind.id}</div>
+      <div style="font-size:11px;color:var(--secondary);margin-bottom:8px">${ind.email}</div>
+      <div class="ind-summary">${dots}</div>
+      <div style="font-size:11px;color:var(--secondary);margin-top:6px">${t(`동의 ${onCount}/${ind.channels.length+ind.processing.length}`, `同意 ${onCount}/${ind.channels.length+ind.processing.length}`)}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectIndividual(idx) {
+  selectedIndividual = idx;
+  renderIndividualGrid();
+  renderConsentPanel();
+}
+
+function statusLabel(s) {
+  if (s === 'on')  return `<span class="consent-badge badge-on">${t('Opted In','Opted In')}</span>`;
+  if (s === 'off') return `<span class="consent-badge badge-off">${t('Opted Out','Opted Out')}</span>`;
+  return `<span class="consent-badge badge-na">${t('미설정','未設定')}</span>`;
+}
+
+function renderConsentPanel() {
+  const ind = individuals[selectedIndividual];
+  const el = document.getElementById('consent-panel');
+  const channelRows = ind.channels.map(c => `
+    <div class="consent-row">
+      <div class="consent-left">
+        <div class="consent-icon">${c.icon}</div>
+        <div>
+          <div class="consent-label">${t(c.ko, c.ja)}</div>
+          <div class="consent-since">${c.since ? t(`변경일: ${c.since}`, `更新: ${c.since}`) : t('미설정','未設定')}</div>
+        </div>
+      </div>
+      <div class="consent-right">
+        ${statusLabel(c.status)}
+        <label class="toggle">
+          <input type="checkbox" ${c.status === 'on' ? 'checked' : ''} onchange="toggleConsent(${selectedIndividual},'channel','${c.key}',this)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>`).join('');
+  const procRows = ind.processing.map(c => `
+    <div class="consent-row">
+      <div class="consent-left">
+        <div class="consent-icon">${c.icon}</div>
+        <div>
+          <div class="consent-label">${t(c.ko, c.ja)}</div>
+          <div class="consent-since">${c.since ? t(`변경일: ${c.since}`, `更新: ${c.since}`) : t('미설정','未設定')}</div>
+        </div>
+      </div>
+      <div class="consent-right">
+        ${statusLabel(c.status)}
+        <label class="toggle">
+          <input type="checkbox" ${c.status === 'on' ? 'checked' : ''} onchange="toggleConsent(${selectedIndividual},'processing','${c.key}',this)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="consent-panel-header">
+      <div>
+        <div class="panel-name">${t(ind.ko, ind.ja)}</div>
+        <div class="panel-id">${ind.id} · ${ind.email}</div>
+      </div>
+      <div class="last-updated">${t('마지막 업데이트: 2026-07-03','最終更新: 2026-07-03')}</div>
+    </div>
+    <div class="consent-group">
+      <div class="consent-group-title">${t('채널 동의 (ContactPointTypeConsent)','チャネル同意 (ContactPointTypeConsent)')}</div>
+      <div class="consent-rows">${channelRows}</div>
+    </div>
+    <div class="consent-group">
+      <div class="consent-group-title">${t('데이터 처리 동의 (PartyConsent)','データ処理同意 (PartyConsent)')}</div>
+      <div class="consent-rows">${procRows}</div>
+    </div>`;
+}
+
+function toggleConsent(indIdx, type, key, checkbox) {
+  const ind = individuals[indIdx];
+  const arr = type === 'channel' ? ind.channels : ind.processing;
+  const item = arr.find(c => c.key === key);
+  if (!item) return;
+  const prev = item.status;
+  item.status = checkbox.checked ? 'on' : 'off';
+  const now = new Date();
+  const ts = now.toISOString().slice(0,16).replace('T',' ');
+  item.since = now.toISOString().slice(0,10);
+  addAuditEntry(ind.id, t(item.ko, item.ja), item.status, ts);
+  renderIndividualGrid();
+  renderConsentPanel();
+  const msg = item.status === 'on'
+    ? `✅ <span class="toast-icon"></span>${t(item.ko,item.ja)}: Opted In`
+    : `🔕 ${t(item.ko,item.ja)}: Opted Out`;
+  showToast(msg);
+  // segment impact warning for email opt-out
+  if (item.status === 'off' && (item.key === 'email' || item.key === 'sms')) {
+    setTimeout(() => showToast(`⚠️ ${t('이 변경으로 해당 고객이 관련 이메일/SMS 세그먼트에서 자동 제외됩니다.','この変更により、当該顧客は関連するメール/SMS セグメントから自動的に除外されます。')}`), 3200);
+  }
+}
+
+function addAuditEntry(id, channel, status, ts) {
+  const list = document.getElementById('audit-list');
+  const entry = document.createElement('div');
+  entry.className = 'audit-entry';
+  entry.innerHTML = `
+    <div class="audit-dot ${status}"></div>
+    <div class="audit-time">${ts}</div>
+    <div class="audit-text">${id} · ${channel} → ${status === 'on' ? 'Opted In' : 'Opted Out'} (source: Demo UI)</div>`;
+  list.insertBefore(entry, list.firstChild);
+}
+
+// ── PRIVACY REQUESTS DATA ──
+const requests = [
+  { id:'REQ-2026-0041', typeKo:'접근권 (Right to Access)',       typeJa:'アクセス権 (Right to Access)',       indId:'UI-100847', nameKo:'김민준', nameJa:'田中さくら', law:'GDPR Art.15', date:'2026-07-01', status:'pending' },
+  { id:'REQ-2026-0039', typeKo:'삭제권 (Right to Erasure)',      typeJa:'削除権 (Right to Erasure)',          indId:'UI-182930', nameKo:'이서연', nameJa:'山田花子', law:'GDPR Art.17', date:'2026-06-28', status:'pending' },
+  { id:'REQ-2026-0035', typeKo:'이동권 (Data Portability)',      typeJa:'データポータビリティ',               indId:'UI-293847', nameKo:'박지수', nameJa:'鈴木雄太', law:'GDPR Art.20', date:'2026-06-20', status:'processing' },
+  { id:'REQ-2026-0031', typeKo:'정정권 (Right to Rectification)',typeJa:'訂正権 (Right to Rectification)',   indId:'UI-100847', nameKo:'김민준', nameJa:'田中さくら', law:'PIPL Art.44', date:'2026-06-10', status:'completed' },
+  { id:'REQ-2026-0028', typeKo:'처리 제한 (Restriction)',        typeJa:'処理制限 (Restriction)',             indId:'UI-182930', nameKo:'이서연', nameJa:'山田花子', law:'CCPA',        date:'2026-06-05', status:'completed' }
+];
+
+function renderRequestTable() {
+  const tbody = document.getElementById('req-tbody');
+  tbody.innerHTML = requests.map((r, idx) => `
+    <tr>
+      <td><div class="req-id">${r.id}</div></td>
+      <td><div class="req-type">${t(r.typeKo, r.typeJa)}</div></td>
+      <td><div style="font-weight:600">${t(r.nameKo,r.nameJa)}</div><div class="req-id">${r.indId}</div></td>
+      <td><span class="consent-badge badge-na">${r.law}</span></td>
+      <td style="color:var(--secondary);font-size:12px">${r.date}</td>
+      <td><span class="status-badge status-${r.status}">${statusText(r.status)}</span></td>
+      <td>${r.status === 'pending'
+        ? `<button class="btn-process" onclick="processRequest(${idx})">${t('처리','処理')}</button>`
+        : r.status === 'processing'
+        ? `<button class="btn-process" onclick="processRequest(${idx})">${t('계속','続行')}</button>`
+        : `<span style="font-size:11px;color:var(--green)">✓ ${t('완료','完了')}</span>`}</td>
+    </tr>`).join('');
+}
+
+function statusText(s) {
+  return {
+    pending:    t('처리 대기','処理待ち'),
+    processing: t('처리 중','処理中'),
+    completed:  t('완료','完了'),
+    rejected:   t('거부','拒否')
+  }[s] || s;
+}
+
+function processRequest(idx) {
+  const r = requests[idx];
+  const area = document.getElementById('processing-area');
+  area.style.display = 'block';
+  area.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  const steps = getProcessingSteps(r);
+  area.innerHTML = `
+    <div class="processing-area">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px">
+        ${t(r.typeKo, r.typeJa)} — ${r.id}
+      </div>
+      <div style="font-size:12px;color:var(--secondary);margin-bottom:18px">
+        ${t(`대상: ${r.nameKo} (${r.indId})`, `対象: ${r.nameJa} (${r.indId})`)}
+      </div>
+      <div class="proc-steps" id="proc-steps-${idx}"></div>
+    </div>`;
+  const stepsEl = document.getElementById(`proc-steps-${idx}`);
+  stepsEl.innerHTML = steps.map((s, i) => `
+    <div class="proc-step" id="pstep-${idx}-${i}">
+      <div class="proc-step-icon">${i+1}</div>
+      <div>
+        <div class="proc-step-label">${t(s.ko, s.ja)}</div>
+        <div class="proc-step-desc">${t(s.descKo, s.descJa)}</div>
+      </div>
+    </div>`).join('');
+  requests[idx].status = 'processing';
+  renderRequestTable();
+  animateSteps(idx, steps.length);
+}
+
+function getProcessingSteps(r) {
+  const common = [
+    { ko:'요청 수신 확인', ja:'リクエスト受信確認', descKo:'요청자 신원 및 법적 근거 검증', descJa:'請求者の本人確認と法的根拠の検証' },
+    { ko:'Individual 레코드 조회', ja:'Individual レコード照会', descKo:`Data 360에서 ${r.indId} 프로필 로드`, descJa:`Data 360 から ${r.indId} プロファイルをロード` }
+  ];
+  if (r.typeKo.includes('접근권') || r.typeJa.includes('アクセス')) return [...common,
+    { ko:'관련 데이터 수집', ja:'関連データ収集', descKo:'ContactPoint·Engagement·Consent 레코드 집계', descJa:'ContactPoint・Engagement・Consent レコードを収集' },
+    { ko:'데이터 패키지 생성', ja:'データパッケージ生成', descKo:'JSON 형식 개인 데이터 아카이브 생성', descJa:'JSON 形式の個人データアーカイブを生成' },
+    { ko:'요청자에게 전달', ja:'請求者へ送付', descKo:'암호화된 다운로드 링크를 이메일로 발송 (30일 유효)', descJa:'暗号化されたダウンロードリンクをメールで送付（30日有効）' }
+  ];
+  if (r.typeKo.includes('삭제') || r.typeJa.includes('削除')) return [...common,
+    { ko:'활성 Journey·세그먼트 제외', ja:'アクティブ Journey・セグメントから除外', descKo:'즉시 실행 — 진행 중인 발송에서 차단', descJa:'即時実行 — 進行中の送信からブロック' },
+    { ko:'Individual 레코드 익명화', ja:'Individual レコードの匿名化', descKo:'PII 필드 해시 처리, ContactPoint 삭제', descJa:'PII フィールドをハッシュ化し、ContactPoint を削除' },
+    { ko:'삭제 확인 통지 발송', ja:'削除確認通知の送付', descKo:'법적 의무 이행 완료 증명서 생성', descJa:'法的義務履行完了証明書を生成' }
+  ];
+  if (r.typeKo.includes('이동') || r.typeJa.includes('ポータビリティ')) return [...common,
+    { ko:'데이터 추출', ja:'データ抽出', descKo:'표준 형식(JSON/CSV)으로 개인 데이터 출력', descJa:'標準フォーマット（JSON/CSV）で個人データを出力' },
+    { ko:'이동 가능 패키지 준비', ja:'移行可能パッケージ準備', descKo:'기계 판독 가능 형식으로 패키징', descJa:'機械判読可能な形式でパッケージ化' },
+    { ko:'요청자에게 전달', ja:'請求者へ送付', descKo:'안전한 채널로 데이터 패키지 전달', descJa:'安全なチャネルでデータパッケージを送付' }
+  ];
+  return [...common,
+    { ko:'레코드 수정', ja:'レコード訂正', descKo:'요청된 필드 업데이트 적용', descJa:'要求されたフィールド更新を適用' },
+    { ko:'수정 확인', ja:'訂正確認', descKo:'변경 사항 감사 로그 기록', descJa:'変更内容を Audit Log に記録' }
+  ];
+}
+
+function animateSteps(reqIdx, total) {
+  let i = 0;
+  function next() {
+    if (i > 0) {
+      const prev = document.getElementById(`pstep-${reqIdx}-${i-1}`);
+      if (prev) {
+        prev.classList.remove('active');
+        prev.classList.add('done');
+        prev.querySelector('.proc-step-icon').innerHTML = '✓';
+      }
+    }
+    if (i >= total) {
+      requests[reqIdx].status = 'completed';
+      renderRequestTable();
+      showToast(`✅ ${t('요청 처리가 완료되었습니다.','リクエスト処理が完了しました。')}`);
+      setTimeout(() => { document.getElementById('processing-area').style.display = 'none'; }, 2000);
+      return;
+    }
+    const step = document.getElementById(`pstep-${reqIdx}-${i}`);
+    if (step) {
+      step.classList.add('active');
+      const icon = step.querySelector('.proc-step-icon');
+      icon.innerHTML = `<div class="spinner-sm"></div>`;
+    }
+    i++;
+    setTimeout(next, 900);
+  }
+  next();
+}
+
+let showingNewForm = false;
+function toggleNewForm() {
+  showingNewForm = !showingNewForm;
+  const el = document.getElementById('new-req-form');
+  if (!showingNewForm) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="new-req-form">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:16px">
+        ${t('새 개인정보 요청 등록','新規プライバシーリクエスト登録')}
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">${t('요청 유형','リクエスト種別')}</label>
+          <select class="form-select" id="nf-type">
+            <option value="access">${t('접근권 (Right to Access)','アクセス権')}</option>
+            <option value="erasure">${t('삭제권 (Right to Erasure)','削除権')}</option>
+            <option value="portability">${t('이동권 (Portability)','ポータビリティ権')}</option>
+            <option value="rectification">${t('정정권 (Rectification)','訂正権')}</option>
+            <option value="restriction">${t('처리 제한 (Restriction)','処理制限')}</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">${t('법적 근거','法的根拠')}</label>
+          <select class="form-select" id="nf-law">
+            <option>GDPR</option>
+            <option>PIPL</option>
+            <option>CCPA</option>
+            <option>APPI</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Individual ID</label>
+          <input class="form-input" id="nf-id" type="text" placeholder="UI-XXXXXX">
+        </div>
+        <div class="form-row">
+          <label class="form-label">${t('요청자 이메일','請求者メール')}</label>
+          <input class="form-input" id="nf-email" type="email" placeholder="requester@example.com">
+        </div>
+      </div>
+      <div style="margin-top:4px">
+        <button class="btn-submit" onclick="submitNewRequest()">${t('등록','登録')}</button>
+        <button class="btn-cancel" onclick="toggleNewForm()">${t('취소','キャンセル')}</button>
+      </div>
+    </div>`;
+  el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function submitNewRequest() {
+  const type = document.getElementById('nf-type')?.value || 'access';
+  const law = document.getElementById('nf-law')?.value || 'GDPR';
+  const id = document.getElementById('nf-id')?.value || 'UI-??????';
+  const typeLabels = {
+    access:       ['접근권 (Right to Access)',        'アクセス権 (Right to Access)'],
+    erasure:      ['삭제권 (Right to Erasure)',        '削除権 (Right to Erasure)'],
+    portability:  ['이동권 (Data Portability)',        'データポータビリティ'],
+    rectification:['정정권 (Right to Rectification)', '訂正権 (Right to Rectification)'],
+    restriction:  ['처리 제한 (Restriction)',          '処理制限 (Restriction)']
+  };
+  const newId = 'REQ-2026-' + String(Math.floor(Math.random()*1000)+50).padStart(4,'0');
+  const today = new Date().toISOString().slice(0,10);
+  requests.unshift({ id:newId, typeKo:typeLabels[type][0], typeJa:typeLabels[type][1], indId:id, nameKo:'—', nameJa:'—', law, date:today, status:'pending' });
+  renderRequestTable();
+  showingNewForm = false;
+  document.getElementById('new-req-form').style.display = 'none';
+  showToast(`📋 ${t(`${newId} 등록 완료`, `${newId} を登録しました`)}`);
+}
+
+// ── IMPACT TAB DATA ──
+const channelData = [
+  { ko:'이메일',   ja:'メール',        pct:82, cls:'on'  },
+  { ko:'SMS',      ja:'SMS',           pct:67, cls:'on'  },
+  { ko:'푸시',     ja:'プッシュ',      pct:54, cls:'mid' },
+  { ko:'전화',     ja:'電話',          pct:41, cls:'mid' },
+  { ko:'우편',     ja:'ダイレクトメール', pct:29, cls:'low' }
+];
+const processingData = [
+  { ko:'프로파일링', ja:'プロファイリング', pct:79, cls:'on'  },
+  { ko:'분석/리포트', ja:'分析・レポート',   pct:88, cls:'on'  },
+  { ko:'제3자 공유', ja:'サードパーティ共有', pct:34, cls:'low' }
+];
+const segmentData = [
+  { ko:'VIP 이메일 캠페인',  ja:'VIP メールキャンペーン',  before:45283, after:37132, cond:t('이메일 Opted In','メール Opted In') },
+  { ko:'SMS 재참여 타겟',    ja:'SMS 再エンゲージメント', before:28940, after:19380, cond:t('SMS Opted In','SMS Opted In') },
+  { ko:'모든 활성 고객',      ja:'全アクティブ顧客',       before:132814, after:112640, cond:t('분석 동의','分析同意') },
+  { ko:'신규 가입자 온보딩',  ja:'新規登録者オンボーディング', before:8420, after:8308, cond:t('이메일 Opted In','メール Opted In') }
+];
+
+let impactRendered = false;
+function renderImpactTab() {
+  if (impactRendered) return;
+  impactRendered = true;
+  // Channel bars (start at 0, animate to value)
+  const chanEl = document.getElementById('channel-bars');
+  chanEl.innerHTML = channelData.map(c =>
+    `<div class="channel-bar-row">
+      <div class="channel-label">${t(c.ko,c.ja)}</div>
+      <div class="bar-track"><div class="bar-fill ${c.cls}" id="cbar-${c.ko}" style="width:0%"></div></div>
+      <div class="bar-pct">${c.pct}%</div>
+    </div>`).join('');
+  const procEl = document.getElementById('processing-bars');
+  procEl.innerHTML = processingData.map(c =>
+    `<div class="channel-bar-row">
+      <div class="channel-label">${t(c.ko,c.ja)}</div>
+      <div class="bar-track"><div class="bar-fill ${c.cls}" id="pbar-${c.ko}" style="width:0%"></div></div>
+      <div class="bar-pct">${c.pct}%</div>
+    </div>`).join('');
+  const segEl = document.getElementById('seg-rows');
+  segEl.innerHTML = segmentData.map(s => {
+    const delta = s.before - s.after;
+    const pct = ((delta / s.before) * 100).toFixed(1);
+    return `<div class="seg-row">
+      <div>
+        <div class="seg-name">${t(s.ko,s.ja)}</div>
+        <div class="seg-cond">${t('필터:','フィルター:')} ${s.cond}</div>
+      </div>
+      <div class="seg-counts">
+        <div class="seg-count-box">
+          <div class="seg-count-num before">${s.before.toLocaleString()}</div>
+          <div class="seg-count-lbl">${t('필터 전','適用前')}</div>
+        </div>
+        <div class="seg-arrow">→</div>
+        <div class="seg-count-box">
+          <div class="seg-count-num after">${s.after.toLocaleString()}</div>
+          <div class="seg-count-lbl">${t('필터 후','適用後')}</div>
+        </div>
+        <div class="seg-delta">-${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+  // Animate bars after small delay
+  setTimeout(() => {
+    channelData.forEach(c => {
+      const el = document.getElementById(`cbar-${c.ko}`);
+      if (el) el.style.width = c.pct + '%';
+    });
+    processingData.forEach(c => {
+      const el = document.getElementById(`pbar-${c.ko}`);
+      if (el) el.style.width = c.pct + '%';
+    });
+  }, 120);
+}
+
+// ── INIT ──
+function init() {
+  switchLang(currentLang);
+  renderIndividualGrid();
+  renderConsentPanel();
+  renderRequestTable();
+}
+init();
+</script>
+</body>
+</html>
