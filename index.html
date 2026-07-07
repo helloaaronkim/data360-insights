@@ -1501,6 +1501,98 @@ footer {
       </div>
     </div>
 
+    <!-- ── Demo 11: Data Cloud One ── -->
+    <div>
+      <div class="sect-hdr">
+        <span class="sect-num num-brand">Demo 11</span>
+        <div class="sect-info">
+          <div class="sect-title">Data Cloud One — マルチ組織アーキテクチャ</div>
+          <div class="sect-desc">ホーム組織 · コンパニオン組織 · CI / Segment 共有 · CRM 関連リスト · Agentforce 連携</div>
+        </div>
+      </div>
+
+      <div id="card-one" class="demo-card">
+        <div class="card-char char-brand">
+          <div class="char-orb" style="width:44px;height:44px;background:#0070D2;opacity:.18;top:8%;left:6%;"></div>
+          <div class="char-orb" style="width:22px;height:22px;background:#7C5CFC;opacity:.30;bottom:10%;right:8%;"></div>
+          <div class="char-orb" style="width:16px;height:16px;background:#FFD000;opacity:.40;top:42%;right:13%;"></div>
+          <svg class="char-svg char-float" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Home Org cloud -->
+            <ellipse cx="75" cy="44" rx="28" ry="19" fill="white" opacity=".95"/>
+            <ellipse cx="59" cy="54" rx="18" ry="13" fill="white" opacity=".95"/>
+            <ellipse cx="91" cy="54" rx="18" ry="13" fill="white" opacity=".95"/>
+            <rect x="41" y="52" width="68" height="16" fill="white" opacity=".95"/>
+            <text x="75" y="63" text-anchor="middle" font-size="9" fill="#0070D2" font-weight="700">Home Org</text>
+            <!-- Companion nodes -->
+            <circle cx="22" cy="112" r="14" fill="white" opacity=".9" stroke="#7C5CFC" stroke-width="1.5"/>
+            <text x="22" y="116" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="700">C1</text>
+            <circle cx="56" cy="122" r="14" fill="white" opacity=".9" stroke="#7C5CFC" stroke-width="1.5"/>
+            <text x="56" y="126" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="700">C2</text>
+            <circle cx="94" cy="122" r="14" fill="white" opacity=".9" stroke="#7C5CFC" stroke-width="1.5"/>
+            <text x="94" y="126" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="700">C3</text>
+            <circle cx="128" cy="112" r="14" fill="white" opacity=".9" stroke="#7C5CFC" stroke-width="1.5"/>
+            <text x="128" y="116" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="700">C4</text>
+            <!-- Connection lines -->
+            <line x1="60" y1="68" x2="30" y2="100" stroke="white" stroke-width="2" stroke-dasharray="4 3" opacity=".8"/>
+            <line x1="67" y1="70" x2="58" y2="109" stroke="white" stroke-width="2" stroke-dasharray="4 3" opacity=".8"/>
+            <line x1="83" y1="70" x2="92" y2="109" stroke="white" stroke-width="2" stroke-dasharray="4 3" opacity=".8"/>
+            <line x1="90" y1="68" x2="120" y2="100" stroke="white" stroke-width="2" stroke-dasharray="4 3" opacity=".8"/>
+            <!-- CI/Segment labels floating -->
+            <rect x="46" y="78" width="58" height="14" rx="7" fill="rgba(124,92,252,.18)"/>
+            <text x="75" y="88" text-anchor="middle" font-size="7" fill="#7C5CFC" font-weight="600">CI · Segment</text>
+          </svg>
+        </div>
+
+        <div class="card-content">
+          <div class="title-row">
+            <div style="flex:1">
+              <div data-lc="card-one-ja"><div class="card-title">Data Cloud One<br>マルチ組織アーキテクチャ</div></div>
+              <div data-lc="card-one-ko" style="display:none"><div class="card-title">Data Cloud One<br>멀티 조직 아키텍처</div></div>
+            </div>
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-card="card-one" data-lang="ja">🇯🇵 JA</button>
+              <button class="lang-btn"        data-card="card-one" data-lang="ko">🇰🇷 KO</button>
+            </div>
+          </div>
+
+          <div data-lc="card-one-ja">
+            <p class="card-sub">1つの Data Cloud（ホーム組織）のメタデータを複数の Salesforce 組織で共有。CI・Segment 参照、CRM 関連リスト表示、Agentforce 連携の仕組みをクリックで体験。</p>
+          </div>
+          <div data-lc="card-one-ko" style="display:none">
+            <p class="card-sub">하나의 Data Cloud(홈 조직) 메타데이터를 여러 Salesforce 조직에서 공유. CI·Segment 참조, CRM 관련 목록 표시, Agentforce 연동을 클릭으로 체험.</p>
+          </div>
+
+          <div class="card-preview">
+            <div data-lc="card-one-ja">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">アーキテクチャ図 — Companion Org をクリックして共有状況を確認</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">メタデータ共有 — CI / Segment がホーム組織からどう流れるか</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">CRM 関連リスト — クエリアニメーションでリアルタイム参照を再現</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Agentforce チャット — 質問を選んで AI 回答をシミュレーション</span></div>
+            </div>
+            <div data-lc="card-one-ko" style="display:none">
+              <div class="pline"><div class="pdot d-sky"></div><span class="ptext">아키텍처 다이어그램 — Companion Org 클릭으로 공유 현황 확인</span></div>
+              <div class="pline"><div class="pdot d-violet"></div><span class="ptext">메타데이터 공유 — CI / Segment가 홈 조직에서 흐르는 방식</span></div>
+              <div class="pline"><div class="pdot d-green"></div><span class="ptext">CRM 관련 목록 — 쿼리 애니메이션으로 실시간 참조 재현</span></div>
+              <div class="pline"><div class="pdot d-orange"></div><span class="ptext">Agentforce 채팅 — 질문 선택으로 AI 응답 시뮬레이션</span></div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="tag">Data Cloud One</span>
+            <span class="tag">Multi-Org</span>
+            <span class="tag">CI / Segment</span>
+            <span class="tag">CRM Related List</span>
+            <span class="tag">Agentforce</span>
+          </div>
+
+          <div class="card-foot">
+            <a class="open-btn btn-sky" href="data360-one.html?lang=ja" id="btn-one">Open Demo →</a>
+            <div class="card-stat">4 views<br>Hub-and-spoke</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1528,7 +1620,8 @@ footer {
     'card-dmo':        { ja: 'data360-dmo-explorer.html?lang=ja',     ko: 'data360-dmo-explorer.html?lang=ko' },
     'card-datastream': { ja: 'data360-datastream.html?lang=ja',       ko: 'data360-datastream.html?lang=ko' },
     'card-consent':    { ja: 'data360-consent.html?lang=ja',          ko: 'data360-consent.html?lang=ko' },
-    'card-catalog':    { ja: 'data360-datadictionary.html?lang=ja',   ko: 'data360-datadictionary.html?lang=ko' }
+    'card-catalog':    { ja: 'data360-datadictionary.html?lang=ja',   ko: 'data360-datadictionary.html?lang=ko' },
+    'card-one':        { ja: 'data360-one.html?lang=ja',               ko: 'data360-one.html?lang=ko' }
   };
   const BTNS = {
     'card-streaming':  document.getElementById('btn-streaming'),
@@ -1539,7 +1632,8 @@ footer {
     'card-dmo':        document.getElementById('btn-dmo'),
     'card-datastream': document.getElementById('btn-datastream'),
     'card-consent':    document.getElementById('btn-consent'),
-    'card-catalog':    document.getElementById('btn-catalog')
+    'card-catalog':    document.getElementById('btn-catalog'),
+    'card-one':        document.getElementById('btn-one')
   };
 
   function switchLang(cardId, lang) {
@@ -1569,6 +1663,7 @@ footer {
   switchLang('card-datastream', 'ja');
   switchLang('card-consent',    'ja');
   switchLang('card-catalog',    'ja');
+  switchLang('card-one',        'ja');
 })();
 </script>
 

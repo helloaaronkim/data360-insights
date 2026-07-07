@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Cloud One · Data 360</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#0070D2;--blue-lt:#E0F0FF;--blue-dk:#032D60;
+  --purple:#7C5CFC;--purple-lt:#F0EDFB;
+  --green:#3CB879;--green-lt:#D9F2E5;
+  --orange:#FF8B00;--orange-lt:#FFF0DB;
+  --gold:#C89400;--gold-lt:#FFF9DB;
+  --red:#EA001E;--red-lt:#FEF0F0;
+  --bg:#F4F6F9;--card:#fff;--border:#E5E9F0;
+  --text-1:#032D60;--text-2:#444;--text-3:#888;
+  --r:12px;--r-sm:8px;--sh:0 2px 12px rgba(0,0,0,.08);--sh-md:0 4px 20px rgba(0,0,0,.12);
+  --t:0.18s ease;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-2);min-height:100vh;}
+
+/* ── Nav ── */
+.nav{background:var(--blue-dk);color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200;}
+.nav-logo{width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.nav-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;}
+.nav-badge{background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:4px;letter-spacing:.5px;}
+.nav-tabs{display:flex;gap:2px;margin-left:auto;}
+.nav-tab{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:var(--t);border:none;background:none;white-space:nowrap;}
+.nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,.15);color:#fff;}
+.lang-bar{display:flex;gap:4px;margin-left:12px;}
+.lang-btn{padding:4px 10px;border:1px solid rgba(255,255,255,.3);border-radius:4px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer;background:none;transition:var(--t);}
+.lang-btn.active{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.6);}
+
+/* ── Views ── */
+.view{display:none;padding:28px 24px 48px;max-width:1080px;margin:0 auto;}
+.view.active{display:block;}
+.section-hdr{margin-bottom:22px;}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text-1);}
+.section-sub{font-size:13px;color:var(--text-3);margin-top:4px;line-height:1.5;}
+
+/* ── Hint Banner ── */
+.hint{background:var(--blue-lt);border:1px solid #A0C8F0;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+
+/* ── ARCH VIEW ── */
+.arch-canvas{position:relative;width:100%;height:420px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:20px;}
+.arch-bg-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,112,210,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,112,210,.05) 1px,transparent 1px);
+  background-size:30px 30px;}
+
+/* Nodes */
+.anode{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s ease;user-select:none;}
+.anode:hover{transform:scale(1.06) !important;}
+.anode.selected .anode-circle{box-shadow:0 0 0 3px var(--purple),0 4px 16px rgba(124,92,252,.4);}
+
+.anode-circle{width:72px;height:72px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--border);background:var(--card);box-shadow:var(--sh);transition:var(--t);}
+.anode-circle.home-circle{background:var(--blue-dk);border-color:var(--blue-dk);width:84px;height:84px;}
+.anode-circle .n-icon{font-size:20px;line-height:1;}
+.anode-circle.home-circle .n-icon{font-size:28px;}
+.anode-label{font-size:11px;font-weight:600;color:var(--text-1);margin-top:5px;text-align:center;line-height:1.3;}
+.anode-label.home-label{color:var(--blue-dk);font-size:12px;font-weight:700;}
+.anode-role{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;margin-top:2px;}
+.role-crm{background:var(--blue-lt);color:var(--blue);}
+.role-ai{background:var(--purple-lt);color:var(--purple);}
+
+/* SVG lines */
+.arch-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+.conn-line{stroke:var(--border);stroke-width:2;fill:none;stroke-dasharray:6 4;transition:stroke .3s,stroke-width .3s;}
+.conn-line.active-line{stroke:var(--purple);stroke-width:2.5;}
+
+/* Data flow particle */
+@keyframes flowAlongLine{0%{offset-distance:0%;}100%{offset-distance:100%;}}
+.flow-particle{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);pointer-events:none;
+  animation:flowAlongLine 1.2s ease-in-out forwards;}
+
+/* Detail panel below arch */
+.arch-detail{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);
+  opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;pointer-events:none;}
+.arch-detail.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.ad-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.ad-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ad-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--text-1);}
+.ad-sub{font-size:12px;color:var(--text-3);}
+.shared-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.shared-col-title{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.shared-chip{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;font-size:12px;
+  opacity:0;transform:translateX(-8px);transition:opacity .25s,transform .25s;}
+.shared-chip.appear{opacity:1;transform:translateX(0);}
+.sc-icon{font-size:13px;}
+.sc-name{flex:1;font-weight:500;color:var(--text-1);}
+.sc-badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
+.badge-ro{background:var(--gold-lt);color:#A16200;}
+.badge-sync{background:var(--purple-lt);color:var(--purple);}
+
+/* Comparison table */
+.compare-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);margin-top:20px;}
+.compare-table{width:100%;border-collapse:collapse;}
+.compare-table th{background:var(--blue-dk);color:#fff;padding:11px 16px;font-size:11px;font-weight:600;text-align:left;letter-spacing:.3px;}
+.compare-table td{padding:9px 16px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table tr:hover td{background:var(--bg);}
+.ck{color:var(--green);font-size:15px;}
+.cx{color:var(--red);font-size:15px;}
+.cp{color:var(--orange);font-size:15px;}
+
+/* ── META VIEW ── */
+.meta-flow-steps{display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
+.meta-step{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;min-width:155px;flex-shrink:0;transition:var(--t);}
+.meta-step.active-step{border-color:var(--blue);background:var(--blue-lt);}
+.ms-num{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+.meta-step.active-step .ms-num{background:var(--purple);}
+.ms-title{font-size:11px;font-weight:700;color:var(--text-1);margin-bottom:3px;line-height:1.3;}
+.ms-desc{font-size:10px;color:var(--text-3);line-height:1.4;}
+.meta-arrow{color:var(--text-3);font-size:18px;padding:0 3px;flex-shrink:0;}
+
+.meta-main{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.meta-col{padding:20px;}
+.meta-col-home{background:var(--blue-dk);}
+.meta-col-arrow{background:linear-gradient(180deg,var(--blue-dk) 0%,var(--purple) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;}
+.meta-col-companion{background:var(--purple-lt);border-left:2px solid var(--purple);}
+.meta-col-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.meta-col-hdr-icon{font-size:20px;}
+.meta-col-hdr-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;}
+.meta-col-hdr-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto;}
+.badge-hub{background:var(--gold);color:#fff;}
+.badge-companion{background:var(--purple-lt);border:1px solid var(--purple);color:var(--purple);}
+.meta-sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.meta-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;margin-bottom:5px;font-size:12px;transition:all .3s;cursor:default;}
+.meta-item-home{background:rgba(255,255,255,.10);}
+.meta-item-companion{background:#fff;border:1px solid var(--border);}
+.meta-item.synced .mi-badge{background:var(--green-lt);color:#1B7A45;}
+.meta-item.syncing{animation:syncPulse .6s ease;}
+@keyframes syncPulse{0%{background:rgba(124,92,252,.3);}100%{background:var(--purple-lt);}}
+.mi-icon{font-size:13px;}
+.mi-name{flex:1;font-weight:500;}
+.mi-name-home{color:rgba(255,255,255,.9);}
+.mi-name-companion{color:var(--text-1);}
+.mi-badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
+.mi-badge-home{background:rgba(255,255,255,.18);color:rgba(255,255,255,.8);}
+.sync-btn{display:block;width:100%;margin-top:10px;padding:9px 0;background:var(--purple);color:#fff;font-size:12px;font-weight:700;border:none;border-radius:6px;cursor:pointer;transition:var(--t);}
+.sync-btn:hover{background:#6A4EE0;}
+.sync-btn:disabled{background:var(--green);cursor:default;}
+.note-box{background:var(--gold-lt);border:1px solid #E8B900;border-radius:var(--r-sm);padding:12px 14px;display:flex;gap:10px;margin-top:20px;font-size:12px;line-height:1.6;}
+
+/* ── CRM VIEW ── */
+.crm-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.crm-record-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.crm-bar{background:var(--blue-dk);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.crm-bar-icon{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.crm-bar-title{font-weight:600;font-size:13px;}
+.crm-bar-sub{font-size:10px;opacity:.6;}
+.crm-body-pad{padding:16px;}
+.crm-fields{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
+.crm-field{background:var(--bg);border-radius:6px;padding:7px 10px;}
+.cf-label{font-size:10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px;}
+.cf-value{font-size:13px;font-weight:600;color:var(--text-1);}
+.crm-query-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:var(--t);margin-bottom:12px;}
+.crm-query-btn:hover{background:#005AC0;}
+.crm-query-btn.loading{background:var(--text-3);cursor:default;}
+.crm-query-btn .btn-icon{font-size:14px;}
+.query-status{font-size:11px;color:var(--text-3);margin-bottom:10px;min-height:16px;transition:var(--t);}
+.crm-rl{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.crm-rl-hdr{background:var(--bg);padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.crm-rl-hdr-title{font-size:11px;font-weight:700;color:var(--text-1);flex:1;}
+.crm-rl-count{background:var(--blue-lt);color:var(--blue);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.crm-rl-row{display:grid;grid-template-columns:3fr 2fr 1fr;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px;align-items:center;
+  opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;}
+.crm-rl-row.show{opacity:1;transform:translateY(0);}
+.crm-rl-row:last-child{border-bottom:none;}
+.crm-rl-row.hdr-row{background:var(--bg);font-weight:600;color:var(--text-3);font-size:10px;text-transform:uppercase;opacity:1;transform:none;}
+.seg-pill{display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+.sp-green{background:var(--green-lt);color:#1B7A45;}
+.sp-blue{background:var(--blue-lt);color:var(--blue);}
+.sp-orange{background:var(--orange-lt);color:#A05A00;}
+.sp-purple{background:var(--purple-lt);color:var(--purple);}
+
+.crm-home-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.crm-home-bar{background:linear-gradient(135deg,var(--blue-dk) 0%,#0A4BAD 100%);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.home-data-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);
+  opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .3s;}
+.home-data-item.show{opacity:1;transform:translateX(0);}
+.home-data-item:last-child{border-bottom:none;}
+.hdi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.hdi-label{font-size:11px;color:var(--text-3);margin-bottom:1px;}
+.hdi-val{font-size:14px;font-weight:700;color:var(--text-1);}
+.hdi-score{margin-left:auto;font-size:22px;font-weight:700;}
+
+/* ── AGENT VIEW ── */
+.agent-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:20px;}
+.agent-chat-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column;}
+.agent-bar{background:linear-gradient(135deg,var(--purple) 0%,#5B3FDC 100%);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;}
+.agent-bar-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.agent-bar-title{font-weight:700;font-size:13px;}
+.agent-bar-sub{font-size:10px;opacity:.7;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s ease infinite;margin-left:auto;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-scroll{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:320px;max-height:380px;}
+.bubble{max-width:88%;padding:10px 13px;border-radius:12px;font-size:12.5px;line-height:1.55;}
+.bubble.user{background:var(--blue-dk);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.bubble.agent{background:var(--purple-lt);color:var(--text-1);align-self:flex-start;border-bottom-left-radius:4px;}
+.bubble.typing{opacity:.6;}
+.data-chip{display:inline-block;background:#fff;border:1px solid var(--border);border-radius:6px;padding:3px 8px;margin:3px 2px;font-size:11px;font-weight:600;color:var(--text-1);}
+.chat-qs{padding:12px 14px;border-top:1px solid var(--border);background:var(--bg);}
+.chat-qs-label{font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px;}
+.chat-q-btn{display:block;width:100%;text-align:left;padding:7px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:11.5px;color:var(--text-1);cursor:pointer;transition:var(--t);margin-bottom:5px;}
+.chat-q-btn:last-child{margin-bottom:0;}
+.chat-q-btn:hover{border-color:var(--purple);background:var(--purple-lt);color:var(--purple);}
+.chat-q-btn:disabled{opacity:.4;cursor:default;}
+.agent-data-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.agent-data-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--text-1);margin-bottom:12px;}
+.ins-card{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;margin-bottom:8px;
+  opacity:0;transform:translateX(8px);transition:opacity .3s,transform .3s;}
+.ins-card.show{opacity:1;transform:translateX(0);}
+.ins-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ins-name{font-size:12.5px;font-weight:600;color:var(--text-1);}
+.ins-from{font-size:11px;color:var(--text-3);}
+.ins-val{font-size:20px;font-weight:700;margin-left:auto;}
+.agent-note{background:var(--bg);border-radius:var(--r-sm);padding:9px 12px;font-size:11px;color:var(--text-3);margin-top:6px;}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .crm-layout,.agent-layout,.shared-cols,.meta-main{grid-template-columns:1fr;}
+  .meta-col-arrow{display:none;}
+  .nav-tabs{display:none;}
+}
+
+/* Utility */
+.mt-16{margin-top:16px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-logo">☁️</div>
+  <div>
+    <span class="nav-title">Data Cloud One</span>
+    <span class="nav-badge">ONE</span>
+  </div>
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-tab active" onclick="showView('arch',this)">
+      <span data-ja>① アーキテクチャ</span><span data-ko style="display:none">① 아키텍처</span>
+    </button>
+    <button class="nav-tab" onclick="showView('meta',this)">
+      <span data-ja>② メタデータ共有</span><span data-ko style="display:none">② 메타데이터 공유</span>
+    </button>
+    <button class="nav-tab" onclick="showView('crm',this)">
+      <span data-ja>③ CRM 連携</span><span data-ko style="display:none">③ CRM 연동</span>
+    </button>
+    <button class="nav-tab" onclick="showView('agent',this)">
+      <span data-ja>④ Agentforce</span><span data-ko style="display:none">④ Agentforce</span>
+    </button>
+  </div>
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="switchLang('ja')" data-lang="ja">JA</button>
+    <button class="lang-btn" onclick="switchLang('ko')" data-lang="ko">KO</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════
+     VIEW 1: ARCHITECTURE
+════════════════════════════ -->
+<div class="view active" id="view-arch">
+  <div class="section-hdr">
+    <div class="section-title"><span data-ja>アーキテクチャ — Hub-and-spoke モデル</span><span data-ko style="display:none">아키텍처 — Hub-and-spoke 모델</span></div>
+    <div class="section-sub"><span data-ja>各コンパニオン組織をクリックして、共有されるメタデータを確認してください</span><span data-ko style="display:none">각 컴패니언 조직을 클릭해서 공유되는 메타데이터를 확인하세요</span></div>
+  </div>
+
+  <div class="hint">
+    <span>👆</span>
+    <span data-ja>下の図で Sales・Service・Agentforce・Commerce の各組織をクリックしてみてください</span>
+    <span data-ko style="display:none">아래 그림에서 Sales·Service·Agentforce·Commerce 각 조직을 클릭해 보세요</span>
+  </div>
+
+  <!-- Canvas -->
+  <div class="arch-canvas" id="arch-canvas">
+    <div class="arch-bg-grid"></div>
+    <svg class="arch-svg" id="arch-svg"></svg>
+    <!-- nodes placed by JS -->
+  </div>
+
+  <!-- Detail panel -->
+  <div class="arch-detail" id="arch-detail">
+    <div class="ad-header">
+      <div class="ad-icon" id="ad-icon" style="background:var(--purple-lt)">🏢</div>
+      <div><div class="ad-title" id="ad-title">-</div><div class="ad-sub" id="ad-sub">-</div></div>
+      <div id="ad-badge" style="margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--purple-lt);color:var(--purple);">
+        <span data-ja>参照専用</span><span data-ko style="display:none">참조 전용</span>
+      </div>
+    </div>
+    <div class="shared-cols" id="ad-cols"></div>
+  </div>
+
+  <!-- Compare -->
+  <div class="compare-wrap mt-16">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:35%"><span data-ja>機能</span><span data-ko style="display:none">기능</span></th>
+          <th>Home Org</th>
+          <th>Companion Org</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span data-ja>Data Cloud インストール</span><span data-ko style="display:none">Data Cloud 설치</span></td>
+            <td><span class="ck">✔</span> <span data-ja>必須</span><span data-ko style="display:none">필수</span></td>
+            <td><span class="cx">✘</span> <span data-ja>不要</span><span data-ko style="display:none">불필요</span></td></tr>
+        <tr><td><span data-ja>データストリーム / DMO</span><span data-ko style="display:none">데이터 스트림 / DMO</span></td>
+            <td><span class="ck">✔</span></td>
+            <td><span class="cx">✘</span></td></tr>
+        <tr><td>Calculated Insight</td>
+            <td><span class="ck">✔</span> <span data-ja>作成・参照</span><span data-ko style="display:none">생성·참조</span></td>
+            <td><span class="ck">✔</span> <span data-ja>参照のみ</span><span data-ko style="display:none">참조만</span></td></tr>
+        <tr><td>Segment</td>
+            <td><span class="ck">✔</span> <span data-ja>作成・参照</span><span data-ko style="display:none">생성·참조</span></td>
+            <td><span class="ck">✔</span> <span data-ja>参照のみ</span><span data-ko style="display:none">참조만</span></td></tr>
+        <tr><td><span data-ja>CRM 関連リスト</span><span data-ko style="display:none">CRM 관련 목록</span></td>
+            <td><span class="cp">◎</span></td>
+            <td><span class="ck">✔</span> <span data-ja>Home Org データを表示</span><span data-ko style="display:none">Home Org 데이터 표시</span></td></tr>
+        <tr><td>Agentforce</td>
+            <td><span class="ck">✔</span></td>
+            <td><span class="ck">✔</span> <span data-ja>Home Org CI・Segment を参照</span><span data-ko style="display:none">Home Org CI·Segment 참조</span></td></tr>
+        <tr><td>Identity Resolution</td>
+            <td><span class="ck">✔</span></td>
+            <td><span class="cx">✘</span> <span data-ja>（結果を参照のみ）</span><span data-ko style="display:none">(결과 참조만)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     VIEW 2: METADATA SHARING
+════════════════════════════ -->
+<div class="view" id="view-meta">
+  <div class="section-hdr">
+    <div class="section-title"><span data-ja>メタデータ共有フロー</span><span data-ko style="display:none">메타데이터 공유 플로우</span></div>
+    <div class="section-sub"><span data-ja>「Sync」ボタンを押してメタデータがホーム組織からコンパニオン組織へ流れるようすを確認</span><span data-ko style="display:none">"Sync" 버튼을 눌러 메타데이터가 홈 조직에서 컴패니언 조직으로 흐르는 과정을 확인</span></div>
+  </div>
+
+  <!-- Step indicators -->
+  <div class="meta-flow-steps" id="meta-steps">
+    <div class="meta-step active-step" id="mstep-1">
+      <div class="ms-num">1</div>
+      <div class="ms-title"><span data-ja>Home Org 設定</span><span data-ko style="display:none">Home Org 설정</span></div>
+      <div class="ms-desc"><span data-ja>DLO / DMO / CI / Segment 定義済</span><span data-ko style="display:none">DLO / DMO / CI / Segment 정의됨</span></div>
+    </div>
+    <div class="meta-arrow">→</div>
+    <div class="meta-step" id="mstep-2">
+      <div class="ms-num">2</div>
+      <div class="ms-title"><span data-ja>Companion Org 接続</span><span data-ko style="display:none">Companion Org 연결</span></div>
+      <div class="ms-desc"><span data-ja>Setup → Data Cloud One</span><span data-ko style="display:none">Setup → Data Cloud One</span></div>
+    </div>
+    <div class="meta-arrow">→</div>
+    <div class="meta-step" id="mstep-3">
+      <div class="ms-num">3</div>
+      <div class="ms-title"><span data-ja>メタデータ同期</span><span data-ko style="display:none">메타데이터 동기화</span></div>
+      <div class="ms-desc"><span data-ja>定義のみ共有（データコピーなし）</span><span data-ko style="display:none">정의만 공유 (데이터 복사 없음)</span></div>
+    </div>
+    <div class="meta-arrow">→</div>
+    <div class="meta-step" id="mstep-4">
+      <div class="ms-num">4</div>
+      <div class="ms-title"><span data-ja>Companion で参照</span><span data-ko style="display:none">Companion에서 참조</span></div>
+      <div class="ms-desc"><span data-ja>CRM / Agentforce からクエリ</span><span data-ko style="display:none">CRM / Agentforce에서 쿼리</span></div>
+    </div>
+  </div>
+
+  <!-- Side-by-side -->
+  <div class="meta-main">
+    <!-- Home -->
+    <div class="meta-col meta-col-home">
+      <div class="meta-col-hdr">
+        <span class="meta-col-hdr-icon">🏠</span>
+        <div>
+          <div class="meta-col-hdr-title" style="color:#fff;">Home Org</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);"><span data-ja>Data Cloud 完全版</span><span data-ko style="display:none">Data Cloud 완전판</span></div>
+        </div>
+        <div class="meta-col-hdr-badge badge-hub">Hub</div>
+      </div>
+      <div class="meta-sec-title" style="color:rgba(255,255,255,.55);">Calculated Insights</div>
+      <div id="home-ci"></div>
+      <div class="meta-sec-title" style="color:rgba(255,255,255,.55);margin-top:10px;">Segments</div>
+      <div id="home-seg"></div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="meta-col-arrow">
+      <div style="font-size:18px;">→</div>
+      <button class="sync-btn" id="sync-btn" onclick="runSync()">
+        <span data-ja>Sync</span><span data-ko style="display:none">동기화</span>
+      </button>
+      <div style="font-size:18px;">→</div>
+    </div>
+
+    <!-- Companion -->
+    <div class="meta-col meta-col-companion">
+      <div class="meta-col-hdr">
+        <span class="meta-col-hdr-icon">🔗</span>
+        <div>
+          <div class="meta-col-hdr-title" style="color:var(--text-1);">Companion Org</div>
+          <div style="font-size:11px;color:var(--text-3);"><span data-ja>CRM のみ</span><span data-ko style="display:none">CRM만</span></div>
+        </div>
+        <div class="meta-col-hdr-badge badge-companion"><span data-ja>参照専用</span><span data-ko style="display:none">참조 전용</span></div>
+      </div>
+      <div class="meta-sec-title" style="color:var(--text-3);">Calculated Insights</div>
+      <div id="companion-ci">
+        <div style="font-size:12px;color:var(--text-3);padding:10px 0;"><span data-ja>← Sync して共有</span><span data-ko style="display:none">← Sync하여 공유</span></div>
+      </div>
+      <div class="meta-sec-title" style="color:var(--text-3);margin-top:10px;">Segments</div>
+      <div id="companion-seg">
+        <div style="font-size:12px;color:var(--text-3);padding:10px 0;"><span data-ja>← Sync して共有</span><span data-ko style="display:none">← Sync하여 공유</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box mt-16">
+    <span style="font-size:16px;">⚠️</span>
+    <div>
+      <strong style="font-size:12px;color:var(--text-1);"><span data-ja>重要：</span><span data-ko style="display:none">중요: </span></strong>
+      <span style="color:var(--text-2);"><span data-ja>共有されるのは「定義（メタデータ）」のみ。顧客ごとの CI 値・Segment 帰属はホーム組織の Data Cloud に存在し、コンパニオン組織はクエリでリアルタイム参照します。データのコピーは行われません。</span><span data-ko style="display:none">공유되는 것은 "정의(메타데이터)"뿐입니다. 고객별 CI 값·Segment 소속은 홈 조직의 Data Cloud에 존재하며, 컴패니언 조직은 쿼리로 실시간 참조합니다. 데이터 복사는 이루어지지 않습니다.</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     VIEW 3: CRM
+════════════════════════════ -->
+<div class="view" id="view-crm">
+  <div class="section-hdr">
+    <div class="section-title"><span data-ja>CRM 関連リスト — リアルタイム参照</span><span data-ko style="display:none">CRM 관련 목록 — 실시간 참조</span></div>
+    <div class="section-sub"><span data-ja>「Query Data Cloud」をクリックして、ホーム組織からデータが取得されるようすをシミュレーション</span><span data-ko style="display:none">"Query Data Cloud"를 클릭해 홈 조직에서 데이터가 조회되는 과정을 시뮬레이션</span></div>
+  </div>
+
+  <div class="hint">
+    <span>👆</span>
+    <span data-ja>「Query Data Cloud」ボタンをクリックして、Companion Org の CRM がホーム組織に問い合わせる様子を体験してください</span>
+    <span data-ko style="display:none">"Query Data Cloud" 버튼을 클릭해 Companion Org의 CRM이 홈 조직에 쿼리하는 과정을 체험해 보세요</span>
+  </div>
+
+  <div class="crm-layout">
+    <!-- Contact record in Companion Org -->
+    <div class="crm-record-wrap">
+      <div class="crm-bar">
+        <div class="crm-bar-icon">👤</div>
+        <div>
+          <div class="crm-bar-title"><span data-ja>Companion Org — Contact</span><span data-ko style="display:none">Companion Org — Contact</span></div>
+          <div class="crm-bar-sub">Sales Cloud · 田中 花子</div>
+        </div>
+      </div>
+      <div class="crm-body-pad">
+        <div class="crm-fields">
+          <div class="crm-field"><div class="cf-label"><span data-ja>氏名</span><span data-ko style="display:none">성명</span></div><div class="cf-value">田中 花子</div></div>
+          <div class="crm-field"><div class="cf-label">Email</div><div class="cf-value" style="font-size:11px;">tanaka@example.com</div></div>
+          <div class="crm-field"><div class="cf-label"><span data-ja>会社</span><span data-ko style="display:none">회사</span></div><div class="cf-value">RAV Group</div></div>
+          <div class="crm-field"><div class="cf-label"><span data-ja>種別</span><span data-ko style="display:none">유형</span></div><div class="cf-value"><span data-ja>既存顧客</span><span data-ko style="display:none">기존 고객</span></div></div>
+        </div>
+
+        <button class="crm-query-btn" id="crm-query-btn" onclick="queryCRM()">
+          <span class="btn-icon">⚡</span>
+          <span data-ja>Query Data Cloud（ホーム組織）</span>
+          <span data-ko style="display:none">Query Data Cloud (홈 조직)</span>
+        </button>
+        <div class="query-status" id="query-status"></div>
+
+        <!-- Data Cloud Insights Related List -->
+        <div class="crm-rl" style="margin-bottom:10px;">
+          <div class="crm-rl-hdr">
+            <span style="font-size:13px;">☁️</span>
+            <span class="crm-rl-hdr-title">
+              <span data-ja>Data Cloud インサイト</span><span data-ko style="display:none">Data Cloud 인사이트</span>
+            </span>
+            <span class="crm-rl-count" id="ci-count">0</span>
+          </div>
+          <div class="crm-rl-row hdr-row">
+            <div><span data-ja>CI 名</span><span data-ko style="display:none">CI명</span></div>
+            <div><span data-ja>値</span><span data-ko style="display:none">값</span></div>
+            <div><span data-ja>日付</span><span data-ko style="display:none">날짜</span></div>
+          </div>
+          <div id="ci-rows"></div>
+        </div>
+
+        <!-- Segment Membership Related List -->
+        <div class="crm-rl">
+          <div class="crm-rl-hdr">
+            <span style="font-size:13px;">🎯</span>
+            <span class="crm-rl-hdr-title">
+              <span data-ja>セグメント帰属</span><span data-ko style="display:none">세그먼트 소속</span>
+            </span>
+            <span class="crm-rl-count" id="seg-count">0</span>
+          </div>
+          <div class="crm-rl-row hdr-row">
+            <div><span data-ja>セグメント名</span><span data-ko style="display:none">세그먼트명</span></div>
+            <div><span data-ja>ステータス</span><span data-ko style="display:none">상태</span></div>
+            <div><span data-ja>追加日</span><span data-ko style="display:none">추가일</span></div>
+          </div>
+          <div id="seg-rows"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home Org data source -->
+    <div class="crm-home-panel">
+      <div class="crm-home-bar">
+        <span style="font-size:20px;">🏠</span>
+        <div>
+          <div style="font-weight:700;font-size:13px;">Home Org · Data Cloud</div>
+          <div style="font-size:10px;opacity:.6;"><span data-ja>データの実体はここに存在</span><span data-ko style="display:none">데이터 실체는 여기에 존재</span></div>
+        </div>
+        <div id="home-query-badge" style="margin-left:auto;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;background:rgba(255,255,255,.15);color:#fff;opacity:0;transition:opacity .3s;">
+          <span data-ja>クエリ受信中...</span><span data-ko style="display:none">쿼리 수신 중...</span>
+        </div>
+      </div>
+      <div id="home-data-items"></div>
+      <div style="padding:10px 14px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);" id="query-time" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     VIEW 4: AGENTFORCE
+════════════════════════════ -->
+<div class="view" id="view-agent">
+  <div class="section-hdr">
+    <div class="section-title"><span data-ja>Agentforce × Data Cloud One</span><span data-ko style="display:none">Agentforce × Data Cloud One</span></div>
+    <div class="section-sub"><span data-ja>下の質問ボタンを押して AI エージェントがホーム組織のデータをどう使うかシミュレーション</span><span data-ko style="display:none">아래 질문 버튼을 눌러 AI 에이전트가 홈 조직 데이터를 어떻게 활용하는지 시뮬레이션</span></div>
+  </div>
+
+  <div class="hint">
+    <span>💬</span>
+    <span data-ja>下のチャット欄にある「質問する」ボタンを押してみてください。エージェントがリアルタイムでホーム組織にクエリを飛ばす様子が分かります</span>
+    <span data-ko style="display:none">아래 채팅창의 "질문하기" 버튼을 눌러 보세요. 에이전트가 실시간으로 홈 조직에 쿼리하는 과정을 확인할 수 있습니다</span>
+  </div>
+
+  <div class="agent-layout">
+    <!-- Chat -->
+    <div class="agent-chat-wrap">
+      <div class="agent-bar">
+        <div class="agent-bar-icon">🤖</div>
+        <div>
+          <div class="agent-bar-title">Agentforce <span style="opacity:.6;font-size:11px;font-weight:400;">· Companion Org</span></div>
+          <div class="agent-bar-sub"><span data-ja>Data Cloud One 経由でホーム組織に接続中</span><span data-ko style="display:none">Data Cloud One 경유로 홈 조직에 연결 중</span></div>
+        </div>
+        <div class="live-dot"></div>
+      </div>
+      <div class="chat-scroll" id="chat-scroll">
+        <div class="bubble agent" id="bubble-welcome">
+          <span data-ja>こんにちは！Agentforce です。下のボタンから質問を選んでください。ホーム組織の Data Cloud データを使ってお答えします。</span>
+          <span data-ko style="display:none">안녕하세요! Agentforce입니다. 아래 버튼에서 질문을 선택해 주세요. 홈 조직의 Data Cloud 데이터를 활용해 답변드립니다.</span>
+        </div>
+      </div>
+      <div class="chat-qs">
+        <div class="chat-qs-label"><span data-ja>質問を選ぶ</span><span data-ko style="display:none">질문 선택</span></div>
+        <button class="chat-q-btn" id="q1" onclick="askQuestion(0)">
+          <span data-ja>👤 田中さんのプロファイルを教えて</span><span data-ko style="display:none">👤 田中씨 프로필을 알려줘</span>
+        </button>
+        <button class="chat-q-btn" id="q2" onclick="askQuestion(1)">
+          <span data-ja>🎁 おすすめのオファーは？</span><span data-ko style="display:none">🎁 추천 오퍼는?</span>
+        </button>
+        <button class="chat-q-btn" id="q3" onclick="askQuestion(2)">
+          <span data-ja>🎯 このセグメントに入った理由は？</span><span data-ko style="display:none">🎯 이 세그먼트에 들어간 이유는?</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Data panel -->
+    <div class="agent-data-wrap">
+      <div class="agent-data-title">
+        <span data-ja>🏠 ホーム組織から取得したデータ</span>
+        <span data-ko style="display:none">🏠 홈 조직에서 가져온 데이터</span>
+      </div>
+      <div id="agent-data-items">
+        <div style="font-size:12px;color:var(--text-3);padding:20px 0;text-align:center;">
+          <span data-ja>← 質問を送信するとデータが表示されます</span>
+          <span data-ko style="display:none">← 질문을 전송하면 데이터가 표시됩니다</span>
+        </div>
+      </div>
+      <div class="agent-note" id="agent-note" style="display:none">
+        <span data-ja>⚡ 応答時間: <span id="agent-latency">-</span>ms ｜ データソース: Home Org · Data Cloud One API</span>
+        <span data-ko style="display:none">⚡ 응답 시간: <span id="agent-latency-ko">-</span>ms ｜ 데이터 소스: Home Org · Data Cloud One API</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── Language ─── */
+let lang = new URLSearchParams(location.search).get('lang') || 'ja';
+function switchLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+  document.querySelectorAll('[data-ja]').forEach(el=>el.style.display=l==='ja'?'':'none');
+  document.querySelectorAll('[data-ko]').forEach(el=>el.style.display=l==='ko'?'':'none');
+}
+
+/* ─── Views ─── */
+function showView(id,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  window.scrollTo({top:52,behavior:'smooth'});
+}
+
+/* ══════════════════════════════
+   ARCH VIEW
+══════════════════════════════ */
+const COMPANIONS = {
+  c1:{
+    icon:'🏢', bg:'#E0F0FF', color:var_blue(),
+    jaTitle:'Sales Cloud Org', koTitle:'Sales Cloud Org',
+    jaSub:'販売部門 CRM · Org ID: 00DXX001',koSub:'영업 부문 CRM · Org ID: 00DXX001',
+    role:'CRM',
+    ci:[
+      {icon:'📊',jaName:'LTV Score',koName:'LTV Score'},
+      {icon:'📈',jaName:'RFM Score',koName:'RFM Score'},
+      {icon:'⚠️',jaName:'Churn Risk Score',koName:'Churn Risk Score'},
+    ],
+    seg:[
+      {icon:'🎯',jaName:'休眠高ポイント顧客',koName:'휴면 고포인트 고객'},
+      {icon:'🎯',jaName:'高 LTV 非アクティブ',koName:'고 LTV 비활성'},
+    ]
+  },
+  c2:{
+    icon:'🛎️', bg:'#D9F2E5', color:'#1B7A45',
+    jaTitle:'Service Cloud Org', koTitle:'Service Cloud Org',
+    jaSub:'サービス部門 CRM · Org ID: 00DXX002',koSub:'서비스 부문 CRM · Org ID: 00DXX002',
+    role:'CRM',
+    ci:[
+      {icon:'📊',jaName:'LTV Score',koName:'LTV Score'},
+      {icon:'🤝',jaName:'Service Satisfaction CI',koName:'Service Satisfaction CI'},
+    ],
+    seg:[
+      {icon:'🎯',jaName:'高 LTV 非アクティブ',koName:'고 LTV 비활성'},
+      {icon:'🎯',jaName:'キャンセル予約顧客',koName:'예약 취소 고객'},
+    ]
+  },
+  c3:{
+    icon:'🤖', bg:'#F0EDFB', color:'#7C5CFC',
+    jaTitle:'Agentforce Org', koTitle:'Agentforce Org',
+    jaSub:'AI エージェント組織 · Org ID: 00DXX003',koSub:'AI 에이전트 조직 · Org ID: 00DXX003',
+    role:'AI',
+    ci:[
+      {icon:'📊',jaName:'LTV Score',koName:'LTV Score'},
+      {icon:'📈',jaName:'RFM Score',koName:'RFM Score'},
+      {icon:'💡',jaName:'Next Best Offer CI',koName:'Next Best Offer CI'},
+    ],
+    seg:[
+      {icon:'🎯',jaName:'全セグメント参照可',koName:'전 세그먼트 참조 가능'},
+    ]
+  },
+  c4:{
+    icon:'🛒', bg:'#FFF0DB', color:'#A05A00',
+    jaTitle:'Commerce Cloud Org', koTitle:'Commerce Cloud Org',
+    jaSub:'EC 部門 CRM · Org ID: 00DXX004',koSub:'EC 부문 CRM · Org ID: 00DXX004',
+    role:'CRM',
+    ci:[
+      {icon:'📊',jaName:'LTV Score',koName:'LTV Score'},
+      {icon:'🛍️',jaName:'Purchase Frequency CI',koName:'Purchase Frequency CI'},
+    ],
+    seg:[
+      {icon:'🎯',jaName:'特定店舗購入顧客(UC1)',koName:'특정 매장 구매 고객(UC1)'},
+      {icon:'🎯',jaName:'休眠高ポイント顧客',koName:'휴면 고포인트 고객'},
+    ]
+  }
+};
+function var_blue(){return '#0070D2';}
+
+function buildArch(){
+  const canvas = document.getElementById('arch-canvas');
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  const cx = W/2, cy = H*0.28;
+
+  // Home node
+  const home = makeNode('home-node','☁️','Home Org','Data Cloud Hub',true);
+  home.style.left = (cx - 42)+'px';
+  home.style.top  = (cy - 42)+'px';
+  canvas.appendChild(home);
+
+  // Companion positions
+  const positions = [
+    {id:'c1', x:W*0.10, y:H*0.70},
+    {id:'c2', x:W*0.32, y:H*0.78},
+    {id:'c3', x:W*0.62, y:H*0.78},
+    {id:'c4', x:W*0.85, y:H*0.70},
+  ];
+  positions.forEach(p=>{
+    const d = COMPANIONS[p.id];
+    const n = makeNode(p.id+'-node', d.icon, lang==='ja'?d.jaTitle:d.koTitle, d.role, false, d.role==='AI');
+    n.style.left = (p.x - 36)+'px';
+    n.style.top  = (p.y - 36)+'px';
+    n.onclick = ()=>selectCompanion(p.id);
+    canvas.appendChild(n);
+  });
+
+  // SVG lines
+  const svg = document.getElementById('arch-svg');
+  svg.innerHTML='';
+  positions.forEach(p=>{
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+    line.setAttribute('x2', p.x); line.setAttribute('y2', p.y);
+    line.setAttribute('class','conn-line');
+    line.id = 'line-'+p.id;
+    svg.appendChild(line);
+  });
+}
+
+function makeNode(id,icon,title,sub,isHome,isAI){
+  const div = document.createElement('div');
+  div.className='anode';
+  div.id=id;
+  if(isHome){
+    div.innerHTML=`
+      <div class="anode-circle home-circle"><span class="n-icon">${icon}</span></div>
+      <div class="anode-label home-label">${title}</div>
+      <div class="anode-label" style="font-size:10px;color:var(--text-3);">${sub}</div>`;
+  } else {
+    div.style.cursor='pointer';
+    div.innerHTML=`
+      <div class="anode-circle"><span class="n-icon" style="font-size:20px;">${icon}</span></div>
+      <div class="anode-label">${title}</div>
+      <span class="anode-role ${isAI?'role-ai':'role-crm'}">${sub}</span>`;
+  }
+  return div;
+}
+
+let selectedCompanion = null;
+function selectCompanion(id){
+  const d = COMPANIONS[id];
+  if(!d) return;
+
+  // Reset all
+  document.querySelectorAll('.anode').forEach(n=>n.classList.remove('selected'));
+  document.querySelectorAll('.conn-line').forEach(l=>l.classList.remove('active-line'));
+
+  // Highlight
+  document.getElementById(id+'-node').classList.add('selected');
+  document.getElementById('line-'+id).classList.add('active-line');
+  selectedCompanion = id;
+
+  // Animate particle along line
+  animateParticle(id);
+
+  // Show detail panel
+  const panel = document.getElementById('arch-detail');
+  panel.classList.remove('visible');
+  setTimeout(()=>{
+    document.getElementById('ad-icon').textContent = d.icon;
+    document.getElementById('ad-icon').style.background = d.bg;
+    document.getElementById('ad-title').textContent = lang==='ja'?d.jaTitle:d.koTitle;
+    document.getElementById('ad-sub').textContent   = lang==='ja'?d.jaSub:d.koSub;
+
+    const ro = lang==='ja'?'読み取り専用':'읽기 전용';
+    const ciHtml = d.ci.map((c,i)=>`
+      <div class="shared-chip" id="chip-ci-${i}">${c.icon} <span class="sc-name">${lang==='ja'?c.jaName:c.koName}</span> <span class="sc-badge badge-ro">${ro}</span></div>`).join('');
+    const segHtml = d.seg.map((s,i)=>`
+      <div class="shared-chip" id="chip-seg-${i}">${s.icon} <span class="sc-name">${lang==='ja'?s.jaName:s.koName}</span> <span class="sc-badge badge-ro">${ro}</span></div>`).join('');
+
+    const ciLabel  = 'Calculated Insights';
+    const segLabel = 'Segments';
+    document.getElementById('ad-cols').innerHTML=`
+      <div><div class="shared-col-title">${ciLabel}</div>${ciHtml}</div>
+      <div><div class="shared-col-title">${segLabel}</div>${segHtml}</div>`;
+
+    panel.classList.add('visible');
+
+    // Stagger chip appearance
+    setTimeout(()=>{
+      document.querySelectorAll('.shared-chip').forEach((c,i)=>{
+        setTimeout(()=>c.classList.add('appear'), i*80);
+      });
+    },100);
+  },150);
+}
+
+function animateParticle(id){
+  const canvas = document.getElementById('arch-canvas');
+  const cRect  = canvas.getBoundingClientRect();
+  const homeEl = document.getElementById('home-node');
+  const compEl = document.getElementById(id+'-node');
+  if(!homeEl||!compEl) return;
+
+  const hr = homeEl.getBoundingClientRect();
+  const cr = compEl.getBoundingClientRect();
+  const sx = hr.left - cRect.left + hr.width/2;
+  const sy = hr.top  - cRect.top  + hr.height/2;
+  const ex = cr.left - cRect.left + cr.width/2;
+  const ey = cr.top  - cRect.top  + cr.height/2;
+
+  const dot = document.createElement('div');
+  dot.style.cssText=`position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);pointer-events:none;left:${sx}px;top:${sy}px;transition:left 0.7s ease,top 0.7s ease,opacity 0.3s;z-index:10;`;
+  canvas.appendChild(dot);
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      dot.style.left = (ex-5)+'px';
+      dot.style.top  = (ey-5)+'px';
+    },50);
+    setTimeout(()=>{ dot.style.opacity='0'; },750);
+    setTimeout(()=>dot.remove(), 1100);
+  });
+}
+
+/* ══════════════════════════════
+   META VIEW
+══════════════════════════════ */
+const META_CI = [
+  {icon:'📊',jaName:'LTV Score',koName:'LTV Score'},
+  {icon:'📈',jaName:'RFM Score',koName:'RFM Score'},
+  {icon:'⚠️',jaName:'Churn Risk Score',koName:'Churn Risk Score'},
+  {icon:'💡',jaName:'Next Best Offer CI',koName:'Next Best Offer CI'},
+];
+const META_SEG = [
+  {icon:'🎯',jaName:'休眠高ポイント顧客',koName:'휴면 고포인트 고객'},
+  {icon:'🎯',jaName:'高 LTV 非アクティブ',koName:'고 LTV 비활성'},
+  {icon:'🎯',jaName:'特定店舗購入顧客',koName:'특정 매장 구매 고객'},
+  {icon:'🎯',jaName:'キャンセル予約顧客',koName:'예약 취소 고객'},
+];
+let syncDone = false;
+
+function buildMeta(){
+  const hciEl  = document.getElementById('home-ci');
+  const hsegEl = document.getElementById('home-seg');
+  if(!hciEl) return;
+  const defLabel = lang==='ja'?'作成済':'생성됨';
+  hciEl.innerHTML = META_CI.map(c=>`
+    <div class="meta-item meta-item-home">
+      <span class="mi-icon">${c.icon}</span>
+      <span class="mi-name mi-name-home">${lang==='ja'?c.jaName:c.koName}</span>
+      <span class="mi-badge mi-badge-home">${defLabel}</span>
+    </div>`).join('');
+  hsegEl.innerHTML = META_SEG.map(s=>`
+    <div class="meta-item meta-item-home">
+      <span class="mi-icon">${s.icon}</span>
+      <span class="mi-name mi-name-home">${lang==='ja'?s.jaName:s.koName}</span>
+      <span class="mi-badge mi-badge-home">${defLabel}</span>
+    </div>`).join('');
+}
+
+function runSync(){
+  if(syncDone) return;
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true;
+  btn.textContent = lang==='ja'?'同期中...':'동기화 중...';
+
+  // Animate steps
+  let step = 2;
+  const stepInterval = setInterval(()=>{
+    document.getElementById('mstep-'+step).classList.add('active-step');
+    step++;
+    if(step>4) clearInterval(stepInterval);
+  }, 400);
+
+  // Add companion items with stagger
+  const roLabel = lang==='ja'?'読み取り専用':'읽기 전용';
+  const cciEl  = document.getElementById('companion-ci');
+  const csegEl = document.getElementById('companion-seg');
+
+  setTimeout(()=>{
+    cciEl.innerHTML = META_CI.map((c,i)=>`
+      <div class="meta-item meta-item-companion" id="comp-ci-${i}" style="opacity:0;transform:translateX(12px);transition:opacity .3s,transform .3s;">
+        <span class="mi-icon">${c.icon}</span>
+        <span class="mi-name mi-name-companion">${lang==='ja'?c.jaName:c.koName}</span>
+        <span class="mi-badge badge-ro">${roLabel}</span>
+      </div>`).join('');
+    csegEl.innerHTML = META_SEG.map((s,i)=>`
+      <div class="meta-item meta-item-companion" id="comp-seg-${i}" style="opacity:0;transform:translateX(12px);transition:opacity .3s,transform .3s;">
+        <span class="mi-icon">${s.icon}</span>
+        <span class="mi-name mi-name-companion">${lang==='ja'?s.jaName:s.koName}</span>
+        <span class="mi-badge badge-ro">${roLabel}</span>
+      </div>`).join('');
+
+    META_CI.forEach((_,i)=>{
+      setTimeout(()=>{
+        const el = document.getElementById('comp-ci-'+i);
+        if(el){ el.style.opacity='1'; el.style.transform='translateX(0)'; el.classList.add('syncing'); }
+      }, i*120);
+    });
+    META_SEG.forEach((_,i)=>{
+      setTimeout(()=>{
+        const el = document.getElementById('comp-seg-'+i);
+        if(el){ el.style.opacity='1'; el.style.transform='translateX(0)'; el.classList.add('syncing'); }
+      }, META_CI.length*120 + i*120);
+    });
+
+    const totalDelay = (META_CI.length + META_SEG.length) * 120 + 300;
+    setTimeout(()=>{
+      btn.textContent = lang==='ja'?'✔ 同期完了':'✔ 동기화 완료';
+      syncDone = true;
+    }, totalDelay);
+  }, 900);
+}
+
+/* ══════════════════════════════
+   CRM VIEW
+══════════════════════════════ */
+const CRM_CI_ROWS = [
+  {jaName:'LTV Score',      koName:'LTV Score',      pill:'sp-purple', jaVal:'820 pts', koVal:'820 pts', date:'2025-06-01'},
+  {jaName:'RFM Score',      koName:'RFM Score',      pill:'sp-green',  jaVal:'High',    koVal:'High',    date:'2025-06-01'},
+  {jaName:'Points Bucket',  koName:'Points Bucket',  pill:'sp-orange', jaVal:'Extreme', koVal:'Extreme', date:'2025-06-01'},
+];
+const CRM_SEG_ROWS = [
+  {jaName:'休眠高ポイント顧客', koName:'휴면 고포인트 고객', pill:'sp-blue',   date:'2025-06-02'},
+  {jaName:'高 LTV 非アクティブ', koName:'고 LTV 비활성',   pill:'sp-orange', date:'2025-06-01'},
+];
+const HOME_DATA = [
+  {icon:'📊',bg:'#F0EDFB',  jaLabel:'LTV Score (CI)',          koLabel:'LTV Score (CI)',         jaVal:'820', koVal:'820', color:'#7C5CFC'},
+  {icon:'📈',bg:'#D9F2E5',  jaLabel:'RFM Score (CI)',          koLabel:'RFM Score (CI)',          jaVal:'High',koVal:'High',color:'#1B7A45'},
+  {icon:'🏅',bg:'#FFF0DB',  jaLabel:'Points Bucket (LMC)',     koLabel:'Points Bucket (LMC)',     jaVal:'Extreme',koVal:'Extreme',color:'#A05A00'},
+  {icon:'🎯',bg:'#E0F0FF',  jaLabel:'セグメント帰属数',         koLabel:'세그먼트 소속 수',         jaVal:'2', koVal:'2', color:'#0070D2'},
+];
+let crmQueried = false;
+
+function queryCRM(){
+  if(crmQueried) return;
+  const btn = document.getElementById('crm-query-btn');
+  const status = document.getElementById('query-status');
+  const badge  = document.getElementById('home-query-badge');
+  btn.classList.add('loading');
+  btn.querySelector('[data-ja]').textContent='クエリ中...';
+  btn.querySelector('[data-ko]').textContent='쿼리 중...';
+  badge.style.opacity='1';
+
+  const steps_ja = ['ホーム組織に接続中...','Identity Resolution で照合中...','CI 値を取得中...','Segment 帰属を確認中...'];
+  const steps_ko = ['홈 조직에 연결 중...','Identity Resolution으로 매칭 중...','CI 값 조회 중...','Segment 소속 확인 중...'];
+  const steps = lang==='ja'?steps_ja:steps_ko;
+  let si=0;
+  const stepInt = setInterval(()=>{
+    status.textContent = steps[si] || '';
+    si++;
+    if(si>=steps.length) clearInterval(stepInt);
+  },380);
+
+  // Home data items appear first
+  const homeEl = document.getElementById('home-data-items');
+  homeEl.innerHTML = HOME_DATA.map((d,i)=>`
+    <div class="home-data-item" id="hdi-${i}">
+      <div class="hdi-icon" style="background:${d.bg};">${d.icon}</div>
+      <div>
+        <div class="hdi-label">${lang==='ja'?d.jaLabel:d.koLabel}</div>
+        <div class="hdi-val">${lang==='ja'?d.jaVal:d.koVal}</div>
+      </div>
+      <div class="hdi-score" style="color:${d.color};">${lang==='ja'?d.jaVal:d.koVal}</div>
+    </div>`).join('');
+
+  setTimeout(()=>{
+    HOME_DATA.forEach((_,i)=>{
+      setTimeout(()=>{ const el=document.getElementById('hdi-'+i); if(el)el.classList.add('show'); }, i*160);
+    });
+  }, 500);
+
+  // CRM rows appear after
+  setTimeout(()=>{
+    badge.style.opacity='0';
+    const ciRowsEl  = document.getElementById('ci-rows');
+    const segRowsEl = document.getElementById('seg-rows');
+    const inEl   = lang==='ja'?'対象':'대상';
+
+    ciRowsEl.innerHTML = CRM_CI_ROWS.map((r,i)=>`
+      <div class="crm-rl-row" id="ci-row-${i}">
+        <div style="font-weight:600;">${lang==='ja'?r.jaName:r.koName}</div>
+        <div><span class="seg-pill ${r.pill}">${lang==='ja'?r.jaVal:r.koVal}</span></div>
+        <div style="color:var(--text-3);font-size:11px;">${r.date}</div>
+      </div>`).join('');
+
+    segRowsEl.innerHTML = CRM_SEG_ROWS.map((r,i)=>`
+      <div class="crm-rl-row" id="seg-row-${i}">
+        <div style="font-weight:600;">${lang==='ja'?r.jaName:r.koName}</div>
+        <div><span class="seg-pill ${r.pill}">${inEl}</span></div>
+        <div style="color:var(--text-3);font-size:11px;">${r.date}</div>
+      </div>`).join('');
+
+    CRM_CI_ROWS.forEach((_,i)=>{
+      setTimeout(()=>{
+        const el=document.getElementById('ci-row-'+i); if(el)el.classList.add('show');
+        document.getElementById('ci-count').textContent=i+1;
+      }, i*180);
+    });
+    CRM_SEG_ROWS.forEach((_,i)=>{
+      setTimeout(()=>{
+        const el=document.getElementById('seg-row-'+i); if(el)el.classList.add('show');
+        document.getElementById('seg-count').textContent=i+1;
+      }, CRM_CI_ROWS.length*180 + i*180);
+    });
+
+    const total = (CRM_CI_ROWS.length + CRM_SEG_ROWS.length) * 180;
+    setTimeout(()=>{
+      status.textContent = lang==='ja'?'✅ データ取得完了 (240ms)':'✅ 데이터 조회 완료 (240ms)';
+      const qt = document.getElementById('query-time');
+      qt.style.display='';
+      qt.textContent = lang==='ja'?'⚡ クエリ応答: 240ms ｜ Data Cloud One API':'⚡ 쿼리 응답: 240ms ｜ Data Cloud One API';
+      crmQueried = true;
+    }, total + 100);
+  }, steps.length*380 + 200);
+}
+
+/* ══════════════════════════════
+   AGENT VIEW
+══════════════════════════════ */
+const Q_DATA = [
+  {
+    jaQ:'田中さんのプロファイルを教えて',
+    koQ:'田中씨 프로필을 알려줘',
+    jaA:'田中 花子さんのプロファイルをホーム組織から取得しました。<br><br><span class="data-chip">LTV Score: 820</span><span class="data-chip">RFM: High</span><span class="data-chip">Points: 8,750 pt</span><br><br>現在 <strong>2つのセグメント</strong>（休眠高ポイント顧客・高LTV非アクティブ）に属しています。直近3ヶ月の購買なし。',
+    koA:'田中 花子님의 프로필을 홈 조직에서 가져왔습니다.<br><br><span class="data-chip">LTV Score: 820</span><span class="data-chip">RFM: High</span><span class="data-chip">Points: 8,750 pt</span><br><br>현재 <strong>2개 세그먼트</strong>(휴면 고포인트 고객·고LTV 비활성)에 속해 있습니다. 최근 3개월 구매 없음.',
+    data:[
+      {icon:'📊',bg:'#F0EDFB',jaL:'LTV Score',koL:'LTV Score',val:'820',color:'#7C5CFC'},
+      {icon:'📈',bg:'#D9F2E5',jaL:'RFM Score',koL:'RFM Score',val:'High',color:'#1B7A45'},
+      {icon:'🏅',bg:'#FFF0DB',jaL:'ポイント残高',koL:'포인트 잔액',val:'8,750 pt',color:'#A05A00'},
+      {icon:'🎯',bg:'#E0F0FF',jaL:'セグメント数',koL:'세그먼트 수',val:'2',color:'#0070D2'},
+    ]
+  },
+  {
+    jaQ:'おすすめのオファーは？',
+    koQ:'추천 오퍼는?',
+    jaA:'LTV スコア 820（上位 5%）、Points Bucket「Extreme」のため、<strong>ポイント 2倍キャンペーン</strong>が最適です。過去のレンタル履歴から SUV 優先傾向あり — <strong>SUV 優先割引</strong>も有効です。',
+    koA:'LTV 스코어 820(상위 5%), Points Bucket "Extreme"이므로 <strong>포인트 2배 캠페인</strong>이 최적입니다. 과거 렌탈 이력에서 SUV 이용 경향 있음 — <strong>SUV 우선 할인</strong>도 효과적입니다.',
+    data:[
+      {icon:'💡',bg:'#FFF9DB',jaL:'Next Best Offer',koL:'Next Best Offer',val:'×2pt',color:'#A16200'},
+      {icon:'🚙',bg:'#D9F2E5',jaL:'SUV 嗜好スコア',koL:'SUV 선호 스코어',val:'92/100',color:'#1B7A45'},
+      {icon:'⏰',bg:'#FEF0F0',jaL:'最終購買',koL:'최근 구매',val:'94日前',color:'#EA001E'},
+    ]
+  },
+  {
+    jaQ:'このセグメントに入った理由は？',
+    koQ:'이 세그먼트에 들어간 이유는?',
+    jaA:'「休眠高ポイント顧客」セグメントの条件を確認しました：<br><br><span class="data-chip">Points ≥ 5,000</span><span class="data-chip">最終購買 ≥ 90日</span><span class="data-chip">LTV ≥ 500</span><br><br>田中さんはすべての条件を満たしています（8,750 pt・94日・820 pts）。',
+    koA:'"휴면 고포인트 고객" 세그먼트 조건을 확인했습니다:<br><br><span class="data-chip">Points ≥ 5,000</span><span class="data-chip">최근 구매 ≥ 90일</span><span class="data-chip">LTV ≥ 500</span><br><br>田中씨는 모든 조건을 충족합니다 (8,750 pt·94일·820 pts).',
+    data:[
+      {icon:'📋',bg:'#E0F0FF',jaL:'セグメント条件',koL:'세그먼트 조건',val:'3/3 ✔',color:'#0070D2'},
+      {icon:'🏅',bg:'#FFF0DB',jaL:'実際のポイント残高',koL:'실제 포인트 잔액',val:'8,750',color:'#A05A00'},
+      {icon:'⏰',bg:'#FEF0F0',jaL:'非アクティブ日数',koL:'비활성 일수',val:'94日',color:'#EA001E'},
+    ]
+  }
+];
+let chatBusy = false;
+
+function askQuestion(idx){
+  if(chatBusy) return;
+  chatBusy = true;
+  document.querySelectorAll('.chat-q-btn').forEach(b=>b.disabled=true);
+
+  const q = Q_DATA[idx];
+  const scroll = document.getElementById('chat-scroll');
+
+  // User bubble
+  const ub = document.createElement('div');
+  ub.className='bubble user';
+  ub.textContent = lang==='ja'?q.jaQ:q.koQ;
+  scroll.appendChild(ub);
+  scroll.scrollTop = scroll.scrollHeight;
+
+  // Typing indicator
+  const tb = document.createElement('div');
+  tb.className='bubble agent typing';
+  tb.innerHTML='<span data-ja>ホーム組織にクエリ中</span><span data-ko style="display:none">홈 조직에 쿼리 중</span><span id="dots">...</span>';
+  scroll.appendChild(tb);
+  scroll.scrollTop = scroll.scrollHeight;
+  switchLang(lang);
+
+  // Animate dots
+  let dotCount = 0;
+  const dotInt = setInterval(()=>{
+    const d = document.getElementById('dots');
+    if(d) d.textContent = '.'.repeat((dotCount%3)+1);
+    dotCount++;
+  }, 300);
+
+  // Data items appear
+  const dataEl = document.getElementById('agent-data-items');
+  const latency = 180 + Math.floor(Math.random()*120);
+  setTimeout(()=>{
+    dataEl.innerHTML = q.data.map((d,i)=>`
+      <div class="ins-card" id="ins-${i}">
+        <div class="ins-icon" style="background:${d.bg};">${d.icon}</div>
+        <div><div class="ins-name">${lang==='ja'?d.jaL:d.koL}</div><div class="ins-from"><span data-ja>Home Org (CI)</span><span data-ko style="display:none">Home Org (CI)</span></div></div>
+        <div class="ins-val" style="color:${d.color};">${d.val}</div>
+      </div>`).join('');
+    q.data.forEach((_,i)=>setTimeout(()=>{ const el=document.getElementById('ins-'+i); if(el)el.classList.add('show'); }, i*150));
+  }, 800);
+
+  setTimeout(()=>{
+    clearInterval(dotInt);
+    tb.remove();
+
+    const ab = document.createElement('div');
+    ab.className='bubble agent';
+    ab.innerHTML = lang==='ja'?q.jaA:q.koA;
+    scroll.appendChild(ab);
+    scroll.scrollTop = scroll.scrollHeight;
+
+    // Show note
+    const note = document.getElementById('agent-note');
+    note.style.display='';
+    document.getElementById('agent-latency').textContent = latency;
+    document.getElementById('agent-latency-ko').textContent = latency;
+    switchLang(lang);
+
+    chatBusy = false;
+    document.querySelectorAll('.chat-q-btn').forEach(b=>b.disabled=false);
+    // Disable the asked question
+    document.getElementById('q'+(idx+1)).disabled=true;
+  }, 1400);
+}
+
+/* ─── Init ─── */
+function init(){
+  buildArch();
+  buildMeta();
+  switchLang(lang);
+}
+window.addEventListener('load', init);
+window.addEventListener('resize', buildArch);
+</script>
+</body>
+</html>
